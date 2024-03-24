@@ -1,0 +1,24 @@
+name: Git Town
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: git-town-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  branch-stack:
+    name: Display the Branch Stack
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Git Town
+        uses: ./
