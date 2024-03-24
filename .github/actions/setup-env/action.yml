@@ -13,4 +13,5 @@ runs:
 
     - name: Install Dependencies
       id: install
+      shell: bash
       run: npm ci
