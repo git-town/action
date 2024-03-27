@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
-    "@vercel/style-guide": "^5.2.0",
+    "@vercel/style-guide": "^6.0.0",
     "editorconfig-checker": "^5.1.5",
     "esbuild": "^0.20.0",
     "eslint": "^8.57.0",
