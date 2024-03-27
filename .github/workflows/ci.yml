@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - 'main'
+
+concurrency:
+  group: ci-${{ github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  eslint:
+    name: Lint - ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Env
+        id: setup-env
+        uses: ./.github/actions/setup-env
+
+      - name: Lint
+        id: lint
+        run: |
+          npm run lint:eslint
+
+  editorconfig:
+    name: Lint - EditorConfig
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Env
+        id: setup-env
+        uses: ./.github/actions/setup-env
+
+      - name: Lint
+        id: lint
+        run: npm run lint:ec
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Env
+        id: setup-env
+        uses: ./.github/actions/setup-env
+
+      - name: Tests
+        id: tests
+        run: npm run test:ci

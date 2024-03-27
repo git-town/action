@@ -1,0 +1,24 @@
+name: Git Town - GitHub Action
+description: Visualizes your stacked changes when proposing pull requests on GitHub
+
+branding:
+  icon: 'home'
+  color: 'orange'
+
+inputs:
+  github-token:
+    required: true
+    default: ${{ github.token }}
+  main-branch:
+    required: false
+    default: ''
+  perennial-branches:
+    required: false
+    default: ''
+  perennial-regex:
+    required: false
+    default: ''
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

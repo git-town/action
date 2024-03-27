@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "module": "ES2020",
+    "moduleResolution": "Node10",
+    "target": "ES2020",
+    "lib": ["ES2022"],
+
+    /* Type Checking */
+    "strict": true,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["."],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,14 @@
+# Git Town configuration file
+
+push-hook = true
+push-new-branches = false
+ship-delete-tracking-branch = false
+sync-before-ship = false
+sync-upstream = true
+
+[branches]
+main = "main"
+
+[sync-strategy]
+feature-branches = "merge"
+perennial-branches = "rebase"

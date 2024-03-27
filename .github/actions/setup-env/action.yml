@@ -1,0 +1,17 @@
+name: Setup Env
+description: Setup Node.js and install dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      id: setup-node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .node-version
+        cache: npm
+
+    - name: Install Dependencies
+      id: install
+      shell: bash
+      run: npm ci
