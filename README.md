@@ -10,9 +10,7 @@
 
 This action visualizes your stacked changes when proposing pull requests on GitHub:
 
-- `main`
-  - ["git town park" command #3181](https://github.com/git-town/git-town/pull/3181) :point_left:
-    - ["git town observe" command" #3186](https://github.com/git-town/git-town/pull/3186)
+![](./docs/example-visualization.png)
 
 This allows you to easily see all related PRs for a given pull request, where
 you are in the stack, as well as navigate between PRs in a stack.
