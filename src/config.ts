@@ -9,7 +9,7 @@ const configSchema = object({
   branches: object({
     main: string().optional(),
     perennials: array(string()).optional(),
-    perennialRegex: string().optional(),
+    'perennial-regex': string().optional(),
   }).optional(),
 })
 

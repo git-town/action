@@ -2,6 +2,7 @@ import { describe, beforeEach, it, expect, vi } from 'vitest'
 import type * as github from '@actions/github'
 import { inputs } from './inputs'
 import type { Octokit } from './types'
+import type { Config } from './config'
 
 beforeEach(() => {
   vi.unstubAllEnvs()
@@ -24,7 +25,7 @@ describe('getMainBranch', () => {
         },
       },
     } as unknown as Octokit
-    const config = {}
+    const config: Config = {}
     const context = {
       repo: {},
     } as unknown as typeof github.context
@@ -46,7 +47,7 @@ describe('getMainBranch', () => {
         },
       },
     } as unknown as Octokit
-    const config = {
+    const config: Config = {
       branches: {
         main: 'main',
       },
@@ -115,10 +116,10 @@ describe('getPerennialBranches', () => {
       },
     },
   } as unknown as Octokit
-  const config = {
+  const config: Config = {
     branches: {
       perennials: ['dev', 'staging', 'prod'],
-      perennialRegex: '^release-.*$',
+      'perennial-regex': '^release-.*$',
     },
   }
   const context = {
