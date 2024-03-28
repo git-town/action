@@ -37,8 +37,14 @@ export const inputs = {
     config: Config | undefined,
     context: typeof github.context
   ): Promise<string[]> {
-    const { data } = await octokit.rest.repos.listBranches({ ...context.repo })
-    const repoBranches = data.map((branch) => branch.name)
+    const [{ data: unprotectedBranches }, { data: protectedBranches }] =
+      await Promise.all([
+        octokit.rest.repos.listBranches({ ...context.repo }),
+        octokit.rest.repos.listBranches({ ...context.repo, protected: true }),
+      ])
+    const repoBranches = [...unprotectedBranches, ...protectedBranches].map(
+      (branch) => branch.name
+    )
 
     let explicitBranches: string[] = []
     explicitBranches = config?.branches?.perennials ?? explicitBranches
@@ -50,7 +56,7 @@ export const inputs = {
       perennialBranchesInput.length > 0 ? perennialBranchesInput : explicitBranches
 
     let perennialRegex: string | undefined
-    perennialRegex = config?.branches?.perennialRegex ?? perennialRegex
+    perennialRegex = config?.branches?.['perennial-regex'] ?? perennialRegex
     const perennialRegexInput = core.getInput('perennial-regex', {
       required: false,
       trimWhitespace: true,

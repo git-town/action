@@ -46840,8 +46840,13 @@ var inputs = {
     return mainBranch;
   },
   async getPerennialBranches(octokit, config2, context3) {
-    const { data } = await octokit.rest.repos.listBranches({ ...context3.repo });
-    const repoBranches = data.map((branch) => branch.name);
+    const [{ data: unprotectedBranches }, { data: protectedBranches }] = await Promise.all([
+      octokit.rest.repos.listBranches({ ...context3.repo }),
+      octokit.rest.repos.listBranches({ ...context3.repo, protected: true })
+    ]);
+    const repoBranches = [...unprotectedBranches, ...protectedBranches].map(
+      (branch) => branch.name
+    );
     let explicitBranches = [];
     explicitBranches = config2?.branches?.perennials ?? explicitBranches;
     const perennialBranchesInput = core2.getMultilineInput("perennial-branches", {
@@ -46850,7 +46855,7 @@ var inputs = {
     });
     explicitBranches = perennialBranchesInput.length > 0 ? perennialBranchesInput : explicitBranches;
     let perennialRegex;
-    perennialRegex = config2?.branches?.perennialRegex ?? perennialRegex;
+    perennialRegex = config2?.branches?.["perennial-regex"] ?? perennialRegex;
     const perennialRegexInput = core2.getInput("perennial-regex", {
       required: false,
       trimWhitespace: true
@@ -46906,7 +46911,7 @@ var configSchema = object({
   branches: object({
     main: string3().optional(),
     perennials: array(string3()).optional(),
-    perennialRegex: string3().optional()
+    "perennial-regex": string3().optional()
   }).optional()
 });
 var configFile;
