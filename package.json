@@ -25,7 +25,7 @@
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
     "toml": "^3.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
