@@ -46916,7 +46916,9 @@ var inputs = {
       )
     );
     core2.startGroup("Inputs: Pull requests");
-    core2.info(JSON.stringify(pullRequests));
+    core2.info(
+      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+    );
     core2.endGroup();
     return pullRequests;
   }

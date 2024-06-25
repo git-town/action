@@ -137,7 +137,9 @@ export const inputs = {
     )
 
     core.startGroup('Inputs: Pull requests')
-    core.info(JSON.stringify(pullRequests))
+    core.info(
+      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+    )
     core.endGroup()
 
     return pullRequests
