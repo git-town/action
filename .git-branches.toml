@@ -9,6 +9,10 @@ sync-upstream = true
 [branches]
 main = "main"
 
+[hosting]
+platform = "github"
+origin-hostname = "github.com"
+
 [sync-strategy]
 feature-branches = "merge"
 perennial-branches = "rebase"
