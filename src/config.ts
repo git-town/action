@@ -33,4 +33,8 @@ if (!parsed.success) {
 
 const config: Config | undefined = configFile && parsed.success ? parsed.data : undefined
 
+core.startGroup('Config')
+core.info(JSON.stringify(config))
+core.endGroup()
+
 export { config }
