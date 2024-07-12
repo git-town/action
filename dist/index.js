@@ -46823,13 +46823,13 @@ async function main({
     repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName);
   });
   const getStackGraph = (pullRequest) => {
-    const stackGraph2 = repoGraph.copy();
-    stackGraph2.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
+    const stackGraph = repoGraph.copy();
+    stackGraph.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
     (0, import_graphology_traversal.bfsFromNode)(
-      stackGraph2,
+      stackGraph,
       pullRequest.headRefName,
       (ref, attributes) => {
-        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
+        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
         return attributes.type === "perennial";
       },
       {
@@ -46837,14 +46837,14 @@ async function main({
       }
     );
     (0, import_graphology_traversal.dfsFromNode)(
-      stackGraph2,
+      stackGraph,
       pullRequest.headRefName,
       (ref) => {
-        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
+        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
       },
       { mode: "outbound" }
     );
-    return stackGraph2;
+    return stackGraph;
   };
   const getOutput = (graph) => {
     const lines = [];
@@ -46873,18 +46873,38 @@ async function main({
     return lines.join("\n");
   };
   const jobs = [];
-  const stackGraph = getStackGraph(currentPullRequest);
-  if (inputs.getSkipSingleStacks() && stackGraph.nodes.length <= 1) {
-    return;
-  }
-  stackGraph.forEachNode((_, stackNode) => {
+  const isStack = (stackGraph) => {
+    let isStack2 = false;
+    const graph = stackGraph.copy();
+    (0, import_graphology_traversal.dfs)(
+      graph,
+      (_, attr, depth) => {
+        if (attr.type === "pull-request") {
+          core2.info(`iterating depth: ${depth} ${attr.number}`);
+          if (depth > 1) {
+            isStack2 = true;
+          }
+        }
+        return false;
+      },
+      { mode: "directed" }
+    );
+    core2.info(`isStack: ${isStack2}`);
+    return isStack2;
+  };
+  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
     if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
       return;
     }
     jobs.push(async () => {
       core2.info(`Updating stack details for PR #${stackNode.number}`);
-      const stackGraph2 = getStackGraph(stackNode);
-      const output = getOutput(stackGraph2);
+      const sg = getStackGraph(stackNode);
+      if (inputs.getSkipSingleStacks()) {
+        if (!isStack(sg)) {
+          return Promise.resolve();
+        }
+      }
+      const output = getOutput(sg);
       let description = stackNode.body ?? "";
       description = updateDescription({
         description,

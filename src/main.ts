@@ -102,13 +102,36 @@ export async function main({
 
   const jobs: Array<() => Promise<void>> = []
 
-  const stackGraph = getStackGraph(currentPullRequest)
+  const isStack = (stackGraph: MultiDirectedGraph<StackNodeAttributes>) => {
+    let isStack = false
 
-  if (inputs.getSkipSingleStacks() && stackGraph.nodes.length <= 1) {
-    return
+    const graph = stackGraph.copy() as MultiDirectedGraph<StackNodeAttributes>
+
+    dfs(
+      graph,
+      (_, attr, depth) => {
+        if (attr.type === 'pull-request') {
+          core.info(`iterating depth: ${depth} ${attr.number}`)
+          if (depth > 1) {
+            isStack = true
+          }
+        }
+
+        return false
+      },
+      { mode: 'directed' }
+    )
+
+    core.info(`isStack: ${isStack}`)
+
+    return isStack
   }
 
-  stackGraph.forEachNode((_, stackNode) => {
+  // if (inputs.getSkipSingleStacks() && !isStack(stackGraph)) {
+  //   return
+  // }
+
+  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
       return
     }
@@ -116,8 +139,15 @@ export async function main({
     jobs.push(async () => {
       core.info(`Updating stack details for PR #${stackNode.number}`)
 
-      const stackGraph = getStackGraph(stackNode)
-      const output = getOutput(stackGraph)
+      const sg = getStackGraph(stackNode)
+
+      if (inputs.getSkipSingleStacks()) {
+        if (!isStack(sg)) {
+          return Promise.resolve()
+        }
+      }
+
+      const output = getOutput(sg)
 
       let description = stackNode.body ?? ''
       description = updateDescription({
