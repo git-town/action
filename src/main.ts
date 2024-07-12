@@ -101,7 +101,13 @@ export async function main({
 
   const jobs: Array<() => Promise<void>> = []
 
-  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
+  const stackGraph = getStackGraph(currentPullRequest);
+
+  if (inputs.getSkipSingleStacks() && stackGraph.length <= 1) {
+    return;
+  }
+
+  stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
       return
     }

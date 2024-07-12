@@ -9,6 +9,10 @@ export const inputs = {
     return core.getInput('github-token', { required: true, trimWhitespace: true })
   },
 
+  getSkipSingleStacks() {
+      return core.getInput('skip-single-stacks', { required: false })
+  },
+
   async getMainBranch(
     octokit: Octokit,
     config: Config | undefined,
