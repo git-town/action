@@ -10,7 +10,7 @@ export const inputs = {
   },
 
   getSkipSingleStacks() {
-      return core.getInput('skip-single-stacks', { required: false })
+    return core.getBooleanInput('skip-single-stacks', { required: false })
   },
 
   async getMainBranch(

@@ -18741,7 +18741,7 @@ var require_core = __commonJS({
       return inputs2.map((input) => input.trim());
     }
     exports2.getMultilineInput = getMultilineInput2;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -18752,7 +18752,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports2.getBooleanInput = getBooleanInput;
+    exports2.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -30712,7 +30712,7 @@ var core4 = __toESM(require_core());
 var github2 = __toESM(require_github());
 
 // src/main.ts
-var core = __toESM(require_core());
+var core2 = __toESM(require_core());
 var github = __toESM(require_github());
 var import_graphology = __toESM(require_graphology_cjs());
 var import_graphology_traversal = __toESM(require_graphology_traversal());
@@ -42831,141 +42831,8 @@ var remark2 = remark().use(remarkGfm).data("settings", {
   bullet: "-"
 });
 
-// src/main.ts
-async function main({
-  octokit,
-  mainBranch,
-  perennialBranches,
-  currentPullRequest,
-  pullRequests
-}) {
-  const repoGraph = new import_graphology.MultiDirectedGraph();
-  repoGraph.addNode(mainBranch, {
-    type: "perennial",
-    ref: mainBranch
-  });
-  perennialBranches.forEach((perennialBranch) => {
-    repoGraph.addNode(perennialBranch, {
-      type: "perennial",
-      ref: perennialBranch
-    });
-  });
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addNode(pullRequest.headRefName, {
-      type: "pull-request",
-      ...pullRequest
-    });
-  });
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName);
-  });
-  const getStackGraph = (pullRequest) => {
-    const stackGraph = repoGraph.copy();
-    stackGraph.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
-    (0, import_graphology_traversal.bfsFromNode)(
-      stackGraph,
-      pullRequest.headRefName,
-      (ref, attributes) => {
-        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
-        return attributes.type === "perennial";
-      },
-      {
-        mode: "inbound"
-      }
-    );
-    (0, import_graphology_traversal.dfsFromNode)(
-      stackGraph,
-      pullRequest.headRefName,
-      (ref) => {
-        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
-      },
-      { mode: "outbound" }
-    );
-    return stackGraph;
-  };
-  const getOutput = (graph) => {
-    const lines = [];
-    const terminatingRefs = [mainBranch, ...perennialBranches];
-    (0, import_graphology_traversal.dfs)(
-      graph,
-      (_, stackNode, depth) => {
-        if (!stackNode.shouldPrint)
-          return;
-        const tabSize = depth * 2;
-        const indentation = new Array(tabSize).fill(" ").join("");
-        let line = indentation;
-        if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
-          line += `- \`${stackNode.ref}\``;
-        }
-        if (stackNode.type === "pull-request") {
-          line += `- #${stackNode.number}`;
-        }
-        if (stackNode.isCurrent) {
-          line += " :point_left:";
-        }
-        lines.push(line);
-      },
-      { mode: "directed" }
-    );
-    return lines.join("\n");
-  };
-  const jobs = [];
-  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
-    if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
-      return;
-    }
-    jobs.push(async () => {
-      core.info(`Updating stack details for PR #${stackNode.number}`);
-      const stackGraph = getStackGraph(stackNode);
-      const output = getOutput(stackGraph);
-      let description = stackNode.body ?? "";
-      description = updateDescription({
-        description,
-        output
-      });
-      await octokit.rest.pulls.update({
-        ...github.context.repo,
-        pull_number: stackNode.number,
-        body: description
-      });
-    });
-  });
-  await Promise.allSettled(jobs.map((job) => job()));
-}
-function updateDescription({
-  description,
-  output
-}) {
-  const ANCHOR = "<!-- branch-stack -->";
-  const descriptionAst = remark2.parse(description);
-  const outputAst = remark2.parse(`${ANCHOR}
-${output}`);
-  const anchorIndex = descriptionAst.children.findIndex(
-    (node2) => node2.type === "html" && node2.value === ANCHOR
-  );
-  const isMissingAnchor = anchorIndex === -1;
-  if (isMissingAnchor) {
-    descriptionAst.children.push(...outputAst.children);
-    return remark2.stringify(descriptionAst);
-  }
-  let nearestListIndex = anchorIndex;
-  for (let i = anchorIndex; i < descriptionAst.children.length; i += 1) {
-    const node2 = descriptionAst.children[i];
-    if (node2?.type === "list") {
-      nearestListIndex = i;
-      break;
-    }
-  }
-  descriptionAst.children.splice(
-    anchorIndex,
-    nearestListIndex - anchorIndex + 1,
-    ...outputAst.children
-  );
-  return remark2.stringify(descriptionAst);
-}
-
 // src/inputs.ts
-var core2 = __toESM(require_core());
+var core = __toESM(require_core());
 
 // node_modules/zod/lib/index.mjs
 var lib_exports = {};
@@ -46822,7 +46689,10 @@ var pullRequestSchema = objectType({
 // src/inputs.ts
 var inputs = {
   getToken() {
-    return core2.getInput("github-token", { required: true, trimWhitespace: true });
+    return core.getInput("github-token", { required: true, trimWhitespace: true });
+  },
+  getSkipSingleStacks() {
+    return core.getBooleanInput("skip-single-stacks", { required: false });
   },
   async getMainBranch(octokit, config2, context3) {
     const {
@@ -46830,13 +46700,13 @@ var inputs = {
     } = await octokit.rest.repos.get({
       ...context3.repo
     });
-    const mainBranchInput = core2.getInput("main-branch", {
+    const mainBranchInput = core.getInput("main-branch", {
       required: false,
       trimWhitespace: true
     });
-    core2.startGroup("Inputs: Main branch from input");
-    core2.info(mainBranchInput);
-    core2.endGroup();
+    core.startGroup("Inputs: Main branch from input");
+    core.info(mainBranchInput);
+    core.endGroup();
     let mainBranch = defaultBranch;
     mainBranch = config2?.branches?.main ?? mainBranch;
     mainBranch = mainBranchInput !== "" ? mainBranchInput : mainBranch;
@@ -46847,26 +46717,26 @@ var inputs = {
       octokit.rest.repos.listBranches({ ...context3.repo }),
       octokit.rest.repos.listBranches({ ...context3.repo, protected: true })
     ]);
-    core2.startGroup("Inputs: Remote branches");
-    core2.info(`Unprotected: ${JSON.stringify(unprotectedBranches)}`);
-    core2.info(`Protected: ${JSON.stringify(protectedBranches)}`);
-    core2.endGroup();
+    core.startGroup("Inputs: Remote branches");
+    core.info(`Unprotected: ${JSON.stringify(unprotectedBranches)}`);
+    core.info(`Protected: ${JSON.stringify(protectedBranches)}`);
+    core.endGroup();
     const repoBranches = [...unprotectedBranches, ...protectedBranches].map(
       (branch) => branch.name
     );
     let explicitBranches = [];
     explicitBranches = config2?.branches?.perennials ?? explicitBranches;
-    const perennialBranchesInput = core2.getMultilineInput("perennial-branches", {
+    const perennialBranchesInput = core.getMultilineInput("perennial-branches", {
       required: false,
       trimWhitespace: true
     });
     explicitBranches = perennialBranchesInput.length > 0 ? perennialBranchesInput : explicitBranches;
-    core2.startGroup("Inputs: Explicit branches");
-    core2.info(JSON.stringify(explicitBranches));
-    core2.endGroup();
+    core.startGroup("Inputs: Explicit branches");
+    core.info(JSON.stringify(explicitBranches));
+    core.endGroup();
     let perennialRegex;
     perennialRegex = config2?.branches?.["perennial-regex"] ?? perennialRegex;
-    const perennialRegexInput = core2.getInput("perennial-regex", {
+    const perennialRegexInput = core.getInput("perennial-regex", {
       required: false,
       trimWhitespace: true
     });
@@ -46877,24 +46747,24 @@ var inputs = {
         (branch) => perennialRegex ? RegExp(perennialRegex).test(branch) : false
       )
     ];
-    core2.startGroup("Inputs: Perennial branches");
-    core2.info(JSON.stringify(perennialBranches));
-    core2.endGroup();
+    core.startGroup("Inputs: Perennial branches");
+    core.info(JSON.stringify(perennialBranches));
+    core.endGroup();
     return [...new Set(perennialBranches)];
   },
   getCurrentPullRequest(context3) {
     try {
       const pullRequest = context3.payload.pull_request;
-      core2.startGroup("Inputs: Current pull request");
-      core2.info(JSON.stringify(pullRequest));
-      core2.endGroup();
+      core.startGroup("Inputs: Current pull request");
+      core.info(JSON.stringify(pullRequest));
+      core.endGroup();
       return pullRequestSchema.parse({
         number: pullRequest?.number,
         baseRefName: pullRequest?.base?.ref,
         headRefName: pullRequest?.head?.ref
       });
     } catch (error) {
-      core2.setFailed(`Unable to determine current pull request from action payload`);
+      core.setFailed(`Unable to determine current pull request from action payload`);
       throw error;
     }
   },
@@ -46915,14 +46785,151 @@ var inputs = {
         })
       )
     );
-    core2.startGroup("Inputs: Pull requests");
-    core2.info(
+    core.startGroup("Inputs: Pull requests");
+    core.info(
       JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     );
-    core2.endGroup();
+    core.endGroup();
     return pullRequests;
   }
 };
+
+// src/main.ts
+async function main({
+  octokit,
+  mainBranch,
+  perennialBranches,
+  currentPullRequest,
+  pullRequests
+}) {
+  const repoGraph = new import_graphology.MultiDirectedGraph();
+  repoGraph.addNode(mainBranch, {
+    type: "perennial",
+    ref: mainBranch
+  });
+  perennialBranches.forEach((perennialBranch) => {
+    repoGraph.addNode(perennialBranch, {
+      type: "perennial",
+      ref: perennialBranch
+    });
+  });
+  pullRequests.forEach((pullRequest) => {
+    repoGraph.addNode(pullRequest.headRefName, {
+      type: "pull-request",
+      ...pullRequest
+    });
+  });
+  pullRequests.forEach((pullRequest) => {
+    repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName);
+  });
+  const getStackGraph = (pullRequest) => {
+    const stackGraph2 = repoGraph.copy();
+    stackGraph2.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
+    (0, import_graphology_traversal.bfsFromNode)(
+      stackGraph2,
+      pullRequest.headRefName,
+      (ref, attributes) => {
+        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
+        return attributes.type === "perennial";
+      },
+      {
+        mode: "inbound"
+      }
+    );
+    (0, import_graphology_traversal.dfsFromNode)(
+      stackGraph2,
+      pullRequest.headRefName,
+      (ref) => {
+        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
+      },
+      { mode: "outbound" }
+    );
+    return stackGraph2;
+  };
+  const getOutput = (graph) => {
+    const lines = [];
+    const terminatingRefs = [mainBranch, ...perennialBranches];
+    (0, import_graphology_traversal.dfs)(
+      graph,
+      (_, stackNode, depth) => {
+        if (!stackNode.shouldPrint)
+          return;
+        const tabSize = depth * 2;
+        const indentation = new Array(tabSize).fill(" ").join("");
+        let line = indentation;
+        if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
+          line += `- \`${stackNode.ref}\``;
+        }
+        if (stackNode.type === "pull-request") {
+          line += `- #${stackNode.number}`;
+        }
+        if (stackNode.isCurrent) {
+          line += " :point_left:";
+        }
+        lines.push(line);
+      },
+      { mode: "directed" }
+    );
+    return lines.join("\n");
+  };
+  const jobs = [];
+  const stackGraph = getStackGraph(currentPullRequest);
+  if (inputs.getSkipSingleStacks() && stackGraph.nodes.length <= 1) {
+    return;
+  }
+  stackGraph.forEachNode((_, stackNode) => {
+    if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
+      return;
+    }
+    jobs.push(async () => {
+      core2.info(`Updating stack details for PR #${stackNode.number}`);
+      const stackGraph2 = getStackGraph(stackNode);
+      const output = getOutput(stackGraph2);
+      let description = stackNode.body ?? "";
+      description = updateDescription({
+        description,
+        output
+      });
+      await octokit.rest.pulls.update({
+        ...github.context.repo,
+        pull_number: stackNode.number,
+        body: description
+      });
+    });
+  });
+  await Promise.allSettled(jobs.map((job) => job()));
+}
+function updateDescription({
+  description,
+  output
+}) {
+  const ANCHOR = "<!-- branch-stack -->";
+  const descriptionAst = remark2.parse(description);
+  const outputAst = remark2.parse(`${ANCHOR}
+${output}`);
+  const anchorIndex = descriptionAst.children.findIndex(
+    (node2) => node2.type === "html" && node2.value === ANCHOR
+  );
+  const isMissingAnchor = anchorIndex === -1;
+  if (isMissingAnchor) {
+    descriptionAst.children.push(...outputAst.children);
+    return remark2.stringify(descriptionAst);
+  }
+  let nearestListIndex = anchorIndex;
+  for (let i = anchorIndex; i < descriptionAst.children.length; i += 1) {
+    const node2 = descriptionAst.children[i];
+    if (node2?.type === "list") {
+      nearestListIndex = i;
+      break;
+    }
+  }
+  descriptionAst.children.splice(
+    anchorIndex,
+    nearestListIndex - anchorIndex + 1,
+    ...outputAst.children
+  );
+  return remark2.stringify(descriptionAst);
+}
 
 // src/config.ts
 var fs = __toESM(require("node:fs"));

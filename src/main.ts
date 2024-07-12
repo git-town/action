@@ -4,6 +4,7 @@ import { MultiDirectedGraph } from 'graphology'
 import { bfsFromNode, dfs, dfsFromNode } from 'graphology-traversal'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
 import { remark } from './remark'
+import { inputs } from './inputs'
 
 export async function main({
   octokit,
@@ -101,10 +102,10 @@ export async function main({
 
   const jobs: Array<() => Promise<void>> = []
 
-  const stackGraph = getStackGraph(currentPullRequest);
+  const stackGraph = getStackGraph(currentPullRequest)
 
-  if (inputs.getSkipSingleStacks() && stackGraph.length <= 1) {
-    return;
+  if (inputs.getSkipSingleStacks() && stackGraph.nodes.length <= 1) {
+    return
   }
 
   stackGraph.forEachNode((_, stackNode) => {
