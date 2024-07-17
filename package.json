@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/node": "^20.11.30",
     "@vercel/style-guide": "^5.2.0",
-    "editorconfig-checker": "^5.1.5",
+    "editorconfig-checker": "5.1.8",
     "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",

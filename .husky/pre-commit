@@ -1,3 +1,4 @@
 npm exec lint-staged
 npm run lint:ec
 npm run test:ci
+npm run build
