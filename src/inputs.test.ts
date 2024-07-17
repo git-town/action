@@ -91,53 +91,22 @@ describe('getMainBranch', () => {
 })
 
 describe('getPerennialBranches', () => {
-  const octokit = {
-    rest: {
-      repos: {
-        listBranches: async () => ({
-          data: [
-            {
-              name: 'main',
-              commit: { sha: '', url: '' },
-              protection: false,
-            },
-            {
-              name: 'release-v1.0.0',
-              commit: { sha: '', url: '' },
-              protection: false,
-            },
-            {
-              name: 'v1.0.0',
-              commit: { sha: '', url: '' },
-              protection: false,
-            },
-          ],
-        }),
-      },
-    },
-  } as unknown as Octokit
+  const remoteBranches = ['main', 'release-v1.0.0', 'v1.0.0']
   const config: Config = {
     branches: {
       perennials: ['dev', 'staging', 'prod'],
       'perennial-regex': '^release-.*$',
     },
   }
-  const context = {
-    repo: {},
-  } as unknown as typeof github.context
 
   it('should default to no branches', async () => {
-    const perennialBranches = await inputs.getPerennialBranches(
-      octokit,
-      undefined,
-      context
-    )
+    const perennialBranches = await inputs.getPerennialBranches(undefined, remoteBranches)
 
     expect(perennialBranches).toStrictEqual([])
   })
 
   it('should override default with config', async () => {
-    const perennialBranches = await inputs.getPerennialBranches(octokit, config, context)
+    const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches)
 
     expect(perennialBranches).toStrictEqual(['dev', 'staging', 'prod', 'release-v1.0.0'])
   })
@@ -153,7 +122,7 @@ describe('getPerennialBranches', () => {
     )
     vi.stubEnv('INPUT_PERENNIAL-REGEX', '^v.*$')
 
-    const perennialBranches = await inputs.getPerennialBranches(octokit, config, context)
+    const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches)
 
     expect(perennialBranches).toStrictEqual(['test', 'uat', 'live', 'v1.0.0'])
   })

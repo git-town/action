@@ -19,17 +19,19 @@ async function run() {
 
     const octokit = github.getOctokit(inputs.getToken())
 
-    const [mainBranch, perennialBranches, pullRequests] = await Promise.all([
+    const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
       inputs.getMainBranch(octokit, config, github.context),
-      inputs.getPerennialBranches(octokit, config, github.context),
+      inputs.getRemoteBranches(octokit, github.context),
       inputs.getPullRequests(octokit, github.context),
     ])
+    const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches)
 
     const context = {
       octokit,
       currentPullRequest: inputs.getCurrentPullRequest(github.context),
       pullRequests,
       mainBranch,
+      remoteBranches,
       perennialBranches,
     }
 

@@ -9,7 +9,7 @@
   "engineStrict": true,
   "scripts": {
     "dev": "npm run build -- --watch",
-    "build": "esbuild src/index.ts --outfile=dist/index.js --bundle --platform=node --target=node20 ",
+    "build": "esbuild src/index.ts --outfile=dist/index.js --metafile=dist/meta.json --bundle --platform=node --target=node20",
     "test": "vitest",
     "test:ci": "vitest run",
     "lint:eslint": "eslint src --max-warnings=0",

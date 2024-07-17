@@ -42834,10 +42834,10 @@ var remark2 = remark().use(remarkGfm).data("settings", {
 // src/main.ts
 async function main({
   octokit,
-  mainBranch,
-  perennialBranches,
   currentPullRequest,
-  pullRequests
+  pullRequests,
+  mainBranch,
+  perennialBranches
 }) {
   const repoGraph = new import_graphology.MultiDirectedGraph();
   repoGraph.addNode(mainBranch, {
@@ -46842,18 +46842,21 @@ var inputs = {
     mainBranch = mainBranchInput !== "" ? mainBranchInput : mainBranch;
     return mainBranch;
   },
-  async getPerennialBranches(octokit, config2, context3) {
-    const [{ data: unprotectedBranches }, { data: protectedBranches }] = await Promise.all([
-      octokit.rest.repos.listBranches({ ...context3.repo }),
-      octokit.rest.repos.listBranches({ ...context3.repo, protected: true })
-    ]);
-    core2.startGroup("Inputs: Remote branches");
-    core2.info(`Unprotected: ${JSON.stringify(unprotectedBranches)}`);
-    core2.info(`Protected: ${JSON.stringify(protectedBranches)}`);
-    core2.endGroup();
-    const repoBranches = [...unprotectedBranches, ...protectedBranches].map(
-      (branch) => branch.name
+  async getRemoteBranches(octokit, context3) {
+    const remoteBranches = await octokit.paginate(
+      "GET /repos/{owner}/{repo}/branches",
+      {
+        ...context3.repo,
+        per_page: 100
+      },
+      (response) => response.data.map((branch) => branch.name)
     );
+    core2.startGroup("Inputs: Remote branches");
+    core2.info(JSON.stringify(remoteBranches));
+    core2.endGroup();
+    return remoteBranches;
+  },
+  async getPerennialBranches(config2, remoteBranches) {
     let explicitBranches = [];
     explicitBranches = config2?.branches?.perennials ?? explicitBranches;
     const perennialBranchesInput = core2.getMultilineInput("perennial-branches", {
@@ -46873,7 +46876,7 @@ var inputs = {
     perennialRegex = perennialRegexInput !== "" ? perennialRegexInput : perennialRegex;
     const perennialBranches = [
       ...explicitBranches,
-      ...repoBranches.filter(
+      ...remoteBranches.filter(
         (branch) => perennialRegex ? RegExp(perennialRegex).test(branch) : false
       )
     ];
@@ -46965,16 +46968,18 @@ async function run() {
       return;
     }
     const octokit = github2.getOctokit(inputs.getToken());
-    const [mainBranch, perennialBranches, pullRequests] = await Promise.all([
+    const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
       inputs.getMainBranch(octokit, config, github2.context),
-      inputs.getPerennialBranches(octokit, config, github2.context),
+      inputs.getRemoteBranches(octokit, github2.context),
       inputs.getPullRequests(octokit, github2.context)
     ]);
+    const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches);
     const context3 = {
       octokit,
       currentPullRequest: inputs.getCurrentPullRequest(github2.context),
       pullRequests,
       mainBranch,
+      remoteBranches,
       perennialBranches
     };
     void main(context3);

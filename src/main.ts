@@ -7,10 +7,10 @@ import { remark } from './remark'
 
 export async function main({
   octokit,
-  mainBranch,
-  perennialBranches,
   currentPullRequest,
   pullRequests,
+  mainBranch,
+  perennialBranches,
 }: Context) {
   const repoGraph = new MultiDirectedGraph<StackNodeAttributes>()
 
