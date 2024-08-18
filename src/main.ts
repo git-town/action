@@ -102,36 +102,44 @@ export async function main({
 
   const jobs: Array<() => Promise<void>> = []
 
-  const isStack = (stackGraph: MultiDirectedGraph<StackNodeAttributes>) => {
-    let isStack = false
-
-    const graph = stackGraph.copy() as MultiDirectedGraph<StackNodeAttributes>
-
-    dfs(
-      graph,
-      (_, attr, depth) => {
-        if (attr.type === 'pull-request') {
-          core.info(`iterating depth: ${depth} ${attr.number}`)
-          if (depth > 1) {
-            isStack = true
-          }
-        }
-
-        return false
-      },
-      { mode: 'directed' }
-    )
-
-    core.info(`isStack: ${isStack}`)
-
-    return isStack
-  }
+  // const isStack = (stackGraph: MultiDirectedGraph<StackNodeAttributes>) => {
+  //   let isStack = false
+  //
+  //   const graph = stackGraph.copy() as MultiDirectedGraph<StackNodeAttributes>
+  //
+  //   dfs(
+  //     graph,
+  //     (_, attr, depth) => {
+  //       if (attr.type === 'pull-request') {
+  //         core.info(`iterating depth: ${depth} ${attr.number}`)
+  //         if (depth > 1) {
+  //           isStack = true
+  //         }
+  //       }
+  //
+  //       return false
+  //     },
+  //     { mode: 'directed' }
+  //   )
+  //
+  //   core.info(`isStack: ${isStack}`)
+  //
+  //   return isStack
+  // }
 
   // if (inputs.getSkipSingleStacks() && !isStack(stackGraph)) {
   //   return
   // }
 
-  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
+  const stackGraph = getStackGraph(currentPullRequest)
+
+  core.debug(`stackGraph: ${JSON.stringify({ edges: stackGraph.edges() })}`)
+
+  if (inputs.getSkipSingleStacks() && stackGraph.edges().length === 0) {
+    return
+  }
+
+  stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
       return
     }
@@ -140,12 +148,6 @@ export async function main({
       core.info(`Updating stack details for PR #${stackNode.number}`)
 
       const sg = getStackGraph(stackNode)
-
-      if (inputs.getSkipSingleStacks()) {
-        if (!isStack(sg)) {
-          return Promise.resolve()
-        }
-      }
 
       const output = getOutput(sg)
 
