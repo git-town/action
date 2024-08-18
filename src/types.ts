@@ -18,6 +18,7 @@ export type Context = {
   currentPullRequest: PullRequest
   pullRequests: PullRequest[]
   perennialBranches: string[]
+  skipSingleStacks: boolean
 }
 
 export type StackNode =

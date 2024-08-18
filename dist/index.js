@@ -18741,7 +18741,7 @@ var require_core = __commonJS({
       return inputs2.map((input) => input.trim());
     }
     exports2.getMultilineInput = getMultilineInput2;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -18752,7 +18752,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports2.getBooleanInput = getBooleanInput;
+    exports2.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -42837,7 +42837,8 @@ async function main({
   mainBranch,
   perennialBranches,
   currentPullRequest,
-  pullRequests
+  pullRequests,
+  skipSingleStacks
 }) {
   const repoGraph = new import_graphology.MultiDirectedGraph();
   repoGraph.addNode(mainBranch, {
@@ -42860,13 +42861,13 @@ async function main({
     repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName);
   });
   const getStackGraph = (pullRequest) => {
-    const stackGraph = repoGraph.copy();
-    stackGraph.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
+    const stackGraph2 = repoGraph.copy();
+    stackGraph2.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
     (0, import_graphology_traversal.bfsFromNode)(
-      stackGraph,
+      stackGraph2,
       pullRequest.headRefName,
       (ref, attributes) => {
-        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
+        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
         return attributes.type === "perennial";
       },
       {
@@ -42874,14 +42875,14 @@ async function main({
       }
     );
     (0, import_graphology_traversal.dfsFromNode)(
-      stackGraph,
+      stackGraph2,
       pullRequest.headRefName,
       (ref) => {
-        stackGraph.setNodeAttribute(ref, "shouldPrint", true);
+        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
       },
       { mode: "outbound" }
     );
-    return stackGraph;
+    return stackGraph2;
   };
   const getOutput = (graph) => {
     const lines = [];
@@ -42910,14 +42911,25 @@ async function main({
     return lines.join("\n");
   };
   const jobs = [];
-  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
+  const stackGraph = getStackGraph(currentPullRequest);
+  const shouldSkip = () => {
+    const neighbors = stackGraph.neighbors(currentPullRequest.headRefName);
+    const allPerennialBranches = stackGraph.filterNodes(
+      (_, nodeAttributes) => nodeAttributes.type === "perennial"
+    );
+    return skipSingleStacks && neighbors.length === 1 && allPerennialBranches.includes(neighbors.at(0) || "");
+  };
+  if (shouldSkip()) {
+    return;
+  }
+  stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
       return;
     }
     jobs.push(async () => {
       core.info(`Updating stack details for PR #${stackNode.number}`);
-      const stackGraph = getStackGraph(stackNode);
-      const output = getOutput(stackGraph);
+      const stackGraph2 = getStackGraph(stackNode);
+      const output = getOutput(stackGraph2);
       let description = stackNode.body ?? "";
       description = updateDescription({
         description,
@@ -46824,6 +46836,13 @@ var inputs = {
   getToken() {
     return core2.getInput("github-token", { required: true, trimWhitespace: true });
   },
+  getSkipSingleStacks() {
+    core2.startGroup("Inputs: Skip single stacks");
+    const input = core2.getBooleanInput("skip-single-stacks", { required: false });
+    core2.info(input.toString());
+    core2.endGroup();
+    return input;
+  },
   async getMainBranch(octokit, config2, context3) {
     const {
       data: { default_branch: defaultBranch }
@@ -46975,7 +46994,8 @@ async function run() {
       currentPullRequest: inputs.getCurrentPullRequest(github2.context),
       pullRequests,
       mainBranch,
-      perennialBranches
+      perennialBranches,
+      skipSingleStacks: inputs.getSkipSingleStacks()
     };
     void main(context3);
   } catch (error) {

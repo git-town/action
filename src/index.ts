@@ -31,6 +31,7 @@ async function run() {
       pullRequests,
       mainBranch,
       perennialBranches,
+      skipSingleStacks: inputs.getSkipSingleStacks(),
     }
 
     void main(context)
