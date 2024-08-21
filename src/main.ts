@@ -11,6 +11,7 @@ export async function main({
   perennialBranches,
   currentPullRequest,
   pullRequests,
+  skipSingleStacks,
 }: Context) {
   const repoGraph = new MultiDirectedGraph<StackNodeAttributes>()
 
@@ -101,7 +102,26 @@ export async function main({
 
   const jobs: Array<() => Promise<void>> = []
 
-  getStackGraph(currentPullRequest).forEachNode((_, stackNode) => {
+  const stackGraph = getStackGraph(currentPullRequest)
+
+  const shouldSkip = () => {
+    const neighbors = stackGraph.neighbors(currentPullRequest.headRefName)
+    const allPerennialBranches = stackGraph.filterNodes(
+      (_, nodeAttributes) => nodeAttributes.type === 'perennial'
+    )
+
+    return (
+      skipSingleStacks &&
+      neighbors.length === 1 &&
+      allPerennialBranches.includes(neighbors.at(0) || '')
+    )
+  }
+
+  if (shouldSkip()) {
+    return
+  }
+
+  stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
       return
     }

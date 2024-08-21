@@ -18,6 +18,9 @@ inputs:
   perennial-regex:
     required: false
     default: ''
+  skip-single-stacks:
+    required: false
+    default: false
 
 runs:
   using: 'node20'
