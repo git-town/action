@@ -146,7 +146,7 @@ branches given into a single, de-duplicated list.
 
 If you don't want the stack description to appear on pull requests which are not part of a stack, you can add `skip-single-stacks: true` to the job.
 
-This skips all pull requests which point to a perennial branch and have no children pull requests pointing to it.
+This skips all pull requests which point to a main or perennial branch and have no children pull requests pointing to it.
 
 ```yaml
 - uses: git-town/action@v1
