@@ -9,7 +9,7 @@
   "engineStrict": true,
   "scripts": {
     "dev": "npm run build -- --watch",
-    "build": "esbuild src/index.ts --outfile=dist/index.js --bundle --platform=node --target=node20 ",
+    "build": "esbuild src/index.ts --outfile=dist/index.js --bundle --platform=node --target=node20",
     "test": "vitest",
     "test:ci": "vitest run",
     "lint:eslint": "eslint src --max-warnings=0",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/node": "^20.11.30",
     "@vercel/style-guide": "^5.2.0",
-    "editorconfig-checker": "^5.1.5",
+    "editorconfig-checker": "5.1.8",
     "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",

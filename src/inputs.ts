@@ -44,26 +44,27 @@ export const inputs = {
     return mainBranch
   },
 
-  async getPerennialBranches(
-    octokit: Octokit,
-    config: Config | undefined,
-    context: typeof github.context
-  ): Promise<string[]> {
-    const [{ data: unprotectedBranches }, { data: protectedBranches }] =
-      await Promise.all([
-        octokit.rest.repos.listBranches({ ...context.repo }),
-        octokit.rest.repos.listBranches({ ...context.repo, protected: true }),
-      ])
-
-    core.startGroup('Inputs: Remote branches')
-    core.info(`Unprotected: ${JSON.stringify(unprotectedBranches)}`)
-    core.info(`Protected: ${JSON.stringify(protectedBranches)}`)
-    core.endGroup()
-
-    const repoBranches = [...unprotectedBranches, ...protectedBranches].map(
-      (branch) => branch.name
+  async getRemoteBranches(octokit: Octokit, context: typeof github.context) {
+    const remoteBranches = await octokit.paginate(
+      'GET /repos/{owner}/{repo}/branches',
+      {
+        ...context.repo,
+        per_page: 100,
+      },
+      (response) => response.data.map((branch) => branch.name)
     )
 
+    core.startGroup('Inputs: Remote branches')
+    core.info(JSON.stringify(remoteBranches))
+    core.endGroup()
+
+    return remoteBranches
+  },
+
+  async getPerennialBranches(
+    config: Config | undefined,
+    remoteBranches: string[]
+  ): Promise<string[]> {
     let explicitBranches: string[] = []
     explicitBranches = config?.branches?.perennials ?? explicitBranches
     const perennialBranchesInput = core.getMultilineInput('perennial-branches', {
@@ -87,7 +88,7 @@ export const inputs = {
 
     const perennialBranches = [
       ...explicitBranches,
-      ...repoBranches.filter((branch) =>
+      ...remoteBranches.filter((branch) =>
         perennialRegex ? RegExp(perennialRegex).test(branch) : false
       ),
     ]
