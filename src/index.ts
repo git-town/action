@@ -33,6 +33,7 @@ async function run() {
       mainBranch,
       remoteBranches,
       perennialBranches,
+      skipSingleStacks: inputs.getSkipSingleStacks(),
     }
 
     void main(context)
