@@ -46921,11 +46921,11 @@ var inputs = {
     }
   },
   async getPullRequests(octokit, context3) {
-    const pullRequests = await octokit.paginate(
+    const openPullRequests = await octokit.paginate(
       "GET /repos/{owner}/{repo}/pulls",
       {
         ...context3.repo,
-        state: "open",
+        state: "all",
         per_page: 100
       },
       (response) => response.data.map(
@@ -46939,10 +46939,10 @@ var inputs = {
     );
     core2.startGroup("Inputs: Pull requests");
     core2.info(
-      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+      JSON.stringify(openPullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     );
     core2.endGroup();
-    return pullRequests;
+    return openPullRequests;
   }
 };
 
