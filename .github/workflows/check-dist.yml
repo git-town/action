@@ -10,7 +10,7 @@
 name: Check Transpiled JavaScript
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - '**'
   push:
