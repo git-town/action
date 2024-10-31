@@ -127,11 +127,11 @@ export const inputs = {
   },
 
   async getPullRequests(octokit: Octokit, context: typeof github.context) {
-    const pullRequests = await octokit.paginate(
+    const openPullRequests = await octokit.paginate(
       'GET /repos/{owner}/{repo}/pulls',
       {
         ...context.repo,
-        state: 'open',
+        state: 'all',
         per_page: 100,
       },
       (response) =>
@@ -147,10 +147,10 @@ export const inputs = {
 
     core.startGroup('Inputs: Pull requests')
     core.info(
-      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+      JSON.stringify(openPullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     )
     core.endGroup()
 
-    return pullRequests
+    return openPullRequests
   },
 }
