@@ -26149,9 +26149,9 @@ var require_graphology_cjs = __commonJS({
     attachEdgeAttributesMethods(Graph);
     attachEdgeIterationMethods(Graph);
     attachNeighborIterationMethods(Graph);
-    var DirectedGraph = /* @__PURE__ */ function(_Graph) {
-      _inheritsLoose(DirectedGraph2, _Graph);
-      function DirectedGraph2(options) {
+    var DirectedGraph2 = /* @__PURE__ */ function(_Graph) {
+      _inheritsLoose(DirectedGraph3, _Graph);
+      function DirectedGraph3(options) {
         var finalOptions = assign({
           type: "directed"
         }, options);
@@ -26161,7 +26161,7 @@ var require_graphology_cjs = __commonJS({
           throw new InvalidArgumentsGraphError('DirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph.call(this, finalOptions) || this;
       }
-      return DirectedGraph2;
+      return DirectedGraph3;
     }(Graph);
     var UndirectedGraph = /* @__PURE__ */ function(_Graph2) {
       _inheritsLoose(UndirectedGraph2, _Graph2);
@@ -26189,9 +26189,9 @@ var require_graphology_cjs = __commonJS({
       }
       return MultiGraph2;
     }(Graph);
-    var MultiDirectedGraph2 = /* @__PURE__ */ function(_Graph4) {
-      _inheritsLoose(MultiDirectedGraph3, _Graph4);
-      function MultiDirectedGraph3(options) {
+    var MultiDirectedGraph = /* @__PURE__ */ function(_Graph4) {
+      _inheritsLoose(MultiDirectedGraph2, _Graph4);
+      function MultiDirectedGraph2(options) {
         var finalOptions = assign({
           type: "directed",
           multi: true
@@ -26202,7 +26202,7 @@ var require_graphology_cjs = __commonJS({
           throw new InvalidArgumentsGraphError('MultiDirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph4.call(this, finalOptions) || this;
       }
-      return MultiDirectedGraph3;
+      return MultiDirectedGraph2;
     }(Graph);
     var MultiUndirectedGraph = /* @__PURE__ */ function(_Graph5) {
       _inheritsLoose(MultiUndirectedGraph2, _Graph5);
@@ -26228,16 +26228,16 @@ var require_graphology_cjs = __commonJS({
       };
     }
     attachStaticFromMethod(Graph);
-    attachStaticFromMethod(DirectedGraph);
+    attachStaticFromMethod(DirectedGraph2);
     attachStaticFromMethod(UndirectedGraph);
     attachStaticFromMethod(MultiGraph);
-    attachStaticFromMethod(MultiDirectedGraph2);
+    attachStaticFromMethod(MultiDirectedGraph);
     attachStaticFromMethod(MultiUndirectedGraph);
     Graph.Graph = Graph;
-    Graph.DirectedGraph = DirectedGraph;
+    Graph.DirectedGraph = DirectedGraph2;
     Graph.UndirectedGraph = UndirectedGraph;
     Graph.MultiGraph = MultiGraph;
-    Graph.MultiDirectedGraph = MultiDirectedGraph2;
+    Graph.MultiDirectedGraph = MultiDirectedGraph;
     Graph.MultiUndirectedGraph = MultiUndirectedGraph;
     Graph.InvalidArgumentsGraphError = InvalidArgumentsGraphError;
     Graph.NotFoundGraphError = NotFoundGraphError;
@@ -26868,6 +26868,208 @@ var require_graphology_traversal = __commonJS({
     exports2.bfsFromNode = bfsModule.bfsFromNode;
     exports2.dfs = dfsModule.dfs;
     exports2.dfsFromNode = dfsModule.dfsFromNode;
+  }
+});
+
+// node_modules/graphology-dag/has-cycle.js
+var require_has_cycle = __commonJS({
+  "node_modules/graphology-dag/has-cycle.js"(exports2, module2) {
+    var isGraph = require_is_graph();
+    var WHITE = void 0;
+    var GREY = 0;
+    var BLACK = 1;
+    module2.exports = function hasCycle(graph) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/has-cycle: the given graph is not a valid graphology instance."
+        );
+      if (graph.size === 0)
+        return false;
+      if (graph.selfLoopCount !== 0)
+        return true;
+      const labels = {};
+      const stack = [];
+      function neighborCallback(neighbor) {
+        const neighborLabel = labels[neighbor];
+        if (neighborLabel === WHITE)
+          stack.push(neighbor);
+        else if (neighborLabel === GREY)
+          return true;
+        return false;
+      }
+      return graph.someNode((node2) => {
+        if (labels[node2] === BLACK)
+          return false;
+        stack.push(node2);
+        while (stack.length !== 0) {
+          const current = stack[stack.length - 1];
+          const currentLabel = labels[current];
+          if (currentLabel !== GREY) {
+            labels[current] = GREY;
+            const shouldStop = graph.someOutboundNeighbor(
+              current,
+              neighborCallback
+            );
+            if (shouldStop)
+              return true;
+          } else if (currentLabel === GREY) {
+            stack.pop();
+            labels[current] = BLACK;
+          }
+        }
+        return false;
+      });
+    };
+  }
+});
+
+// node_modules/graphology-dag/will-create-cycle.js
+var require_will_create_cycle = __commonJS({
+  "node_modules/graphology-dag/will-create-cycle.js"(exports2, module2) {
+    var isGraph = require_is_graph();
+    module2.exports = function willCreateCycle(graph, source, target) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/will-create-cycle: the given graph is not a valid graphology instance."
+        );
+      source = "" + source;
+      target = "" + target;
+      if (source === target)
+        return true;
+      if (!graph.hasNode(source) || !graph.hasNode(target))
+        return false;
+      if (graph.hasDirectedEdge(source, target))
+        return false;
+      if (graph.hasDirectedEdge(target, source))
+        return true;
+      const stack = graph.outNeighbors(target);
+      function push2(neighbor) {
+        stack.push(neighbor);
+      }
+      while (stack.length !== 0) {
+        const node2 = stack.pop();
+        if (node2 === source)
+          return true;
+        graph.forEachOutNeighbor(node2, push2);
+      }
+      return false;
+    };
+  }
+});
+
+// node_modules/graphology-dag/topological-sort.js
+var require_topological_sort = __commonJS({
+  "node_modules/graphology-dag/topological-sort.js"(exports2) {
+    var isGraph = require_is_graph();
+    var FixedDeque = require_fixed_deque();
+    function simpleInDegree(graph, node2) {
+      let degree = 0;
+      graph.forEachInNeighbor(node2, () => {
+        degree++;
+      });
+      return degree;
+    }
+    function forEachNodeInTopologicalOrder(graph, callback) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/topological-sort: the given graph is not a valid graphology instance."
+        );
+      if (graph.type === "undirected" || graph.undirectedSize !== 0)
+        throw new Error(
+          "graphology-dag/topological-sort: cannot work if graph is not directed."
+        );
+      if (graph.order === 0)
+        return;
+      const queue = new FixedDeque(Array, graph.order);
+      const inDegrees = {};
+      let total = 0;
+      graph.forEachNode((node2, attr) => {
+        const inDegree = graph.multi ? simpleInDegree(graph, node2) : graph.inDegree(node2);
+        if (inDegree === 0) {
+          queue.push([node2, attr, 0]);
+        } else {
+          inDegrees[node2] = inDegree;
+          total += inDegree;
+        }
+      });
+      let currentGeneration = 0;
+      function neighborCallback(neighbor, attr) {
+        const neighborInDegree = --inDegrees[neighbor];
+        total--;
+        if (neighborInDegree === 0)
+          queue.push([neighbor, attr, currentGeneration + 1]);
+        inDegrees[neighbor] = neighborInDegree;
+      }
+      while (queue.size !== 0) {
+        const [node2, attr, gen] = queue.shift();
+        currentGeneration = gen;
+        callback(node2, attr, gen);
+        graph.forEachOutNeighbor(node2, neighborCallback);
+      }
+      if (total !== 0)
+        throw new Error(
+          "graphology-dag/topological-sort: given graph is not acyclic."
+        );
+    }
+    function topologicalSort2(graph) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/topological-sort: the given graph is not a valid graphology instance."
+        );
+      const sortedNodes = new Array(graph.order);
+      let i = 0;
+      forEachNodeInTopologicalOrder(graph, (node2) => {
+        sortedNodes[i++] = node2;
+      });
+      return sortedNodes;
+    }
+    function forEachTopologicalGeneration(graph, callback) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/topological-generations: the given graph is not a valid graphology instance."
+        );
+      if (graph.order === 0)
+        return;
+      let lastGenLevel = 0;
+      let lastGen = [];
+      forEachNodeInTopologicalOrder(graph, (node2, _, gen) => {
+        if (gen > lastGenLevel) {
+          callback(lastGen);
+          lastGenLevel = gen;
+          lastGen = [];
+        }
+        lastGen.push(node2);
+      });
+      callback(lastGen);
+    }
+    function topologicalGenerations(graph) {
+      if (!isGraph(graph))
+        throw new Error(
+          "graphology-dag/topological-generations: the given graph is not a valid graphology instance."
+        );
+      const generations = [];
+      forEachTopologicalGeneration(graph, (generation) => {
+        generations.push(generation);
+      });
+      return generations;
+    }
+    exports2.topologicalSort = topologicalSort2;
+    exports2.forEachNodeInTopologicalOrder = forEachNodeInTopologicalOrder;
+    exports2.topologicalGenerations = topologicalGenerations;
+    exports2.forEachTopologicalGeneration = forEachTopologicalGeneration;
+  }
+});
+
+// node_modules/graphology-dag/index.js
+var require_graphology_dag = __commonJS({
+  "node_modules/graphology-dag/index.js"(exports2) {
+    exports2.hasCycle = require_has_cycle();
+    exports2.willCreateCycle = require_will_create_cycle();
+    var sort = require_topological_sort();
+    exports2.forEachNodeInTopologicalOrder = sort.forEachNodeInTopologicalOrder;
+    exports2.topologicalSort = sort.topologicalSort;
+    exports2.topologicalGenerations = sort.topologicalGenerations;
+    exports2.forEachTopologicalGeneration = sort.forEachTopologicalGeneration;
   }
 });
 
@@ -30716,6 +30918,7 @@ var core = __toESM(require_core());
 var github = __toESM(require_github());
 var import_graphology = __toESM(require_graphology_cjs());
 var import_graphology_traversal = __toESM(require_graphology_traversal());
+var import_graphology_dag = __toESM(require_graphology_dag());
 
 // node_modules/mdast-util-to-string/lib/index.js
 var emptyOptions = {};
@@ -42840,61 +43043,92 @@ async function main({
   perennialBranches,
   skipSingleStacks
 }) {
-  const repoGraph = new import_graphology.MultiDirectedGraph();
-  repoGraph.addNode(mainBranch, {
+  const repoGraph = new import_graphology.DirectedGraph();
+  repoGraph.mergeNode(mainBranch, {
     type: "perennial",
     ref: mainBranch
   });
   perennialBranches.forEach((perennialBranch) => {
-    repoGraph.addNode(perennialBranch, {
+    repoGraph.mergeNode(perennialBranch, {
       type: "perennial",
       ref: perennialBranch
     });
   });
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addNode(pullRequest.headRefName, {
+  const openPullRequests = pullRequests.filter(
+    (pullRequest) => pullRequest.state === "open"
+  );
+  openPullRequests.forEach((openPullRequest) => {
+    repoGraph.mergeNode(openPullRequest.head.ref, {
       type: "pull-request",
-      ...pullRequest
+      ...openPullRequest
     });
   });
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName);
+  openPullRequests.forEach((openPullRequest) => {
+    const hasExistingBasePullRequest = repoGraph.hasNode(openPullRequest.base.ref);
+    if (hasExistingBasePullRequest) {
+      repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref);
+      return;
+    }
+    const basePullRequest = pullRequests.find(
+      (basePullRequest2) => basePullRequest2.head.ref === openPullRequest.base.ref
+    );
+    if (basePullRequest?.state === "closed") {
+      repoGraph.mergeNode(openPullRequest.base.ref, {
+        type: "pull-request",
+        ...basePullRequest
+      });
+      repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref);
+      return;
+    }
+    repoGraph.mergeNode(openPullRequest.base.ref, {
+      type: "orphan-branch",
+      ref: openPullRequest.base.ref
+    });
+    repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref);
   });
+  const terminatingRefs = [mainBranch, ...perennialBranches];
   const getStackGraph = (pullRequest) => {
     const stackGraph2 = repoGraph.copy();
-    stackGraph2.setNodeAttribute(pullRequest.headRefName, "isCurrent", true);
+    stackGraph2.setNodeAttribute(pullRequest.head.ref, "isCurrent", true);
     (0, import_graphology_traversal.bfsFromNode)(
       stackGraph2,
-      pullRequest.headRefName,
+      pullRequest.head.ref,
       (ref, attributes) => {
         stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
-        return attributes.type === "perennial";
+        return attributes.type === "perennial" || attributes.type === "orphan-branch";
       },
-      {
-        mode: "inbound"
-      }
+      { mode: "inbound" }
     );
     (0, import_graphology_traversal.dfsFromNode)(
       stackGraph2,
-      pullRequest.headRefName,
+      pullRequest.head.ref,
       (ref) => {
         stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
       },
       { mode: "outbound" }
     );
-    return stackGraph2;
+    stackGraph2.forEachNode((ref, stackNode) => {
+      if (!stackNode.shouldPrint) {
+        stackGraph2.dropNode(ref);
+      }
+    });
+    return import_graphology.DirectedGraph.from(stackGraph2.toJSON());
   };
   const getOutput = (graph) => {
     const lines = [];
-    const terminatingRefs = [mainBranch, ...perennialBranches];
-    (0, import_graphology_traversal.dfs)(
+    const rootRef = (0, import_graphology_dag.topologicalSort)(graph)[0];
+    (0, import_graphology_traversal.dfsFromNode)(
       graph,
+      rootRef,
       (_, stackNode, depth) => {
         if (!stackNode.shouldPrint)
           return;
         const tabSize = depth * 2;
         const indentation = new Array(tabSize).fill(" ").join("");
         let line = indentation;
+        if (stackNode.type === "orphan-branch") {
+          line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`;
+        }
         if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
           line += `- \`${stackNode.ref}\``;
         }
@@ -42910,10 +43144,9 @@ async function main({
     );
     return lines.join("\n");
   };
-  const jobs = [];
   const stackGraph = getStackGraph(currentPullRequest);
   const shouldSkip = () => {
-    const neighbors = stackGraph.neighbors(currentPullRequest.headRefName);
+    const neighbors = stackGraph.neighbors(currentPullRequest.head.ref);
     const allPerennialBranches = stackGraph.filterNodes(
       (_, nodeAttributes) => nodeAttributes.type === "perennial"
     );
@@ -42922,6 +43155,7 @@ async function main({
   if (shouldSkip()) {
     return;
   }
+  const jobs = [];
   stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
       return;
@@ -46826,8 +47060,13 @@ var z = /* @__PURE__ */ Object.freeze({
 // src/types.ts
 var pullRequestSchema = objectType({
   number: numberType(),
-  baseRefName: stringType(),
-  headRefName: stringType(),
+  base: objectType({
+    ref: stringType()
+  }),
+  head: objectType({
+    ref: stringType()
+  }),
+  state: stringType(),
   body: stringType().optional()
 });
 
@@ -46906,22 +47145,18 @@ var inputs = {
   },
   getCurrentPullRequest(context3) {
     try {
-      const pullRequest = context3.payload.pull_request;
+      const pullRequest = pullRequestSchema.parse(context3.payload.pull_request);
       core2.startGroup("Inputs: Current pull request");
       core2.info(JSON.stringify(pullRequest));
       core2.endGroup();
-      return pullRequestSchema.parse({
-        number: pullRequest?.number,
-        baseRefName: pullRequest?.base?.ref,
-        headRefName: pullRequest?.head?.ref
-      });
+      return pullRequest;
     } catch (error) {
       core2.setFailed(`Unable to determine current pull request from action payload`);
       throw error;
     }
   },
   async getPullRequests(octokit, context3) {
-    const openPullRequests = await octokit.paginate(
+    const pullRequests = await octokit.paginate(
       "GET /repos/{owner}/{repo}/pulls",
       {
         ...context3.repo,
@@ -46931,18 +47166,20 @@ var inputs = {
       (response) => response.data.map(
         (item) => ({
           number: item.number,
-          baseRefName: item.base.ref,
-          headRefName: item.head.ref,
-          body: item.body ?? void 0
+          base: { ref: item.base.ref },
+          head: { ref: item.head.ref },
+          body: item.body ?? void 0,
+          state: item.state
         })
       )
     );
+    pullRequests.sort((a, b) => b.number - a.number);
     core2.startGroup("Inputs: Pull requests");
     core2.info(
-      JSON.stringify(openPullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     );
     core2.endGroup();
-    return openPullRequests;
+    return pullRequests;
   }
 };
 

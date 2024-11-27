@@ -103,23 +103,13 @@ export const inputs = {
 
   getCurrentPullRequest(context: typeof github.context) {
     try {
-      const pullRequest:
-        | {
-            number: number
-            base?: { ref?: string }
-            head?: { ref?: string }
-          }
-        | undefined = context.payload.pull_request
+      const pullRequest = pullRequestSchema.parse(context.payload.pull_request)
 
       core.startGroup('Inputs: Current pull request')
       core.info(JSON.stringify(pullRequest))
       core.endGroup()
 
-      return pullRequestSchema.parse({
-        number: pullRequest?.number,
-        baseRefName: pullRequest?.base?.ref,
-        headRefName: pullRequest?.head?.ref,
-      })
+      return pullRequest
     } catch (error) {
       core.setFailed(`Unable to determine current pull request from action payload`)
       throw error
@@ -127,7 +117,7 @@ export const inputs = {
   },
 
   async getPullRequests(octokit: Octokit, context: typeof github.context) {
-    const openPullRequests = await octokit.paginate(
+    const pullRequests = await octokit.paginate(
       'GET /repos/{owner}/{repo}/pulls',
       {
         ...context.repo,
@@ -138,19 +128,21 @@ export const inputs = {
         response.data.map(
           (item): PullRequest => ({
             number: item.number,
-            baseRefName: item.base.ref,
-            headRefName: item.head.ref,
+            base: { ref: item.base.ref },
+            head: { ref: item.head.ref },
             body: item.body ?? undefined,
+            state: item.state,
           })
         )
     )
+    pullRequests.sort((a, b) => b.number - a.number)
 
     core.startGroup('Inputs: Pull requests')
     core.info(
-      JSON.stringify(openPullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
+      JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     )
     core.endGroup()
 
-    return openPullRequests
+    return pullRequests
   },
 }

@@ -21,6 +21,7 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^6.0.0",
     "graphology": "^0.25.4",
+    "graphology-dag": "^0.4.1",
     "graphology-traversal": "^0.3.1",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
