@@ -136,6 +136,7 @@ describe('getCurrentPullRequest', () => {
           number: 100,
           base: { ref: 'main' },
           head: { ref: 'feat/git-town-action' },
+          state: 'open',
         },
       },
     } as unknown as typeof github.context
@@ -144,8 +145,9 @@ describe('getCurrentPullRequest', () => {
 
     expect(currentPullRequest).toStrictEqual({
       number: 100,
-      baseRefName: 'main',
-      headRefName: 'feat/git-town-action',
+      base: { ref: 'main' },
+      head: { ref: 'feat/git-town-action' },
+      state: 'open',
     })
   })
 

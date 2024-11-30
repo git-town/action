@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { MultiDirectedGraph } from 'graphology'
-import { bfsFromNode, dfs, dfsFromNode } from 'graphology-traversal'
+import { DirectedGraph } from 'graphology'
+import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
+import { topologicalSort } from 'graphology-dag'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
 import { remark } from './remark'
 
@@ -13,65 +14,104 @@ export async function main({
   perennialBranches,
   skipSingleStacks,
 }: Context) {
-  const repoGraph = new MultiDirectedGraph<StackNodeAttributes>()
+  const repoGraph = new DirectedGraph<StackNodeAttributes>()
 
-  repoGraph.addNode(mainBranch, {
+  repoGraph.mergeNode(mainBranch, {
     type: 'perennial',
     ref: mainBranch,
   })
 
   perennialBranches.forEach((perennialBranch) => {
-    repoGraph.addNode(perennialBranch, {
+    repoGraph.mergeNode(perennialBranch, {
       type: 'perennial',
       ref: perennialBranch,
     })
   })
 
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addNode(pullRequest.headRefName, {
+  const openPullRequests = pullRequests.filter(
+    (pullRequest) => pullRequest.state === 'open'
+  )
+
+  openPullRequests.forEach((openPullRequest) => {
+    repoGraph.mergeNode(openPullRequest.head.ref, {
       type: 'pull-request',
-      ...pullRequest,
+      ...openPullRequest,
     })
   })
 
-  pullRequests.forEach((pullRequest) => {
-    repoGraph.addDirectedEdge(pullRequest.baseRefName, pullRequest.headRefName)
+  openPullRequests.forEach((openPullRequest) => {
+    const hasExistingBasePullRequest = repoGraph.hasNode(openPullRequest.base.ref)
+    if (hasExistingBasePullRequest) {
+      repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref)
+
+      return
+    }
+
+    const basePullRequest = pullRequests.find(
+      (basePullRequest) => basePullRequest.head.ref === openPullRequest.base.ref
+    )
+    if (basePullRequest?.state === 'closed') {
+      repoGraph.mergeNode(openPullRequest.base.ref, {
+        type: 'pull-request',
+        ...basePullRequest,
+      })
+      repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref)
+
+      return
+    }
+
+    repoGraph.mergeNode(openPullRequest.base.ref, {
+      type: 'orphan-branch',
+      ref: openPullRequest.base.ref,
+    })
+    repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref)
   })
 
+  const terminatingRefs = [mainBranch, ...perennialBranches]
+
   const getStackGraph = (pullRequest: PullRequest) => {
-    const stackGraph = repoGraph.copy() as MultiDirectedGraph<StackNodeAttributes>
-    stackGraph.setNodeAttribute(pullRequest.headRefName, 'isCurrent', true)
+    const stackGraph = repoGraph.copy() as DirectedGraph<StackNodeAttributes>
+    stackGraph.setNodeAttribute(pullRequest.head.ref, 'isCurrent', true)
 
     bfsFromNode(
       stackGraph,
-      pullRequest.headRefName,
+      pullRequest.head.ref,
       (ref, attributes) => {
         stackGraph.setNodeAttribute(ref, 'shouldPrint', true)
-        return attributes.type === 'perennial'
+        return attributes.type === 'perennial' || attributes.type === 'orphan-branch'
       },
-      {
-        mode: 'inbound',
-      }
+      { mode: 'inbound' }
     )
 
     dfsFromNode(
       stackGraph,
-      pullRequest.headRefName,
+      pullRequest.head.ref,
       (ref) => {
         stackGraph.setNodeAttribute(ref, 'shouldPrint', true)
       },
       { mode: 'outbound' }
     )
 
-    return stackGraph
+    stackGraph.forEachNode((ref, stackNode) => {
+      if (!stackNode.shouldPrint) {
+        stackGraph.dropNode(ref)
+      }
+    })
+
+    return DirectedGraph.from(stackGraph.toJSON())
   }
 
-  const getOutput = (graph: MultiDirectedGraph<StackNodeAttributes>) => {
+  const getOutput = (graph: DirectedGraph<StackNodeAttributes>) => {
     const lines: string[] = []
-    const terminatingRefs = [mainBranch, ...perennialBranches]
 
-    dfs(
+    // `dfs` is bugged and doesn't traverse in topological order.
+    // `dfsFromNode` does, so we'll do the topological sort ourselves
+    // start traversal from the root.
+    const rootRef = topologicalSort(graph)[0]
+
+    dfsFromNode(
       graph,
+      rootRef,
       (_, stackNode, depth) => {
         if (!stackNode.shouldPrint) return
 
@@ -79,6 +119,10 @@ export async function main({
         const indentation = new Array(tabSize).fill(' ').join('')
 
         let line = indentation
+
+        if (stackNode.type === 'orphan-branch') {
+          line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`
+        }
 
         if (stackNode.type === 'perennial' && terminatingRefs.includes(stackNode.ref)) {
           line += `- \`${stackNode.ref}\``
@@ -100,12 +144,10 @@ export async function main({
     return lines.join('\n')
   }
 
-  const jobs: Array<() => Promise<void>> = []
-
   const stackGraph = getStackGraph(currentPullRequest)
 
   const shouldSkip = () => {
-    const neighbors = stackGraph.neighbors(currentPullRequest.headRefName)
+    const neighbors = stackGraph.neighbors(currentPullRequest.head.ref)
     const allPerennialBranches = stackGraph.filterNodes(
       (_, nodeAttributes) => nodeAttributes.type === 'perennial'
     )
@@ -120,6 +162,8 @@ export async function main({
   if (shouldSkip()) {
     return
   }
+
+  const jobs: Array<() => Promise<void>> = []
 
   stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
