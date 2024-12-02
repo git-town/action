@@ -40,8 +40,8 @@ export async function main({
   })
 
   openPullRequests.forEach((openPullRequest) => {
-    const hasExistingBasePullRequest = repoGraph.hasNode(openPullRequest.base.ref)
-    if (hasExistingBasePullRequest) {
+    const hasExistingBase = repoGraph.hasNode(openPullRequest.base.ref)
+    if (hasExistingBase) {
       repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref)
 
       return
@@ -98,7 +98,7 @@ export async function main({
       }
     })
 
-    return DirectedGraph.from(stackGraph.toJSON())
+    return stackGraph
   }
 
   const getOutput = (graph: DirectedGraph<StackNodeAttributes>) => {

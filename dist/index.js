@@ -43064,8 +43064,8 @@ async function main({
     });
   });
   openPullRequests.forEach((openPullRequest) => {
-    const hasExistingBasePullRequest = repoGraph.hasNode(openPullRequest.base.ref);
-    if (hasExistingBasePullRequest) {
+    const hasExistingBase = repoGraph.hasNode(openPullRequest.base.ref);
+    if (hasExistingBase) {
       repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref);
       return;
     }
@@ -43112,7 +43112,7 @@ async function main({
         stackGraph2.dropNode(ref);
       }
     });
-    return import_graphology.DirectedGraph.from(stackGraph2.toJSON());
+    return stackGraph2;
   };
   const getOutput = (graph) => {
     const lines = [];
