@@ -47067,7 +47067,7 @@ var pullRequestSchema = objectType({
     ref: stringType()
   }),
   state: stringType(),
-  body: stringType().optional()
+  body: stringType().optional().nullable()
 });
 
 // src/inputs.ts
