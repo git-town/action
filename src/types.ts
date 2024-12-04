@@ -13,7 +13,7 @@ export const pullRequestSchema = object({
     ref: string(),
   }),
   state: string(),
-  body: string().optional(),
+  body: string().optional().nullable(),
 })
 export type PullRequest = InferType<typeof pullRequestSchema>
 
