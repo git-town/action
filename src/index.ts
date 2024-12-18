@@ -19,10 +19,11 @@ async function run() {
 
     const octokit = github.getOctokit(inputs.getToken())
 
+    const historyLimit = inputs.getHistoryLimit()
     const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
       inputs.getMainBranch(octokit, config, github.context),
       inputs.getRemoteBranches(octokit, github.context),
-      inputs.getPullRequests(octokit, github.context),
+      inputs.getPullRequests(octokit, github.context, historyLimit),
     ])
     const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches)
 
