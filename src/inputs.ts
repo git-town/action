@@ -11,25 +11,29 @@ export const inputs = {
   },
 
   getSkipSingleStacks() {
-    core.startGroup('Inputs: Skip single stacks')
     const input = core.getBooleanInput('skip-single-stacks', {
       required: false,
       trimWhitespace: true,
     })
+
+    core.startGroup('Inputs: Skip single stacks')
     core.info(input.toString())
     core.endGroup()
+
     return input
   },
 
-  getHistoryLimit() {
-    core.startGroup('Inputs: History limit')
+  getHistoryLimit(): number {
     const input = core.getInput('history-limit', {
       required: false,
       trimWhitespace: true,
     })
     const historyLimit = Number.parseInt(input, 10)
+
+    core.startGroup('Inputs: History limit')
     core.info(input)
     core.endGroup()
+
     return historyLimit
   },
 
@@ -132,7 +136,11 @@ export const inputs = {
     }
   },
 
-  async getPullRequests(octokit: Octokit, context: typeof github.context) {
+  async getPullRequests(
+    octokit: Octokit,
+    context: typeof github.context,
+    historyLimit: number
+  ) {
     function toPullRequest(
       item: Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'][number]
     ): PullRequest {
@@ -144,6 +152,8 @@ export const inputs = {
         state: item.state,
       }
     }
+
+    let closedPullRequestCount = 0
 
     const [openPullRequests, closedPullRequests] = await Promise.all([
       octokit.paginate(
@@ -164,6 +174,12 @@ export const inputs = {
           per_page: 100,
         },
         (response, done) => {
+          closedPullRequestCount += response.data.length
+
+          if (historyLimit > 0 && closedPullRequestCount >= historyLimit) {
+            done()
+          }
+
           return response.data.map(toPullRequest)
         }
       ),

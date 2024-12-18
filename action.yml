@@ -23,7 +23,7 @@ inputs:
     default: false
   history-limit:
     required: false
-    default: 0
+    default: '0'
 
 runs:
   using: 'node20'

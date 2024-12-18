@@ -59,7 +59,7 @@ your repository.
 
 ### Modify the Pull Request Template
 
-By default, this action will append the visualization to the bottom of the PR description.
+By default, the action will append the visualization to the bottom of the PR description.
 If you are using a [pull request template](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository),
 you can specify the location of the visualization in the template by adding a [HTML comment](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#hiding-content-with-comments)
 that contains `branch-stack` inside of it:
@@ -76,7 +76,7 @@ that contains `branch-stack` inside of it:
 [ ] Baz
 ```
 
-This action will look for this comment and insert the visualization underneath the comment
+The action will look for this comment and insert the visualization underneath the comment
 when it runs. It will also leave behind the comment, so that the next time it runs, it will
 be able to use it again to update the visualization:
 
@@ -98,17 +98,17 @@ be able to use it again to update the visualization:
 
 > [!WARNING]
 > Be careful not to add content between the comment and the
-> visualization, as this action will replace that content each time it
+> visualization, as the action will replace that content each time it
 > updates your PR. Adding content above the tag, or below the list is
 > safe though!
 
-### Manual Configuration
+## Manual Configuration
 
-If you are using Git Town v11 and below, or are setting up this action for a repository
-that doesn't have a `.git-branches.toml`, you will need to tell this action what the
+If you are using Git Town v11 and below, or are setting up the action for a repository
+that doesn't have a `.git-branches.toml`, you will need to tell the action what the
 main branch and perennial branches are for your repository.
 
-#### Main Branch
+### Main Branch
 
 The main branch is the default parent branch for new feature branches, and can be
 specified using the `main-branch` input:
@@ -119,10 +119,10 @@ specified using the `main-branch` input:
     main-branch: 'main'
 ```
 
-This action will default to your repository's default branch, which it fetches via
+The action will default to your repository's default branch, which it fetches via
 the GitHub REST API.
 
-#### Perennial Branches
+### Perennial Branches
 
 Perennial branches are long lived branches and are never shipped.
 
@@ -139,26 +139,69 @@ be done with the `perennial-branches` and `perennial-regex` inputs respectively:
     perennial-regex: '^release-.*$'
 ```
 
-Both inputs can be used at the same time. This action will merge the perennial
+Both inputs can be used at the same time. The action will merge the perennial
 branches given into a single, de-duplicated list.
 
 ## Customization
 
 ### Skip Single Stacks
 
-If you don't want the stack description to appear on pull requests which are not part of a stack, you can add `skip-single-stacks: true` to the job.
+If you don't want the stack visualization to appear on pull requests which are **not** part
+of a stack, add `skip-single-stacks: true` to the action's inputs.
 
-This skips all pull requests which point to a main or perennial branch and have no children pull requests pointing to it.
+A pull request is considered to be **not** a part of a stack if:
+- It has no child pull requests.
+- It's parent is the main branch or a perennial branch.
 
 ```yaml
 - uses: git-town/action@v1
   with:
-    perennial-branches: |
-      dev
-      staging
-      prod
     skip-single-stacks: true
 ```
+
+### History Limit
+
+In order to accurately visualize stacked changes, the action needs to fetch _all_ open
+and closed pull requests. This can problematic for larger/older repositories that have
+a large number of closed pull requests.
+
+The action can be configured to fetch a limited number of closed pull requests. This is
+customizable with the `history-limit` input:
+
+```yaml
+- uses: git-town/action@v1
+  with:
+    history-limit: '500' # Only fetch the latest 500 closed pull requests
+```
+
+> [!NOTE]
+> This only applies to closed pull requests. Open pull requests will be completely fetched
+> regardless of the `history-limit`.
+
+## Reference
+
+```yaml
+inputs:
+  github-token:
+    required: true
+    default: ${{ github.token }}
+  main-branch:
+    required: false
+    default: ''
+  perennial-branches:
+    required: false
+    default: ''
+  perennial-regex:
+    required: false
+    default: ''
+  skip-single-stacks:
+    required: false
+    default: false
+  history-limit:
+    required: false
+    default: '0'
+```
+
 
 ## License
 

@@ -47076,11 +47076,25 @@ var inputs = {
     return core2.getInput("github-token", { required: true, trimWhitespace: true });
   },
   getSkipSingleStacks() {
+    const input = core2.getBooleanInput("skip-single-stacks", {
+      required: false,
+      trimWhitespace: true
+    });
     core2.startGroup("Inputs: Skip single stacks");
-    const input = core2.getBooleanInput("skip-single-stacks", { required: false });
     core2.info(input.toString());
     core2.endGroup();
     return input;
+  },
+  getHistoryLimit() {
+    const input = core2.getInput("history-limit", {
+      required: false,
+      trimWhitespace: true
+    });
+    const historyLimit = Number.parseInt(input, 10);
+    core2.startGroup("Inputs: History limit");
+    core2.info(input);
+    core2.endGroup();
+    return historyLimit;
   },
   async getMainBranch(octokit, config2, context3) {
     const {
@@ -47155,24 +47169,44 @@ var inputs = {
       throw error;
     }
   },
-  async getPullRequests(octokit, context3) {
-    const pullRequests = await octokit.paginate(
-      "GET /repos/{owner}/{repo}/pulls",
-      {
-        ...context3.repo,
-        state: "all",
-        per_page: 100
-      },
-      (response) => response.data.map(
-        (item) => ({
-          number: item.number,
-          base: { ref: item.base.ref },
-          head: { ref: item.head.ref },
-          body: item.body ?? void 0,
-          state: item.state
-        })
+  async getPullRequests(octokit, context3, historyLimit) {
+    function toPullRequest(item) {
+      return {
+        number: item.number,
+        base: { ref: item.base.ref },
+        head: { ref: item.head.ref },
+        body: item.body ?? void 0,
+        state: item.state
+      };
+    }
+    let closedPullRequestCount = 0;
+    const [openPullRequests, closedPullRequests] = await Promise.all([
+      octokit.paginate(
+        "GET /repos/{owner}/{repo}/pulls",
+        {
+          ...context3.repo,
+          state: "open",
+          per_page: 100
+        },
+        (response) => response.data.map(toPullRequest)
+      ),
+      octokit.paginate(
+        "GET /repos/{owner}/{repo}/pulls",
+        {
+          ...context3.repo,
+          state: "closed",
+          per_page: 100
+        },
+        (response, done) => {
+          closedPullRequestCount += response.data.length;
+          if (historyLimit > 0 && closedPullRequestCount >= historyLimit) {
+            done();
+          }
+          return response.data.map(toPullRequest);
+        }
       )
-    );
+    ]);
+    const pullRequests = [...openPullRequests, ...closedPullRequests];
     pullRequests.sort((a, b) => b.number - a.number);
     core2.startGroup("Inputs: Pull requests");
     core2.info(
@@ -47224,10 +47258,11 @@ async function run() {
       return;
     }
     const octokit = github2.getOctokit(inputs.getToken());
+    const historyLimit = inputs.getHistoryLimit();
     const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
       inputs.getMainBranch(octokit, config, github2.context),
       inputs.getRemoteBranches(octokit, github2.context),
-      inputs.getPullRequests(octokit, github2.context)
+      inputs.getPullRequests(octokit, github2.context, historyLimit)
     ]);
     const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches);
     const context3 = {
