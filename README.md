@@ -142,7 +142,9 @@ be done with the `perennial-branches` and `perennial-regex` inputs respectively:
 Both inputs can be used at the same time. This action will merge the perennial
 branches given into a single, de-duplicated list.
 
-#### Skip Single Stacks
+## Customization
+
+### Skip Single Stacks
 
 If you don't want the stack description to appear on pull requests which are not part of a stack, you can add `skip-single-stacks: true` to the job.
 

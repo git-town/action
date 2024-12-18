@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import type * as github from '@actions/github'
+import type { Endpoints } from '@octokit/types'
 import { pullRequestSchema } from './types'
 import type { PullRequest, Octokit } from './types'
 import type { Config } from './config'
@@ -11,10 +12,25 @@ export const inputs = {
 
   getSkipSingleStacks() {
     core.startGroup('Inputs: Skip single stacks')
-    const input = core.getBooleanInput('skip-single-stacks', { required: false })
+    const input = core.getBooleanInput('skip-single-stacks', {
+      required: false,
+      trimWhitespace: true,
+    })
     core.info(input.toString())
     core.endGroup()
     return input
+  },
+
+  getHistoryLimit() {
+    core.startGroup('Inputs: History limit')
+    const input = core.getInput('history-limit', {
+      required: false,
+      trimWhitespace: true,
+    })
+    const historyLimit = Number.parseInt(input, 10)
+    core.info(input)
+    core.endGroup()
+    return historyLimit
   },
 
   async getMainBranch(
@@ -117,24 +133,43 @@ export const inputs = {
   },
 
   async getPullRequests(octokit: Octokit, context: typeof github.context) {
-    const pullRequests = await octokit.paginate(
-      'GET /repos/{owner}/{repo}/pulls',
-      {
-        ...context.repo,
-        state: 'all',
-        per_page: 100,
-      },
-      (response) =>
-        response.data.map(
-          (item): PullRequest => ({
-            number: item.number,
-            base: { ref: item.base.ref },
-            head: { ref: item.head.ref },
-            body: item.body ?? undefined,
-            state: item.state,
-          })
-        )
-    )
+    function toPullRequest(
+      item: Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'][number]
+    ): PullRequest {
+      return {
+        number: item.number,
+        base: { ref: item.base.ref },
+        head: { ref: item.head.ref },
+        body: item.body ?? undefined,
+        state: item.state,
+      }
+    }
+
+    const [openPullRequests, closedPullRequests] = await Promise.all([
+      octokit.paginate(
+        'GET /repos/{owner}/{repo}/pulls',
+        {
+          ...context.repo,
+          state: 'open',
+          per_page: 100,
+        },
+        (response) => response.data.map(toPullRequest)
+      ),
+
+      octokit.paginate(
+        'GET /repos/{owner}/{repo}/pulls',
+        {
+          ...context.repo,
+          state: 'closed',
+          per_page: 100,
+        },
+        (response, done) => {
+          return response.data.map(toPullRequest)
+        }
+      ),
+    ])
+
+    const pullRequests = [...openPullRequests, ...closedPullRequests]
     pullRequests.sort((a, b) => b.number - a.number)
 
     core.startGroup('Inputs: Pull requests')

@@ -21,6 +21,9 @@ inputs:
   skip-single-stacks:
     required: false
     default: false
+  history-limit:
+    required: false
+    default: 0
 
 runs:
   using: 'node20'

@@ -29,6 +29,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@octokit/types": "^13.6.2",
     "@types/node": "^20.11.30",
     "@vercel/style-guide": "^5.2.0",
     "editorconfig-checker": "5.1.8",
