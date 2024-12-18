@@ -162,11 +162,11 @@ A pull request is considered to be **not** a part of a stack if:
 ### History Limit
 
 In order to accurately visualize stacked changes, the action needs to fetch _all_ open
-and closed pull requests. This can problematic for larger/older repositories that have
-a large number of closed pull requests.
+and closed pull requests. However, this can increase the runtime of the action for
+larger/older repositories.
 
-The action can be configured to fetch a limited number of closed pull requests. This is
-customizable with the `history-limit` input:
+If you're experiencing long runtimes, the `history-limit` input can be configured to
+limit the total number of closed pull requests fetched by the action:
 
 ```yaml
 - uses: git-town/action@v1
@@ -174,9 +174,10 @@ customizable with the `history-limit` input:
     history-limit: '500' # Only fetch the latest 500 closed pull requests
 ```
 
-> [!NOTE]
-> This only applies to closed pull requests. Open pull requests will be completely fetched
-> regardless of the `history-limit`.
+> [!WARNING]
+> You may encounter inaccuracies in the visualization when customizing `history-limit` as
+> open pull requests may refer to closed pull requests not fetched within the configured
+> limits.
 
 ## Reference
 
