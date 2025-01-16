@@ -216,15 +216,13 @@ export function updateDescription({
     return remark.stringify(descriptionAst)
   }
 
-  let nearestListIndex = anchorIndex
+  // if the anchor is the last ast node, set nearestListIndex to anchorIndex for proper splicing
+  let nearestListIndex =
+    anchorIndex === descriptionAst.children.length - 1 ? anchorIndex : anchorIndex + 1
 
-  for (let i = anchorIndex; i < descriptionAst.children.length; i += 1) {
-    const node = descriptionAst.children[i]
-
-    if (node?.type === 'list') {
-      nearestListIndex = i
-      break
-    }
+  // NOTE: this will eat up any list node in direct succession to the anchor comment.
+  if (descriptionAst.children[nearestListIndex]?.type !== 'list') {
+    nearestListIndex = anchorIndex
   }
 
   descriptionAst.children.splice(

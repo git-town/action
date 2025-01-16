@@ -77,7 +77,14 @@ that contains `branch-stack` inside of it:
 ```
 
 The action will look for this comment and insert the visualization underneath the comment
-when it runs. It will also leave behind the comment, so that the next time it runs, it will
+when it runs.
+
+> [!WARNING]
+> Any checklist or list directly after the comment will be replaced
+> with the stack list content. Please add another element such as a
+> heading before any other list.
+
+It will also leave behind the comment, so that the next time it runs, it will
 be able to use it again to update the visualization:
 
 ```md
