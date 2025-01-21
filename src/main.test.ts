@@ -132,6 +132,37 @@ There may be things here we don't want to overwrite.
 
     expect(actual).toEqual(expected)
   })
+
+  it('should correctly update pull request body when the comment is inline and there is a succeeding list', () => {
+    const description = `
+## Description
+
+## Stack
+
+- main <!-- branch-stack -->
+  - \\#1
+
+* my list
+  - should survive
+`
+    const output = ['- main <!-- branch-stack -->', '  - \\#2'].join('\n')
+
+    const actual = updateDescription({ description, output })
+    const expected = [
+      '## Description',
+      '',
+      '## Stack',
+      '',
+      '- main <!-- branch-stack -->',
+      '  - \\#2',
+      '',
+      '* my list',
+      '  - should survive',
+      '',
+    ].join('\n')
+
+    expect(actual).toEqual(expected)
+  })
 })
 
 describe('getStackGraph', () => {

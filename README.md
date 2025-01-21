@@ -80,9 +80,9 @@ The action will look for this comment and insert the visualization underneath th
 when it runs.
 
 > [!WARNING]
-> Any checklist or list directly after the comment will be replaced
-> with the stack list content. Please add another element such as a
-> heading before any other list.
+> Any checklist or list directly after the comment will have it's syntax changed to
+> the asterisk list format (`*`), rather than the dash list format (`-`). This should
+> not affect the readme in any other way.
 
 It will also leave behind the comment, so that the next time it runs, it will
 be able to use it again to update the visualization:
