@@ -90,9 +90,7 @@ be able to use it again to update the visualization:
 ```md
 ## Stack
 
-<!-- branch-stack --> 👈 Still there!
-
-- `main`
+- `main` <!-- branch-stack --> 👈 Still there!
   - \#1 :point_left:
     - \#2
 
