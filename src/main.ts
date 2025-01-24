@@ -183,7 +183,7 @@ export function getOutput(
       }
 
       if (stackNode.type === 'perennial' && terminatingRefs.includes(stackNode.ref)) {
-        line += `- \`${stackNode.ref}\` ${ANCHOR}`
+        line += `- \`${stackNode.ref}\``
       }
 
       if (stackNode.type === 'pull-request') {
@@ -192,6 +192,10 @@ export function getOutput(
 
       if (stackNode.isCurrent) {
         line += ' :point_left:'
+      }
+
+      if (depth === 0) {
+        line += ` ${ANCHOR}`
       }
 
       lines.push(line)
