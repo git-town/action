@@ -206,7 +206,7 @@ export function getOutput(
   return lines.join('\n')
 }
 
-const findNewAnchorIndex = (descriptionAst: ReturnType<typeof remark.parse>) => {
+const findInlineAnchorIndex = (descriptionAst: ReturnType<typeof remark.parse>) => {
   const listChildren = descriptionAst.children
     .map((node, originalIndex) => [node, originalIndex] as const)
     .filter(([node]) => node.type === 'list')
@@ -229,7 +229,7 @@ const isListType = (
   listAstNode: RootContent | undefined | BlockContent | DefinitionContent
 ): listAstNode is List => listAstNode?.type === 'list'
 
-const nearestListContainsPrs = (listAst: RootContent | undefined) => {
+const nextChildIsListAndContainsPrs = (listAst: RootContent | undefined) => {
   if (!listAst || !isListType(listAst)) return false
 
   if (listAst.children.length > 1) {
@@ -259,11 +259,16 @@ export function updateDescription({
   const descriptionAst = remark.parse(description)
   const outputAst = remark.parse(output)
 
-  const anchorIndex =
-    findNewAnchorIndex(descriptionAst) ??
-    descriptionAst.children.findIndex(
-      (node) => node.type === 'html' && node.value === ANCHOR
-    )
+  const inlineAnchorIndex = findInlineAnchorIndex(descriptionAst)
+
+  if (inlineAnchorIndex) {
+    descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children)
+    return remark.stringify(descriptionAst)
+  }
+
+  const anchorIndex = descriptionAst.children.findIndex(
+    (node) => node.type === 'html' && node.value === ANCHOR
+  )
 
   const isMissingAnchor = anchorIndex === -1
   if (isMissingAnchor) {
@@ -272,22 +277,10 @@ export function updateDescription({
     return remark.stringify(descriptionAst)
   }
 
-  // if the anchor is the last ast node, set nearestListIndex to anchorIndex for proper splicing
-  let nearestListIndex =
-    anchorIndex === descriptionAst.children.length - 1 ? anchorIndex : anchorIndex + 1
+  const numChildrenToReplace =
+    nextChildIsListAndContainsPrs(descriptionAst.children[anchorIndex + 1]) ? 2 : 1
 
-  if (
-    descriptionAst.children[nearestListIndex]?.type !== 'list' ||
-    !nearestListContainsPrs(descriptionAst.children[nearestListIndex])
-  ) {
-    nearestListIndex = anchorIndex
-  }
-
-  descriptionAst.children.splice(
-    anchorIndex,
-    nearestListIndex - anchorIndex + 1,
-    ...outputAst.children
-  )
+  descriptionAst.children.splice(anchorIndex, numChildrenToReplace, ...outputAst.children)
 
   return remark.stringify(descriptionAst)
 }

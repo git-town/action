@@ -43182,7 +43182,7 @@ function getOutput(graph, terminatingRefs) {
   );
   return lines.join("\n");
 }
-var findNewAnchorIndex = (descriptionAst) => {
+var findInlineAnchorIndex = (descriptionAst) => {
   const listChildren = descriptionAst.children.map((node2, originalIndex) => [node2, originalIndex]).filter(([node2]) => node2.type === "list");
   const [, listChildWithAnchorIdx] = listChildren.find(([node2]) => {
     const listItems = node2.children;
@@ -43194,7 +43194,7 @@ var findNewAnchorIndex = (descriptionAst) => {
   return listChildWithAnchorIdx;
 };
 var isListType = (listAstNode) => listAstNode?.type === "list";
-var nearestListContainsPrs = (listAst) => {
+var nextChildIsListAndContainsPrs = (listAst) => {
   if (!listAst || !isListType(listAst))
     return false;
   if (listAst.children.length > 1) {
@@ -43217,7 +43217,12 @@ function updateDescription({
 }) {
   const descriptionAst = remark2.parse(description);
   const outputAst = remark2.parse(output);
-  const anchorIndex = findNewAnchorIndex(descriptionAst) ?? descriptionAst.children.findIndex(
+  const inlineAnchorIndex = findInlineAnchorIndex(descriptionAst);
+  if (inlineAnchorIndex) {
+    descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children);
+    return remark2.stringify(descriptionAst);
+  }
+  const anchorIndex = descriptionAst.children.findIndex(
     (node2) => node2.type === "html" && node2.value === ANCHOR
   );
   const isMissingAnchor = anchorIndex === -1;
@@ -43225,15 +43230,8 @@ function updateDescription({
     descriptionAst.children.push(...outputAst.children);
     return remark2.stringify(descriptionAst);
   }
-  let nearestListIndex = anchorIndex === descriptionAst.children.length - 1 ? anchorIndex : anchorIndex + 1;
-  if (descriptionAst.children[nearestListIndex]?.type !== "list" || !nearestListContainsPrs(descriptionAst.children[nearestListIndex])) {
-    nearestListIndex = anchorIndex;
-  }
-  descriptionAst.children.splice(
-    anchorIndex,
-    nearestListIndex - anchorIndex + 1,
-    ...outputAst.children
-  );
+  const numChildrenToReplace = nextChildIsListAndContainsPrs(descriptionAst.children[anchorIndex + 1]) ? 2 : 1;
+  descriptionAst.children.splice(anchorIndex, numChildrenToReplace, ...outputAst.children);
   return remark2.stringify(descriptionAst);
 }
 
