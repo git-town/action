@@ -43035,6 +43035,7 @@ var remark2 = remark().use(remarkGfm).data("settings", {
 });
 
 // src/main.ts
+var ANCHOR = "<!-- branch-stack -->";
 async function main({
   octokit,
   currentPullRequest,
@@ -43087,64 +43088,7 @@ async function main({
     repoGraph.mergeDirectedEdge(openPullRequest.base.ref, openPullRequest.head.ref);
   });
   const terminatingRefs = [mainBranch, ...perennialBranches];
-  const getStackGraph = (pullRequest) => {
-    const stackGraph2 = repoGraph.copy();
-    stackGraph2.setNodeAttribute(pullRequest.head.ref, "isCurrent", true);
-    (0, import_graphology_traversal.bfsFromNode)(
-      stackGraph2,
-      pullRequest.head.ref,
-      (ref, attributes) => {
-        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
-        return attributes.type === "perennial" || attributes.type === "orphan-branch";
-      },
-      { mode: "inbound" }
-    );
-    (0, import_graphology_traversal.dfsFromNode)(
-      stackGraph2,
-      pullRequest.head.ref,
-      (ref) => {
-        stackGraph2.setNodeAttribute(ref, "shouldPrint", true);
-      },
-      { mode: "outbound" }
-    );
-    stackGraph2.forEachNode((ref, stackNode) => {
-      if (!stackNode.shouldPrint) {
-        stackGraph2.dropNode(ref);
-      }
-    });
-    return stackGraph2;
-  };
-  const getOutput = (graph) => {
-    const lines = [];
-    const rootRef = (0, import_graphology_dag.topologicalSort)(graph)[0];
-    (0, import_graphology_traversal.dfsFromNode)(
-      graph,
-      rootRef,
-      (_, stackNode, depth) => {
-        if (!stackNode.shouldPrint)
-          return;
-        const tabSize = depth * 2;
-        const indentation = new Array(tabSize).fill(" ").join("");
-        let line = indentation;
-        if (stackNode.type === "orphan-branch") {
-          line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`;
-        }
-        if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
-          line += `- \`${stackNode.ref}\``;
-        }
-        if (stackNode.type === "pull-request") {
-          line += `- #${stackNode.number}`;
-        }
-        if (stackNode.isCurrent) {
-          line += " :point_left:";
-        }
-        lines.push(line);
-      },
-      { mode: "directed" }
-    );
-    return lines.join("\n");
-  };
-  const stackGraph = getStackGraph(currentPullRequest);
+  const stackGraph = getStackGraph(currentPullRequest, repoGraph);
   const shouldSkip = () => {
     const neighbors = stackGraph.neighbors(currentPullRequest.head.ref);
     const allPerennialBranches = stackGraph.filterNodes(
@@ -43162,8 +43106,8 @@ async function main({
     }
     jobs.push(async () => {
       core.info(`Updating stack details for PR #${stackNode.number}`);
-      const stackGraph2 = getStackGraph(stackNode);
-      const output = getOutput(stackGraph2);
+      const stackGraph2 = getStackGraph(stackNode, repoGraph);
+      const output = getOutput(stackGraph2, terminatingRefs);
       let description = stackNode.body ?? "";
       description = updateDescription({
         description,
@@ -43178,14 +43122,106 @@ async function main({
   });
   await Promise.allSettled(jobs.map((job) => job()));
 }
+function getStackGraph(pullRequest, repoGraph) {
+  const stackGraph = repoGraph.copy();
+  stackGraph.setNodeAttribute(pullRequest.head.ref, "isCurrent", true);
+  (0, import_graphology_traversal.bfsFromNode)(
+    stackGraph,
+    pullRequest.head.ref,
+    (ref, attributes) => {
+      stackGraph.setNodeAttribute(ref, "shouldPrint", true);
+      return attributes.type === "perennial" || attributes.type === "orphan-branch";
+    },
+    { mode: "inbound" }
+  );
+  (0, import_graphology_traversal.dfsFromNode)(
+    stackGraph,
+    pullRequest.head.ref,
+    (ref) => {
+      stackGraph.setNodeAttribute(ref, "shouldPrint", true);
+    },
+    { mode: "outbound" }
+  );
+  stackGraph.forEachNode((ref, stackNode) => {
+    if (!stackNode.shouldPrint) {
+      stackGraph.dropNode(ref);
+    }
+  });
+  return stackGraph;
+}
+function getOutput(graph, terminatingRefs) {
+  const lines = [];
+  const rootRef = (0, import_graphology_dag.topologicalSort)(graph)[0];
+  (0, import_graphology_traversal.dfsFromNode)(
+    graph,
+    rootRef,
+    (_, stackNode, depth) => {
+      if (!stackNode.shouldPrint)
+        return;
+      const tabSize = depth * 2;
+      const indentation = new Array(tabSize).fill(" ").join("");
+      let line = indentation;
+      if (stackNode.type === "orphan-branch") {
+        line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`;
+      }
+      if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
+        line += `- \`${stackNode.ref}\``;
+      }
+      if (stackNode.type === "pull-request") {
+        line += `- #${stackNode.number}`;
+      }
+      if (stackNode.isCurrent) {
+        line += " :point_left:";
+      }
+      if (depth === 0) {
+        line += ` ${ANCHOR}`;
+      }
+      lines.push(line);
+    },
+    { mode: "directed" }
+  );
+  return lines.join("\n");
+}
+var findInlineAnchorIndex = (descriptionAst) => {
+  const listChildren = descriptionAst.children.map((node2, originalIndex) => [node2, originalIndex]).filter(([node2]) => node2.type === "list");
+  const [, listChildWithAnchorIdx] = listChildren.find(([node2]) => {
+    const listItems = node2.children;
+    const maybeFirstListItemParagraph = listItems[0]?.children[0];
+    return maybeFirstListItemParagraph?.children.some(
+      (node3) => node3.type === "html" && node3.value === ANCHOR
+    );
+  }) ?? [];
+  return listChildWithAnchorIdx;
+};
+var isListType = (listAstNode) => listAstNode?.type === "list";
+var nextChildIsListAndContainsPrs = (listAst) => {
+  if (!listAst || !isListType(listAst))
+    return false;
+  if (listAst.children.length > 1) {
+    return false;
+  }
+  const subList = listAst.children[0]?.children[1];
+  if (!isListType(subList))
+    return false;
+  const firstItemParagraphNode = subList.children[0]?.children[0];
+  if (firstItemParagraphNode?.type !== "paragraph")
+    return false;
+  const sublistFirstItemParagraphText = firstItemParagraphNode.children[0];
+  if (sublistFirstItemParagraphText?.type !== "text")
+    return false;
+  return /^#\d+/.test(sublistFirstItemParagraphText.value);
+};
 function updateDescription({
   description,
   output
 }) {
-  const ANCHOR = "<!-- branch-stack -->";
   const descriptionAst = remark2.parse(description);
-  const outputAst = remark2.parse(`${ANCHOR}
-${output}`);
+  const outputAst = remark2.parse(output);
+  const inlineAnchorIndex = findInlineAnchorIndex(descriptionAst);
+  if (inlineAnchorIndex) {
+    descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children);
+    return remark2.stringify(descriptionAst);
+  }
   const anchorIndex = descriptionAst.children.findIndex(
     (node2) => node2.type === "html" && node2.value === ANCHOR
   );
@@ -43194,19 +43230,8 @@ ${output}`);
     descriptionAst.children.push(...outputAst.children);
     return remark2.stringify(descriptionAst);
   }
-  let nearestListIndex = anchorIndex;
-  for (let i = anchorIndex; i < descriptionAst.children.length; i += 1) {
-    const node2 = descriptionAst.children[i];
-    if (node2?.type === "list") {
-      nearestListIndex = i;
-      break;
-    }
-  }
-  descriptionAst.children.splice(
-    anchorIndex,
-    nearestListIndex - anchorIndex + 1,
-    ...outputAst.children
-  );
+  const numChildrenToReplace = nextChildIsListAndContainsPrs(descriptionAst.children[anchorIndex + 1]) ? 2 : 1;
+  descriptionAst.children.splice(anchorIndex, numChildrenToReplace, ...outputAst.children);
   return remark2.stringify(descriptionAst);
 }
 
