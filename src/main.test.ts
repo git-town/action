@@ -8,91 +8,111 @@ beforeEach(() => {
 })
 
 describe('updateDescription', () => {
-  it('should correctly update pull request body', () => {
-    const description = `
-## Description
+  describe('when standalone anchor is present', () => {
+    describe('when previous stack exists', () => {
+      it('should delete previous stack & replace anchor with updated stack', () => {
+        const description = [
+          '<!-- branch-stack -->',
+          '',
+          '- `main`',
+          '  - \\#1 :point\\_left:',
+        ].join('\n')
+        const output = ['- `main` <!-- branch-stack -->', '  - \\#2 :point\\_left:'].join(
+          '\n'
+        )
 
-## Stack
+        const actual = updateDescription({ description, output })
+        const expected = [
+          '- `main` <!-- branch-stack -->',
+          '  - \\#2 :point\\_left:',
+          '',
+        ].join('\n')
 
-<!-- branch-stack -->
-- main
-  - \\#1
-`
-    const output = ['- main <!-- branch-stack -->', '  - \\#2'].join('\n')
+        expect(actual).toBe(expected)
+      })
+    })
 
-    const actual = updateDescription({ description, output })
-    const expected = [
-      '## Description',
-      '',
-      '## Stack',
-      '',
-      '- main <!-- branch-stack -->',
-      '  - \\#2',
-      '',
-    ].join('\n')
+    describe('when stack is missing', () => {
+      it('should replace standalone anchor with updated stack', () => {
+        const description = ['<!-- branch-stack -->', ''].join('\n')
+        const output = ['- main <!-- branch-stack -->', '  - \\#2 :point\\_left:'].join(
+          '\n'
+        )
 
-    expect(actual).toEqual(expected)
+        const actual = updateDescription({ description, output })
+        const expected = [
+          '- main <!-- branch-stack -->',
+          '  - \\#2 :point\\_left:',
+          '',
+        ].join('\n')
+
+        expect(actual).toEqual(expected)
+      })
+    })
   })
 
-  it('should correctly update pull request body when the comment is inline', () => {
-    const description = `
-## Description
+  describe('when inline anchor is present', () => {
+    it('should replace inline anchor with updated stack', () => {
+      const description = [
+        '- `main` <!-- branch-stack -->',
+        '  - \\#1 :point_left:',
+        '',
+      ].join('\n')
+      const output = ['- `main` <!-- branch-stack -->', '  - \\#2 :point\\_left:'].join(
+        '\n'
+      )
 
-## Stack
+      const actual = updateDescription({ description, output })
+      const expected = [
+        '- `main` <!-- branch-stack -->',
+        '  - \\#2 :point\\_left:',
+        '',
+      ].join('\n')
 
-- main <!-- branch-stack -->
-  - \\#2
-`
-    const output = ['- main <!-- branch-stack -->', '  - \\#2'].join('\n')
-
-    const actual = updateDescription({ description, output })
-    const expected = [
-      '## Description',
-      '',
-      '## Stack',
-      '',
-      '- main <!-- branch-stack -->',
-      '  - \\#2',
-      '',
-    ].join('\n')
-
-    expect(actual).toEqual(expected)
+      expect(actual).toBe(expected)
+    })
   })
 
-  it('should append output to description if body regex fails', () => {
-    const description = '## Description'
-    const output = ['- main <!-- branch-stack -->', '  - \\#2'].join('\n')
+  describe('when anchor is missing', () => {
+    describe('when previous stack exists', () => {
+      it('should replace previous stack with updated stack', () => {
+        const description = ['- `main`', '  - \\#1 :point\\_left:', ''].join('\n')
+        const output = ['- `main` <!-- branch-stack -->', '  - \\#2 :point\\_left:'].join(
+          '\n'
+        )
 
-    const actual = updateDescription({ description, output })
-    const expected = [
-      '## Description',
-      '',
-      '- main <!-- branch-stack -->',
-      '  - \\#2',
-      '',
-    ].join('\n')
+        const actual = updateDescription({ description, output })
+        const expected = [
+          '- `main` <!-- branch-stack -->',
+          '  - \\#2 :point\\_left:',
+          '',
+        ].join('\n')
 
-    expect(actual).toEqual(expected)
+        expect(actual).toBe(expected)
+      })
+    })
   })
 
   it('should not delete parts of the description below itself when there is another list', () => {
-    const description = `<!-- branch-stack -->
-
-## More Description
-
-There may be things here we don't want to overwrite.
-
-- [ ] including
-- [ ] something
-- [ ] like a
-- [ ] checklist
-`
-    const output = ['- main <!-- branch-stack -->', '  - \\#1'].join('\n')
+    const description = [
+      '<!-- branch-stack -->',
+      '',
+      '## More Description',
+      '',
+      `There may be things here we don't want to overwrite.`,
+      '',
+      '- [ ] including',
+      '- [ ] something',
+      '- [ ] like a',
+      '- [ ] checklist',
+      '',
+    ].join('\n')
+    const output = ['- main <!-- branch-stack -->', '  - \\#1 :point\\_left:'].join('\n')
 
     const actual = updateDescription({ description, output })
     const expected = [
       '- main <!-- branch-stack -->',
-      '  - \\#1',
+      '  - \\#1 :point\\_left:',
       '',
       '## More Description',
       '',
@@ -109,19 +129,21 @@ There may be things here we don't want to overwrite.
   })
 
   it('should not replace any list directly succeeding the stack comment', () => {
-    const description = `<!-- branch-stack -->
-
-- [ ] this checklist
-  - [ ] is going to be alright but with an asterisk to start
-
-## More Description
-`
-    const output = ['- main <!-- branch-stack -->', '  - \\#1'].join('\n')
+    const description = [
+      '<!-- branch-stack -->',
+      '',
+      '- [ ] this checklist',
+      '  - [ ] is going to be alright but with an asterisk to start',
+      '',
+      '## More Description',
+      '',
+    ].join('\n')
+    const output = ['- main <!-- branch-stack -->', '  - \\#1 :point\\_left:'].join('\n')
 
     const actual = updateDescription({ description, output })
     const expected = [
       '- main <!-- branch-stack -->',
-      '  - \\#1',
+      '  - \\#1 :point\\_left:',
       '',
       '* [ ] this checklist',
       '  - [ ] is going to be alright but with an asterisk to start',
@@ -134,18 +156,19 @@ There may be things here we don't want to overwrite.
   })
 
   it('should correctly update pull request body when the comment is inline and there is a succeeding list', () => {
-    const description = `
-## Description
-
-## Stack
-
-- main <!-- branch-stack -->
-  - \\#1
-
-* my list
-  - should survive
-`
-    const output = ['- main <!-- branch-stack -->', '  - \\#2'].join('\n')
+    const description = [
+      '## Description',
+      '',
+      '## Stack',
+      '',
+      '- main <!-- branch-stack -->',
+      '  - \\#1 :point\\_left:',
+      '',
+      '* my list',
+      '  - should survive',
+      '',
+    ].join('\n')
+    const output = ['- main <!-- branch-stack -->', '  - \\#2 :point\\_left:'].join('\n')
 
     const actual = updateDescription({ description, output })
     const expected = [
@@ -154,7 +177,7 @@ There may be things here we don't want to overwrite.
       '## Stack',
       '',
       '- main <!-- branch-stack -->',
-      '  - \\#2',
+      '  - \\#2 :point\\_left:',
       '',
       '* my list',
       '  - should survive',
@@ -275,9 +298,12 @@ describe('getOutput', () => {
     const stackGraph = getStackGraph(pullRequest1, repoGraph)
 
     const output = getOutput(stackGraph, ['main'])
+    const expected = [
+      '- `main` <!-- branch-stack -->',
+      '  - #1 :point_left:',
+      '    - #2',
+    ].join('\n')
 
-    expect(output).toBe(`- \`main\` <!-- branch-stack -->
-  - #1 :point_left:
-    - #2`)
+    expect(output).toBe(expected)
   })
 })
