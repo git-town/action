@@ -15,19 +15,22 @@ const configSchema = object({
 
 export type Config = z.infer<typeof configSchema>
 
-let configFile
+const CONFIG_FILE_NAMES = ['.git-branches.toml', '.git-town.toml']
+let configFile: string | undefined
 
-try {
-  configFile = fs.readFileSync('.git-branches.toml').toString()
-} catch {
-  configFile = undefined
-}
+CONFIG_FILE_NAMES.forEach((file) => {
+  try {
+    configFile ??= fs.readFileSync(file).toString()
+  } catch {
+    configFile = undefined
+  }
+})
 
 const parsed = configSchema.safeParse(toml.parse(configFile ?? ''))
 
 if (!parsed.success) {
   core.warning(
-    'Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml` is valid.'
+    'Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml`/`.git-town.toml` is valid.'
   )
 }
 
