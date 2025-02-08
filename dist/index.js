@@ -43385,17 +43385,6 @@ function updateDescription({
   descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children);
   return remark2.stringify(descriptionAst);
 }
-var findInlineAnchor = (descriptionAst) => {
-  const listChildren = descriptionAst.children.map((node2, originalIndex) => [node2, originalIndex]).filter(([node2]) => node2.type === "list");
-  const [, listChildWithAnchorIdx] = listChildren.find(([node2]) => {
-    const listItems = node2.children;
-    const maybeFirstListItemParagraph = listItems[0]?.children[0];
-    return maybeFirstListItemParagraph?.children.some(
-      (node3) => node3.type === "html" && node3.value === ANCHOR
-    );
-  }) ?? [];
-  return listChildWithAnchorIdx ?? -1;
-};
 function removeUnanchoredBranchStack(descriptionAst) {
   const branchStackIndex = descriptionAst.children.findIndex(
     function matchesBranchStackHeuristic(node2) {
@@ -43406,8 +43395,8 @@ function removeUnanchoredBranchStack(descriptionAst) {
       if (node2.children.length !== 1 || !child) {
         return false;
       }
-      const isMatch = containsPullRequestNode(child);
-      return isMatch;
+      const result = containsPullRequestNode(child);
+      return result;
     }
   );
   if (branchStackIndex === -1) {
@@ -43415,18 +43404,40 @@ function removeUnanchoredBranchStack(descriptionAst) {
   }
   descriptionAst.children.splice(branchStackIndex, 1);
 }
-function containsPullRequestNode(list4) {
-  return list4.children.some((node2) => {
+function containsPullRequestNode(listItem2) {
+  return listItem2.children.some((node2) => {
     if (node2.type === "list" && node2.children.length > 0) {
       return node2.children.some(containsPullRequestNode);
     }
     if (node2.type !== "paragraph") {
       return false;
     }
-    const hasMatchingChildNode = node2.children.some(
+    const result = node2.children.some(
       (child) => child.type === "text" && PULL_REQUEST_NODE_REGEX.test(child.value)
     );
-    return hasMatchingChildNode;
+    return result;
+  });
+}
+function findInlineAnchor(descriptionAst) {
+  return descriptionAst.children.findIndex((node2) => {
+    if (node2.type !== "list") {
+      return;
+    }
+    return node2.children.some(containsAnchor);
+  });
+}
+function containsAnchor(listItem2) {
+  return listItem2.children.some((node2) => {
+    if (node2.type === "list") {
+      return node2.children.some(containsAnchor);
+    }
+    if (node2.type !== "paragraph") {
+      return false;
+    }
+    const result = node2.children.some(
+      (child) => child.type === "html" && child.value === ANCHOR
+    );
+    return result;
   });
 }
 

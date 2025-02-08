@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
 import { topologicalSort } from 'graphology-dag'
-import type { List, ListItem, Paragraph, Root } from 'mdast'
+import type { ListItem, Root } from 'mdast'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
 import { remark } from './remark'
 
@@ -242,25 +242,6 @@ export function updateDescription({
   return remark.stringify(descriptionAst)
 }
 
-const findInlineAnchor = (descriptionAst: Root): number => {
-  const listChildren = descriptionAst.children
-    .map((node, originalIndex) => [node, originalIndex] as const)
-    .filter(([node]) => node.type === 'list')
-
-  const [, listChildWithAnchorIdx] =
-    (listChildren as Array<[List, number]>).find(([node]) => {
-      const listItems = node.children
-      const maybeFirstListItemParagraph = listItems[0]?.children[0] as
-        | Paragraph
-        | undefined
-      return maybeFirstListItemParagraph?.children.some(
-        (node) => node.type === 'html' && node.value === ANCHOR
-      )
-    }) ?? []
-
-  return listChildWithAnchorIdx ?? -1
-}
-
 function removeUnanchoredBranchStack(descriptionAst: Root) {
   const branchStackIndex = descriptionAst.children.findIndex(
     function matchesBranchStackHeuristic(node) {
@@ -273,9 +254,9 @@ function removeUnanchoredBranchStack(descriptionAst: Root) {
         return false
       }
 
-      const isMatch = containsPullRequestNode(child)
+      const result = containsPullRequestNode(child)
 
-      return isMatch
+      return result
     }
   )
 
@@ -286,8 +267,8 @@ function removeUnanchoredBranchStack(descriptionAst: Root) {
   descriptionAst.children.splice(branchStackIndex, 1)
 }
 
-function containsPullRequestNode(list: ListItem) {
-  return list.children.some((node) => {
+function containsPullRequestNode(listItem: ListItem) {
+  return listItem.children.some((node) => {
     if (node.type === 'list' && node.children.length > 0) {
       return node.children.some(containsPullRequestNode)
     }
@@ -296,10 +277,38 @@ function containsPullRequestNode(list: ListItem) {
       return false
     }
 
-    const hasMatchingChildNode = node.children.some(
+    const result = node.children.some(
       (child) => child.type === 'text' && PULL_REQUEST_NODE_REGEX.test(child.value)
     )
 
-    return hasMatchingChildNode
+    return result
+  })
+}
+
+function findInlineAnchor(descriptionAst: Root): number {
+  return descriptionAst.children.findIndex((node) => {
+    if (node.type !== 'list') {
+      return
+    }
+
+    return node.children.some(containsAnchor)
+  })
+}
+
+function containsAnchor(listItem: ListItem): boolean {
+  return listItem.children.some((node) => {
+    if (node.type === 'list') {
+      return node.children.some(containsAnchor)
+    }
+
+    if (node.type !== 'paragraph') {
+      return false
+    }
+
+    const result = node.children.some(
+      (child) => child.type === 'html' && child.value === ANCHOR
+    )
+
+    return result
   })
 }
