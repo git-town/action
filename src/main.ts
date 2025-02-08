@@ -3,11 +3,12 @@ import * as github from '@actions/github'
 import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
 import { topologicalSort } from 'graphology-dag'
-import type { BlockContent, DefinitionContent, List, Paragraph, RootContent } from 'mdast'
+import type { ListItem, Root } from 'mdast'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
 import { remark } from './remark'
 
 const ANCHOR = '<!-- branch-stack -->'
+export const PULL_REQUEST_NODE_REGEX = /#\d+ :point_left:/
 
 export async function main({
   octokit,
@@ -206,49 +207,6 @@ export function getOutput(
   return lines.join('\n')
 }
 
-const findInlineAnchorIndex = (descriptionAst: ReturnType<typeof remark.parse>) => {
-  const listChildren = descriptionAst.children
-    .map((node, originalIndex) => [node, originalIndex] as const)
-    .filter(([node]) => node.type === 'list')
-
-  const [, listChildWithAnchorIdx] =
-    (listChildren as Array<[List, number]>).find(([node]) => {
-      const listItems = node.children
-      const maybeFirstListItemParagraph = listItems[0]?.children[0] as
-        | Paragraph
-        | undefined
-      return maybeFirstListItemParagraph?.children.some(
-        (node) => node.type === 'html' && node.value === ANCHOR
-      )
-    }) ?? []
-
-  return listChildWithAnchorIdx
-}
-
-const isListType = (
-  listAstNode: RootContent | undefined | BlockContent | DefinitionContent
-): listAstNode is List => listAstNode?.type === 'list'
-
-const nextChildIsListAndContainsPrs = (listAst: RootContent | undefined) => {
-  if (!listAst || !isListType(listAst)) return false
-
-  if (listAst.children.length > 1) {
-    return false
-  }
-
-  const subList = listAst.children[0]?.children[1]
-
-  if (!isListType(subList)) return false
-
-  const firstItemParagraphNode = subList.children[0]?.children[0]
-  if (firstItemParagraphNode?.type !== 'paragraph') return false
-
-  const sublistFirstItemParagraphText = firstItemParagraphNode.children[0]
-  if (sublistFirstItemParagraphText?.type !== 'text') return false
-
-  return /^#\d+/.test(sublistFirstItemParagraphText.value)
-}
-
 export function updateDescription({
   description,
   output,
@@ -259,28 +217,98 @@ export function updateDescription({
   const descriptionAst = remark.parse(description)
   const outputAst = remark.parse(output)
 
-  const inlineAnchorIndex = findInlineAnchorIndex(descriptionAst)
-
-  if (inlineAnchorIndex) {
-    descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children)
-    return remark.stringify(descriptionAst)
-  }
-
-  const anchorIndex = descriptionAst.children.findIndex(
+  const standaloneAnchorIndex = descriptionAst.children.findIndex(
     (node) => node.type === 'html' && node.value === ANCHOR
   )
 
-  const isMissingAnchor = anchorIndex === -1
-  if (isMissingAnchor) {
-    descriptionAst.children.push(...outputAst.children)
+  if (standaloneAnchorIndex >= 0) {
+    removeUnanchoredBranchStack(descriptionAst)
 
+    descriptionAst.children.splice(standaloneAnchorIndex, 1, ...outputAst.children)
     return remark.stringify(descriptionAst)
   }
 
-  const numChildrenToReplace =
-    nextChildIsListAndContainsPrs(descriptionAst.children[anchorIndex + 1]) ? 2 : 1
+  const inlineAnchorIndex = findInlineAnchor(descriptionAst)
 
-  descriptionAst.children.splice(anchorIndex, numChildrenToReplace, ...outputAst.children)
+  const isMissingAnchor = inlineAnchorIndex === -1
+  if (isMissingAnchor) {
+    removeUnanchoredBranchStack(descriptionAst)
 
+    descriptionAst.children.push(...outputAst.children)
+    return remark.stringify(descriptionAst)
+  }
+
+  descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children)
   return remark.stringify(descriptionAst)
+}
+
+function removeUnanchoredBranchStack(descriptionAst: Root) {
+  const branchStackIndex = descriptionAst.children.findIndex(
+    function matchesBranchStackHeuristic(node) {
+      if (node.type !== 'list') {
+        return false
+      }
+
+      const child = node.children[0]
+      if (node.children.length !== 1 || !child) {
+        return false
+      }
+
+      const result = containsPullRequestNode(child)
+
+      return result
+    }
+  )
+
+  if (branchStackIndex === -1) {
+    return
+  }
+
+  descriptionAst.children.splice(branchStackIndex, 1)
+}
+
+function containsPullRequestNode(listItem: ListItem) {
+  return listItem.children.some((node) => {
+    if (node.type === 'list' && node.children.length > 0) {
+      return node.children.some(containsPullRequestNode)
+    }
+
+    if (node.type !== 'paragraph') {
+      return false
+    }
+
+    const result = node.children.some(
+      (child) => child.type === 'text' && PULL_REQUEST_NODE_REGEX.test(child.value)
+    )
+
+    return result
+  })
+}
+
+function findInlineAnchor(descriptionAst: Root): number {
+  return descriptionAst.children.findIndex((node) => {
+    if (node.type !== 'list') {
+      return
+    }
+
+    return node.children.some(containsAnchor)
+  })
+}
+
+function containsAnchor(listItem: ListItem): boolean {
+  return listItem.children.some((node) => {
+    if (node.type === 'list') {
+      return node.children.some(containsAnchor)
+    }
+
+    if (node.type !== 'paragraph') {
+      return false
+    }
+
+    const result = node.children.some(
+      (child) => child.type === 'html' && child.value === ANCHOR
+    )
+
+    return result
+  })
 }
