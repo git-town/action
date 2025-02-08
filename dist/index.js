@@ -47460,16 +47460,19 @@ var configSchema = object({
     "perennial-regex": string3().optional()
   }).optional()
 });
+var CONFIG_FILE_NAMES = [".git-branches.toml", ".git-town.toml"];
 var configFile;
-try {
-  configFile = fs.readFileSync(".git-branches.toml").toString();
-} catch {
-  configFile = void 0;
-}
+CONFIG_FILE_NAMES.forEach((file) => {
+  try {
+    configFile ??= fs.readFileSync(file).toString();
+  } catch {
+    configFile = void 0;
+  }
+});
 var parsed = configSchema.safeParse(toml.parse(configFile ?? ""));
 if (!parsed.success) {
   core3.warning(
-    "Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml` is valid."
+    "Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml`/`.git-town.toml` is valid."
   );
 }
 var config = configFile && parsed.success ? parsed.data : void 0;
