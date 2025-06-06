@@ -119,8 +119,10 @@ export async function main({
           pull_number: stackNode.number,
           body: description,
         })
-        core.info('Done')
-        for (const line of (response.data.body ?? '').split('\n')) {
+
+        core.info('Updated Body:\n')
+        const updatedBody = response.data.body ?? ''
+        for (const line of updatedBody.split('\n')) {
           core.info(line)
         }
       } catch (error) {
