@@ -43288,11 +43288,17 @@ async function main({
       core.startGroup(`PR #${stackNode.number}`);
       const stackGraph2 = getStackGraph(stackNode, repoGraph);
       const output = getOutput(stackGraph2, terminatingRefs);
+      core.info("Output:");
+      core.info("");
+      output.split("\n").forEach(core.info);
       let description = stackNode.body ?? "";
       description = updateDescription({
         description,
         output
       });
+      core.info("Updated PR description:");
+      core.info("");
+      description.split("\n").forEach(core.info);
       try {
         core.info("Updating PR...");
         const response = await octokit.rest.pulls.update({
@@ -43300,11 +43306,11 @@ async function main({
           pull_number: stackNode.number,
           body: description
         });
-        core.info("Updated Body:\n");
+        core.info("Done");
+        core.info("API response:");
+        core.info("");
         const updatedBody = response.data.body ?? "";
-        for (const line of updatedBody.split("\n")) {
-          core.info(line);
-        }
+        updatedBody.split("\n").forEach(core.info);
       } catch (error2) {
         failedJobs.push(stackNode.number);
         if (error2 instanceof Error) {

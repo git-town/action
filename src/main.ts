@@ -106,11 +106,19 @@ export async function main({
       const stackGraph = getStackGraph(stackNode, repoGraph)
       const output = getOutput(stackGraph, terminatingRefs)
 
+      core.info('Output:')
+      core.info('')
+      output.split('\n').forEach(core.info)
+
       let description = stackNode.body ?? ''
       description = updateDescription({
         description,
         output,
       })
+
+      core.info('Updated PR description:')
+      core.info('')
+      description.split('\n').forEach(core.info)
 
       try {
         core.info('Updating PR...')
@@ -119,12 +127,12 @@ export async function main({
           pull_number: stackNode.number,
           body: description,
         })
+        core.info('Done')
 
-        core.info('Updated Body:\n')
+        core.info('API response:')
+        core.info('')
         const updatedBody = response.data.body ?? ''
-        for (const line of updatedBody.split('\n')) {
-          core.info(line)
-        }
+        updatedBody.split('\n').forEach(core.info)
       } catch (error) {
         failedJobs.push(stackNode.number)
 
