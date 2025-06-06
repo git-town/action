@@ -93,6 +93,7 @@ export async function main({
   }
 
   const jobs: Array<() => Promise<void>> = []
+  const failedJobs: number[] = []
 
   stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
@@ -100,10 +101,17 @@ export async function main({
     }
 
     jobs.push(async () => {
-      core.info(`Updating stack details for PR #${stackNode.number}`)
+      core.startGroup(`PR #${stackNode.number}`)
 
       const stackGraph = getStackGraph(stackNode, repoGraph)
       const output = getOutput(stackGraph, terminatingRefs)
+
+      core.info('--- Output ---')
+      core.info('')
+      output.split('\n').forEach(core.info)
+      core.info('')
+      core.info('--- End output ---')
+      core.info('')
 
       let description = stackNode.body ?? ''
       description = updateDescription({
@@ -111,15 +119,48 @@ export async function main({
         output,
       })
 
-      await octokit.rest.pulls.update({
-        ...github.context.repo,
-        pull_number: stackNode.number,
-        body: description,
-      })
+      core.info('--- Updated description ---')
+      core.info('')
+      description.split('\n').forEach(core.info)
+      core.info('')
+      core.info('--- End updated description ---')
+      core.info('')
+
+      try {
+        core.info('Updating PR via GitHub API...')
+        const response = await octokit.rest.pulls.update({
+          ...github.context.repo,
+          pull_number: stackNode.number,
+          body: description,
+        })
+        core.info('✅ Done')
+        core.info('')
+
+        core.info('--- API response ---')
+        core.info('')
+        const updatedBody = response.data.body ?? ''
+        updatedBody.split('\n').forEach(core.info)
+        core.info('')
+        core.info('--- End API response ---')
+      } catch (error) {
+        failedJobs.push(stackNode.number)
+
+        if (error instanceof Error) {
+          core.error(`Unable to update PR: ${error.message}`)
+        }
+      } finally {
+        core.endGroup()
+      }
     })
   })
 
   await Promise.allSettled(jobs.map((job) => job()))
+
+  if (failedJobs.length > 0) {
+    core.setFailed(
+      `Action failed for ${failedJobs.map((pullRequestNumber) => `#${pullRequestNumber}`).join(', ')}`
+    )
+  }
 }
 
 export function getStackGraph(
