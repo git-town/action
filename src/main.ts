@@ -101,32 +101,32 @@ export async function main({
     }
 
     jobs.push(async () => {
-      core.startGroup(`PR #${stackNode.number}`)
-
-      const stackGraph = getStackGraph(stackNode, repoGraph)
-      const output = getOutput(stackGraph, terminatingRefs)
-
-      core.info('--- Output ---')
-      core.info('')
-      output.split('\n').forEach(core.info)
-      core.info('')
-      core.info('--- End output ---')
-      core.info('')
-
-      let description = stackNode.body ?? ''
-      description = updateDescription({
-        description,
-        output,
-      })
-
-      core.info('--- Updated description ---')
-      core.info('')
-      description.split('\n').forEach(core.info)
-      core.info('')
-      core.info('--- End updated description ---')
-      core.info('')
-
       try {
+        core.startGroup(`PR #${stackNode.number}`)
+
+        const stackGraph = getStackGraph(stackNode, repoGraph)
+        const output = getOutput(stackGraph, terminatingRefs)
+
+        core.info('--- Output ---')
+        core.info('')
+        output.split('\n').forEach(core.info)
+        core.info('')
+        core.info('--- End output ---')
+        core.info('')
+
+        let description = stackNode.body ?? ''
+        description = updateDescription({
+          description,
+          output,
+        })
+
+        core.info('--- Updated description ---')
+        core.info('')
+        description.split('\n').forEach(core.info)
+        core.info('')
+        core.info('--- End updated description ---')
+        core.info('')
+
         core.info('Updating PR via GitHub API...')
         const response = await octokit.rest.pulls.update({
           ...github.context.repo,
@@ -147,6 +147,8 @@ export async function main({
 
         if (error instanceof Error) {
           core.error(`Unable to update PR: ${error.message}`)
+        } else {
+          core.error(String(error))
         }
       } finally {
         core.endGroup()
