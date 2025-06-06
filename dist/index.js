@@ -43291,6 +43291,9 @@ async function main({
       core.info("--- Output ---");
       core.info("");
       output.split("\n").forEach(core.info);
+      core.info("");
+      core.info("--- End output ---");
+      core.info("");
       let description = stackNode.body ?? "";
       description = updateDescription({
         description,
@@ -43299,6 +43302,9 @@ async function main({
       core.info("--- Updated description ---");
       core.info("");
       description.split("\n").forEach(core.info);
+      core.info("");
+      core.info("--- End updated description ---");
+      core.info("");
       try {
         core.info("Updating PR via GitHub API...");
         const response = await octokit.rest.pulls.update({
@@ -43312,6 +43318,8 @@ async function main({
         core.info("");
         const updatedBody = response.data.body ?? "";
         updatedBody.split("\n").forEach(core.info);
+        core.info("");
+        core.info("--- End API response ---");
       } catch (error2) {
         failedJobs.push(stackNode.number);
         if (error2 instanceof Error) {

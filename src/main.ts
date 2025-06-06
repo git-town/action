@@ -109,6 +109,9 @@ export async function main({
       core.info('--- Output ---')
       core.info('')
       output.split('\n').forEach(core.info)
+      core.info('')
+      core.info('--- End output ---')
+      core.info('')
 
       let description = stackNode.body ?? ''
       description = updateDescription({
@@ -119,6 +122,9 @@ export async function main({
       core.info('--- Updated description ---')
       core.info('')
       description.split('\n').forEach(core.info)
+      core.info('')
+      core.info('--- End updated description ---')
+      core.info('')
 
       try {
         core.info('Updating PR via GitHub API...')
@@ -134,6 +140,8 @@ export async function main({
         core.info('')
         const updatedBody = response.data.body ?? ''
         updatedBody.split('\n').forEach(core.info)
+        core.info('')
+        core.info('--- End API response ---')
       } catch (error) {
         failedJobs.push(stackNode.number)
 
