@@ -43288,7 +43288,7 @@ async function main({
       core.startGroup(`PR #${stackNode.number}`);
       const stackGraph2 = getStackGraph(stackNode, repoGraph);
       const output = getOutput(stackGraph2, terminatingRefs);
-      core.info("Output:");
+      core.info("--- Output ---");
       core.info("");
       output.split("\n").forEach(core.info);
       let description = stackNode.body ?? "";
@@ -43296,18 +43296,19 @@ async function main({
         description,
         output
       });
-      core.info("Updated PR description:");
+      core.info("--- Updated description ---");
       core.info("");
       description.split("\n").forEach(core.info);
       try {
-        core.info("Updating PR...");
+        core.info("Updating PR via GitHub API...");
         const response = await octokit.rest.pulls.update({
           ...github.context.repo,
           pull_number: stackNode.number,
           body: description
         });
-        core.info("Done");
-        core.info("API response:");
+        core.info("\u2705 Done");
+        core.info("");
+        core.info("--- API response ---");
         core.info("");
         const updatedBody = response.data.body ?? "";
         updatedBody.split("\n").forEach(core.info);

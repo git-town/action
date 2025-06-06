@@ -106,7 +106,7 @@ export async function main({
       const stackGraph = getStackGraph(stackNode, repoGraph)
       const output = getOutput(stackGraph, terminatingRefs)
 
-      core.info('Output:')
+      core.info('--- Output ---')
       core.info('')
       output.split('\n').forEach(core.info)
 
@@ -116,20 +116,21 @@ export async function main({
         output,
       })
 
-      core.info('Updated PR description:')
+      core.info('--- Updated description ---')
       core.info('')
       description.split('\n').forEach(core.info)
 
       try {
-        core.info('Updating PR...')
+        core.info('Updating PR via GitHub API...')
         const response = await octokit.rest.pulls.update({
           ...github.context.repo,
           pull_number: stackNode.number,
           body: description,
         })
-        core.info('Done')
+        core.info('✅ Done')
+        core.info('')
 
-        core.info('API response:')
+        core.info('--- API response ---')
         core.info('')
         const updatedBody = response.data.body ?? ''
         updatedBody.split('\n').forEach(core.info)
