@@ -67,7 +67,7 @@ that contains `branch-stack` inside of it:
 ```md
 ## Stack
 
-<!-- branch-stack -->
+<!-- branch-stack --> 👈 Add this!
 
 ## Checklist
 
@@ -78,11 +78,6 @@ that contains `branch-stack` inside of it:
 
 The action will look for this comment and insert the visualization underneath the comment
 when it runs.
-
-> [!WARNING]
-> Any checklist or list directly after the comment will have it's syntax changed to
-> the asterisk list format (`*`), rather than the dash list format (`-`). This should
-> not affect the readme in any other way.
 
 It will also leave behind the comment, so that the next time it runs, it will
 be able to use it again to update the visualization:
@@ -100,12 +95,6 @@ be able to use it again to update the visualization:
 [ ] Bar
 [ ] Baz
 ```
-
-> [!WARNING]
-> Be careful not to add content between the comment and the
-> visualization, as the action will replace that content each time it
-> updates your PR. Adding content above the tag, or below the list is
-> safe though!
 
 ## Manual Configuration
 
@@ -183,6 +172,28 @@ limit the total number of closed pull requests fetched by the action:
 > You may encounter inaccuracies in the visualization when customizing `history-limit` as
 > open pull requests may refer to closed pull requests not fetched within the configured
 > limits.
+
+## Common Issues
+
+### Visualization missing on pull requests from forked repositories
+
+When creating pull requests from forked repositories, the "Allow edits by maintainers" option
+enables contributors to grant/deny maintainers direct push access to the forked branch. The
+problem with this option is that it also overrides the permissions granted to the action's
+`GITHUB_TOKEN`. If edit access is not granted to maintainers, the action will not be
+able to sync the visualization to the pull request description.
+
+To work around this, you can create a [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+with write access to pull requests, store it as a repository secret, and then pass
+it into the actions's `github-token` input to grant it sufficient permissions:
+
+```yaml
+  steps:
+    - uses: actions/checkout@v4
+    - uses: git-town/action@v1
+      with:
+        github-token: ${{ secrets.GIT_TOWN_PAT }} # 👈 Add this to `git-town.yml`
+```
 
 ## Reference
 
