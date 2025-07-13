@@ -22,3 +22,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Git Town
         uses: ./
+        with:
+          location: comment

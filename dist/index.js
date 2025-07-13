@@ -43330,7 +43330,7 @@ var DescriptionLocation = class {
     this.octokit = context3.octokit;
   }
   async update(pullRequest, visualization) {
-    core.startGroup(`Update: PR #${pullRequest.number}`);
+    core.startGroup(`Update: PR #${pullRequest.number} (DESCRIPTION)`);
     core.info("Visualization:");
     core.info(visualization);
     const description = injectVisualization(visualization, pullRequest.body ?? "");
@@ -47311,10 +47311,22 @@ var pullRequestSchema = objectType({
   body: stringType().optional().nullable()
 });
 
+// src/locations/types.ts
+var locationInputSchema = z.enum(["description", "comment"]);
+
 // src/inputs.ts
 var inputs = {
   getToken() {
     return core2.getInput("github-token", { required: true, trimWhitespace: true });
+  },
+  getLocation() {
+    const location = core2.getInput("location", { required: false, trimWhitespace: true });
+    try {
+      return locationInputSchema.parse(location);
+    } catch {
+      core2.setFailed(`Invalid 'location' input: ${location}`);
+      process.exit(1);
+    }
   },
   getSkipSingleStacks() {
     const input = core2.getBooleanInput("skip-single-stacks", {

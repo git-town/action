@@ -12,7 +12,7 @@ export class DescriptionLocation implements Location {
   }
 
   async update(pullRequest: PullRequest, visualization: string) {
-    core.startGroup(`Update: PR #${pullRequest.number}`)
+    core.startGroup(`Update: PR #${pullRequest.number} (DESCRIPTION)`)
     core.info('Visualization:')
     core.info(visualization)
 

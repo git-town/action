@@ -18,6 +18,9 @@ inputs:
   perennial-regex:
     required: false
     default: ''
+  location:
+    required: false
+    default: 'description'
   skip-single-stacks:
     required: false
     default: false

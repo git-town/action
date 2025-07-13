@@ -4,10 +4,22 @@ import type { Endpoints } from '@octokit/types'
 import { pullRequestSchema } from './types'
 import type { PullRequest, Octokit } from './types'
 import type { Config } from './config'
+import { locationInputSchema, type LocationInput } from './locations/types'
 
 export const inputs = {
   getToken() {
     return core.getInput('github-token', { required: true, trimWhitespace: true })
+  },
+
+  getLocation(): LocationInput {
+    const location = core.getInput('location', { required: false, trimWhitespace: true })
+
+    try {
+      return locationInputSchema.parse(location)
+    } catch {
+      core.setFailed(`Invalid 'location' input: ${location}`)
+      process.exit(1)
+    }
   },
 
   getSkipSingleStacks() {
