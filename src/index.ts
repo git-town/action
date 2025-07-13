@@ -3,6 +3,7 @@ import * as github from '@actions/github'
 import { main } from './main'
 import { inputs } from './inputs'
 import { config } from './config'
+import type { Context } from './types'
 
 void run()
 
@@ -19,6 +20,8 @@ async function run() {
 
     const octokit = github.getOctokit(inputs.getToken())
 
+    const location = inputs.getLocation()
+    const skipSingleStacks = inputs.getSkipSingleStacks()
     const historyLimit = inputs.getHistoryLimit()
     const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
       inputs.getMainBranch(octokit, config, github.context),
@@ -32,10 +35,10 @@ async function run() {
       currentPullRequest: inputs.getCurrentPullRequest(github.context),
       pullRequests,
       mainBranch,
-      remoteBranches,
       perennialBranches,
-      skipSingleStacks: inputs.getSkipSingleStacks(),
-    }
+      skipSingleStacks,
+      location,
+    } satisfies Context
 
     void main(context)
   } catch (error) {

@@ -2,9 +2,9 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { injectVisualization } from '../renderer'
 import type { Context, Octokit, PullRequest } from '../types'
-import type { Location } from './types'
+import type { AbstractLocationAdapter } from './types'
 
-export class DescriptionLocation implements Location {
+export class DescriptionLocationAdapter implements AbstractLocationAdapter {
   private octokit: Octokit
 
   constructor(context: Context) {
@@ -12,7 +12,7 @@ export class DescriptionLocation implements Location {
   }
 
   async update(pullRequest: PullRequest, visualization: string) {
-    core.startGroup(`Update: PR #${pullRequest.number}`)
+    core.startGroup(`Update: PR #${pullRequest.number} (DESCRIPTION)`)
     core.info('Visualization:')
     core.info(visualization)
 

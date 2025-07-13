@@ -6,7 +6,7 @@
   </picture>
 </p>
 
-# Git Town Action V1
+# Git Town Action v1
 
 This action visualizes your stacked changes when proposing pull requests on GitHub:
 
@@ -96,47 +96,24 @@ be able to use it again to update the visualization:
 [ ] Baz
 ```
 
-## Manual Configuration
-
-If you are using Git Town v11 and below, or are setting up the action for a repository
-that doesn't have a `.git-branches.toml`, you will need to tell the action what the
-main branch and perennial branches are for your repository.
-
-### Main Branch
-
-The main branch is the default parent branch for new feature branches, and can be
-specified using the `main-branch` input:
-
-```yaml
-- uses: git-town/action@v1
-  with:
-    main-branch: 'main'
-```
-
-The action will default to your repository's default branch, which it fetches via
-the GitHub REST API.
-
-### Perennial Branches
-
-Perennial branches are long lived branches and are never shipped.
-
-There are two ways to specify perennial branches: explicitly or via regex. This can
-be done with the `perennial-branches` and `perennial-regex` inputs respectively:
-
-```yaml
-- uses: git-town/action@v1
-  with:
-    perennial-branches: |
-      dev
-      staging
-      prod
-    perennial-regex: '^release-.*$'
-```
-
-Both inputs can be used at the same time. The action will merge the perennial
-branches given into a single, de-duplicated list.
-
 ## Customization
+
+### Visualization Location
+
+The location of the stack visualization can be customized using the `location` input.
+Valid options for this input include:
+
+- `description`: This is the default option. The stack visualization will appear within the
+  pull request description. This will require granting `pull-requests: write` permissions to the
+  action.
+- `comment`: The stack visualization will appear in a separate comment. No additional permissions
+  are required for this option.
+
+```yaml
+- uses: git-town/action@v1
+  with:
+    location: comment
+```
 
 ### Skip Single Stacks
 
@@ -160,12 +137,12 @@ and closed pull requests. However, this can increase the runtime of the action f
 larger/older repositories.
 
 If you're experiencing long runtimes, the `history-limit` input can be configured to
-limit the total number of closed pull requests fetched by the action:
+limit the total number of pull requests fetched by the action:
 
 ```yaml
 - uses: git-town/action@v1
   with:
-    history-limit: '500' # Only fetch the latest 500 closed pull requests
+    history-limit: 500 # Only fetch the latest 500 pull requests
 ```
 
 > [!WARNING]
@@ -195,6 +172,46 @@ it into the actions's `github-token` input to grant it sufficient permissions:
         github-token: ${{ secrets.GIT_TOWN_PAT }} # 👈 Add this to `git-town.yml`
 ```
 
+## Manual Configuration
+
+If you are using Git Town v11 and below, or are setting up the action for a repository
+that doesn't have a `.git-branches.toml`, you will need to tell the action what the
+main branch and perennial branches are for your repository.
+
+### Main Branch
+
+The main branch is the default parent branch for new feature branches, and can be
+specified using the `main-branch` input:
+
+```yaml
+- uses: git-town/action@v1
+  with:
+    main-branch: main
+```
+
+The action will default to your repository's default branch, which it fetches via
+the GitHub REST API.
+
+### Perennial Branches
+
+Perennial branches are long lived branches and are never shipped.
+
+There are two ways to specify perennial branches: explicitly or via regex. This can
+be done with the `perennial-branches` and `perennial-regex` inputs respectively:
+
+```yaml
+- uses: git-town/action@v1
+  with:
+    perennial-branches: |
+      dev
+      staging
+      prod
+    perennial-regex: '^release-.*$'
+```
+
+Both inputs can be used at the same time. The action will merge the perennial
+branches given into a single, de-duplicated list.
+
 ## Reference
 
 ```yaml
@@ -211,6 +228,9 @@ inputs:
   perennial-regex:
     required: false
     default: ''
+  location:
+    required: false
+    default: 'description'
   skip-single-stacks:
     required: false
     default: false
@@ -218,7 +238,6 @@ inputs:
     required: false
     default: '0'
 ```
-
 
 ## License
 

@@ -1,6 +1,7 @@
 import type { getOctokit } from '@actions/github'
 import type { infer as InferType } from 'zod'
 import { object, number, string } from 'zod'
+import type { LocationInput } from './locations/types'
 
 export type Octokit = ReturnType<typeof getOctokit>
 
@@ -24,6 +25,7 @@ export type Context = {
   pullRequests: PullRequest[]
   perennialBranches: string[]
   skipSingleStacks: boolean
+  location: LocationInput
 }
 
 export type StackNode =
