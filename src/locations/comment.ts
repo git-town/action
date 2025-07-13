@@ -2,9 +2,9 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { ANCHOR, injectVisualization } from '../renderer'
 import type { Context, Octokit, PullRequest } from '../types'
-import type { Location } from './types'
+import type { AbstractLocationAdapter } from './types'
 
-export class CommentLocation implements Location {
+export class CommentLocationAdapter implements AbstractLocationAdapter {
   private octokit: Octokit
 
   constructor(context: Context) {

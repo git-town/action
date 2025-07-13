@@ -4581,18 +4581,18 @@ var require_webidl = __commonJS({
     webidl.errors.exception = function(message) {
       return new TypeError(`${message.header}: ${message.message}`);
     };
-    webidl.errors.conversionFailed = function(context3) {
-      const plural = context3.types.length === 1 ? "" : " one of";
-      const message = `${context3.argument} could not be converted to${plural}: ${context3.types.join(", ")}.`;
+    webidl.errors.conversionFailed = function(context4) {
+      const plural = context4.types.length === 1 ? "" : " one of";
+      const message = `${context4.argument} could not be converted to${plural}: ${context4.types.join(", ")}.`;
       return webidl.errors.exception({
-        header: context3.prefix,
+        header: context4.prefix,
         message
       });
     };
-    webidl.errors.invalidArgument = function(context3) {
+    webidl.errors.invalidArgument = function(context4) {
       return webidl.errors.exception({
-        header: context3.prefix,
-        message: `"${context3.value}" is an invalid ${context3.type}.`
+        header: context4.prefix,
+        message: `"${context4.value}" is an invalid ${context4.type}.`
       });
     };
     webidl.brandCheck = function(V, I, opts = void 0) {
@@ -9930,15 +9930,15 @@ var require_api_request = __commonJS({
         }
         addSignal(this, signal);
       }
-      onConnect(abort, context3) {
+      onConnect(abort, context4) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context3;
+        this.context = context4;
       }
       onHeaders(statusCode, rawHeaders, resume, statusMessage) {
-        const { callback, opaque, abort, context: context3, responseHeaders, highWaterMark } = this;
+        const { callback, opaque, abort, context: context4, responseHeaders, highWaterMark } = this;
         const headers = responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
         if (statusCode < 200) {
           if (this.onInfo) {
@@ -9965,7 +9965,7 @@ var require_api_request = __commonJS({
               trailers: this.trailers,
               opaque,
               body,
-              context: context3
+              context: context4
             });
           }
         }
@@ -10085,15 +10085,15 @@ var require_api_stream = __commonJS({
         }
         addSignal(this, signal);
       }
-      onConnect(abort, context3) {
+      onConnect(abort, context4) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context3;
+        this.context = context4;
       }
       onHeaders(statusCode, rawHeaders, resume, statusMessage) {
-        const { factory, opaque, context: context3, callback, responseHeaders } = this;
+        const { factory, opaque, context: context4, callback, responseHeaders } = this;
         const headers = responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
         if (statusCode < 200) {
           if (this.onInfo) {
@@ -10121,7 +10121,7 @@ var require_api_stream = __commonJS({
             statusCode,
             headers,
             opaque,
-            context: context3
+            context: context4
           });
           if (!res || typeof res.write !== "function" || typeof res.end !== "function" || typeof res.on !== "function") {
             throw new InvalidReturnValueError("expected Writable");
@@ -10313,17 +10313,17 @@ var require_api_pipeline = __commonJS({
         this.res = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context3) {
+      onConnect(abort, context4) {
         const { ret, res } = this;
         assert(!res, "pipeline cannot be retried");
         if (ret.destroyed) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context3;
+        this.context = context4;
       }
       onHeaders(statusCode, rawHeaders, resume) {
-        const { opaque, handler, context: context3 } = this;
+        const { opaque, handler, context: context4 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
@@ -10341,7 +10341,7 @@ var require_api_pipeline = __commonJS({
             headers,
             opaque,
             body: this.res,
-            context: context3
+            context: context4
           });
         } catch (err) {
           this.res.on("error", util2.nop);
@@ -10425,7 +10425,7 @@ var require_api_upgrade = __commonJS({
         this.context = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context3) {
+      onConnect(abort, context4) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
@@ -10436,7 +10436,7 @@ var require_api_upgrade = __commonJS({
         throw new SocketError("bad upgrade", null);
       }
       onUpgrade(statusCode, rawHeaders, socket) {
-        const { callback, opaque, context: context3 } = this;
+        const { callback, opaque, context: context4 } = this;
         assert.strictEqual(statusCode, 101);
         removeSignal(this);
         this.callback = null;
@@ -10445,7 +10445,7 @@ var require_api_upgrade = __commonJS({
           headers,
           socket,
           opaque,
-          context: context3
+          context: context4
         });
       }
       onError(err) {
@@ -10513,18 +10513,18 @@ var require_api_connect = __commonJS({
         this.abort = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context3) {
+      onConnect(abort, context4) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context3;
+        this.context = context4;
       }
       onHeaders() {
         throw new SocketError("bad connect", null);
       }
       onUpgrade(statusCode, rawHeaders, socket) {
-        const { callback, opaque, context: context3 } = this;
+        const { callback, opaque, context: context4 } = this;
         removeSignal(this);
         this.callback = null;
         let headers = rawHeaders;
@@ -10536,7 +10536,7 @@ var require_api_connect = __commonJS({
           headers,
           socket,
           opaque,
-          context: context3
+          context: context4
         });
       }
       onError(err) {
@@ -17933,12 +17933,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info4 = this._prepareRequest(verb, parsedUrl, headers);
+          let info5 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info4, data);
+            response = yield this.requestRaw(info5, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -17948,7 +17948,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info4, data);
+                return authenticationHandler.handleAuthentication(this, info5, data);
               } else {
                 return response;
               }
@@ -17971,8 +17971,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info4, data);
+              info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info5, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -18001,7 +18001,7 @@ var require_lib = __commonJS({
        * @param info
        * @param data
        */
-      requestRaw(info4, data) {
+      requestRaw(info5, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -18013,7 +18013,7 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info4, data, callbackForResult);
+            this.requestRawWithCallback(info5, data, callbackForResult);
           });
         });
       }
@@ -18023,12 +18023,12 @@ var require_lib = __commonJS({
        * @param data
        * @param onResult
        */
-      requestRawWithCallback(info4, data, onResult) {
+      requestRawWithCallback(info5, data, onResult) {
         if (typeof data === "string") {
-          if (!info4.options.headers) {
-            info4.options.headers = {};
+          if (!info5.options.headers) {
+            info5.options.headers = {};
           }
-          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult2(err, res) {
@@ -18037,7 +18037,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info4.httpModule.request(info4.options, (msg) => {
+        const req = info5.httpModule.request(info5.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult2(void 0, res);
         });
@@ -18049,7 +18049,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult2(new Error(`Request timeout: ${info4.options.path}`));
+          handleResult2(new Error(`Request timeout: ${info5.options.path}`));
         });
         req.on("error", function(err) {
           handleResult2(err);
@@ -18085,27 +18085,27 @@ var require_lib = __commonJS({
         return this._getProxyAgentDispatcher(parsedUrl, proxyUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info4 = {};
-        info4.parsedUrl = requestUrl;
-        const usingSsl = info4.parsedUrl.protocol === "https:";
-        info4.httpModule = usingSsl ? https : http;
+        const info5 = {};
+        info5.parsedUrl = requestUrl;
+        const usingSsl = info5.parsedUrl.protocol === "https:";
+        info5.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info4.options = {};
-        info4.options.host = info4.parsedUrl.hostname;
-        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
-        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
-        info4.options.method = method;
-        info4.options.headers = this._mergeHeaders(headers);
+        info5.options = {};
+        info5.options.host = info5.parsedUrl.hostname;
+        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
+        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
+        info5.options.method = method;
+        info5.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info4.options.headers["user-agent"] = this.userAgent;
+          info5.options.headers["user-agent"] = this.userAgent;
         }
-        info4.options.agent = this._getAgent(info4.parsedUrl);
+        info5.options.agent = this._getAgent(info5.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info4.options);
+            handler.prepareRequest(info5.options);
           }
         }
-        return info4;
+        return info5;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -18969,26 +18969,26 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.notice = notice;
-    function info4(message) {
+    function info5(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports2.info = info4;
-    function startGroup4(name) {
+    exports2.info = info5;
+    function startGroup5(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup4;
-    function endGroup4() {
+    exports2.startGroup = startGroup5;
+    function endGroup5() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup4;
+    exports2.endGroup = endGroup5;
     function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup4(name);
+        startGroup5(name);
         let result;
         try {
           result = yield fn();
         } finally {
-          endGroup4();
+          endGroup5();
         }
         return result;
       });
@@ -19516,8 +19516,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context3, operator, key, modifier) {
-      var value = context3[key], result = [];
+    function getValues(context4, operator, key, modifier) {
+      var value = context4[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -19581,7 +19581,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context3) {
+    function expand(template, context4) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       template = template.replace(
         /\{([^\{\}]+)\}|([^\{\}]+)/g,
@@ -19595,7 +19595,7 @@ var require_dist_node2 = __commonJS({
             }
             expression.split(/,/g).forEach(function(variable) {
               var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-              values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
+              values.push(getValues(context4, operator, tmp[1], tmp[2] || tmp[3]));
             });
             if (operator && operator !== "+") {
               var separator = ",";
@@ -25144,9 +25144,9 @@ var require_graphology_cjs = __commonJS({
         alreadyExistingEdgeData = undirected ? sourceData.undirected[target] : sourceData.out[target];
       }
       if (alreadyExistingEdgeData) {
-        var info4 = [alreadyExistingEdgeData.key, false, false, false];
+        var info5 = [alreadyExistingEdgeData.key, false, false, false];
         if (asUpdater ? !updater : !attributes)
-          return info4;
+          return info5;
         if (asUpdater) {
           var oldAttributes = alreadyExistingEdgeData.attributes;
           alreadyExistingEdgeData.attributes = updater(oldAttributes);
@@ -25164,7 +25164,7 @@ var require_graphology_cjs = __commonJS({
             data: attributes
           });
         }
-        return info4;
+        return info5;
       }
       attributes = attributes || {};
       if (asUpdater && updater)
@@ -30915,7 +30915,7 @@ var require_compiler = __commonJS({
       var valueAssignments = [];
       var currentPath = "";
       var data = /* @__PURE__ */ Object.create(null);
-      var context3 = data;
+      var context4 = data;
       var arrayMode = false;
       return reduce(nodes);
       function reduce(nodes2) {
@@ -30953,10 +30953,10 @@ var require_compiler = __commonJS({
         } else {
           fullPath = key;
         }
-        if (typeof context3[key] !== "undefined") {
+        if (typeof context4[key] !== "undefined") {
           genError("Cannot redefine existing key '" + fullPath + "'.", line, column);
         }
-        context3[key] = reduceValueNode(value);
+        context4[key] = reduceValueNode(value);
         if (!pathAssigned(fullPath)) {
           assignedPaths.push(fullPath);
           valueAssignments.push(fullPath);
@@ -30995,7 +30995,7 @@ var require_compiler = __commonJS({
           genError("Cannot redefine existing key '" + path2 + "'.", line, column);
         }
         assignedPaths.push(quotedPath);
-        context3 = deepRef(data, path2, /* @__PURE__ */ Object.create(null), line, column);
+        context4 = deepRef(data, path2, /* @__PURE__ */ Object.create(null), line, column);
         currentPath = path2;
       }
       function addTableArray(node2) {
@@ -31010,12 +31010,12 @@ var require_compiler = __commonJS({
           return p.indexOf(quotedPath) !== 0;
         });
         assignedPaths.push(quotedPath);
-        context3 = deepRef(data, path2, [], line, column);
+        context4 = deepRef(data, path2, [], line, column);
         currentPath = quotedPath;
-        if (context3 instanceof Array) {
+        if (context4 instanceof Array) {
           var newObj = /* @__PURE__ */ Object.create(null);
-          context3.push(newObj);
-          context3 = newObj;
+          context4.push(newObj);
+          context4 = newObj;
         } else {
           genError("Cannot redefine existing key '" + path2 + "'.", line, column);
         }
@@ -31088,8 +31088,8 @@ var require_toml = __commonJS({
 });
 
 // src/index.ts
-var core4 = __toESM(require_core());
-var github2 = __toESM(require_github());
+var core5 = __toESM(require_core());
+var github3 = __toESM(require_github());
 
 // src/main.ts
 var import_graphology = __toESM(require_graphology_cjs());
@@ -33696,13 +33696,13 @@ function classifyCharacter(code3) {
 }
 
 // node_modules/micromark-util-resolve-all/index.js
-function resolveAll(constructs2, events, context3) {
+function resolveAll(constructs2, events, context4) {
   const called = [];
   let index2 = -1;
   while (++index2 < constructs2.length) {
     const resolve = constructs2[index2].resolveAll;
     if (resolve && !called.includes(resolve)) {
-      events = resolve(events, context3);
+      events = resolve(events, context4);
       called.push(resolve);
     }
   }
@@ -33715,7 +33715,7 @@ var attention = {
   tokenize: tokenizeAttention,
   resolveAll: resolveAllAttention
 };
-function resolveAllAttention(events, context3) {
+function resolveAllAttention(events, context4) {
   let index2 = -1;
   let open;
   let group;
@@ -33730,7 +33730,7 @@ function resolveAllAttention(events, context3) {
       open = index2;
       while (open--) {
         if (events[open][0] === "exit" && events[open][1].type === "attentionSequence" && events[open][1]._open && // If the markers are the same:
-        context3.sliceSerialize(events[open][1]).charCodeAt(0) === context3.sliceSerialize(events[index2][1]).charCodeAt(0)) {
+        context4.sliceSerialize(events[open][1]).charCodeAt(0) === context4.sliceSerialize(events[index2][1]).charCodeAt(0)) {
           if ((events[open][1]._close || events[index2][1]._open) && (events[index2][1].end.offset - events[index2][1].start.offset) % 3 && !((events[open][1].end.offset - events[open][1].start.offset + events[index2][1].end.offset - events[index2][1].start.offset) % 3)) {
             continue;
           }
@@ -33764,35 +33764,35 @@ function resolveAllAttention(events, context3) {
           nextEvents = [];
           if (events[open][1].end.offset - events[open][1].start.offset) {
             nextEvents = push(nextEvents, [
-              ["enter", events[open][1], context3],
-              ["exit", events[open][1], context3]
+              ["enter", events[open][1], context4],
+              ["exit", events[open][1], context4]
             ]);
           }
           nextEvents = push(nextEvents, [
-            ["enter", group, context3],
-            ["enter", openingSequence, context3],
-            ["exit", openingSequence, context3],
-            ["enter", text5, context3]
+            ["enter", group, context4],
+            ["enter", openingSequence, context4],
+            ["exit", openingSequence, context4],
+            ["enter", text5, context4]
           ]);
           nextEvents = push(
             nextEvents,
             resolveAll(
-              context3.parser.constructs.insideSpan.null,
+              context4.parser.constructs.insideSpan.null,
               events.slice(open + 1, index2),
-              context3
+              context4
             )
           );
           nextEvents = push(nextEvents, [
-            ["exit", text5, context3],
-            ["enter", closingSequence, context3],
-            ["exit", closingSequence, context3],
-            ["exit", group, context3]
+            ["exit", text5, context4],
+            ["enter", closingSequence, context4],
+            ["exit", closingSequence, context4],
+            ["exit", group, context4]
           ]);
           if (events[index2][1].end.offset - events[index2][1].start.offset) {
             offset = 2;
             nextEvents = push(nextEvents, [
-              ["enter", events[index2][1], context3],
-              ["exit", events[index2][1], context3]
+              ["enter", events[index2][1], context4],
+              ["exit", events[index2][1], context4]
             ]);
           } else {
             offset = 0;
@@ -34163,9 +34163,9 @@ function tokenizeCodeFenced(effects, ok3, nok) {
     effects.enter("chunkString", {
       contentType: "string"
     });
-    return info4(code3);
+    return info5(code3);
   }
-  function info4(code3) {
+  function info5(code3) {
     if (code3 === null || markdownLineEnding(code3)) {
       effects.exit("chunkString");
       effects.exit("codeFencedFenceInfo");
@@ -34180,7 +34180,7 @@ function tokenizeCodeFenced(effects, ok3, nok) {
       return nok(code3);
     }
     effects.consume(code3);
-    return info4;
+    return info5;
   }
   function metaBefore(code3) {
     if (code3 === null || markdownLineEnding(code3)) {
@@ -34551,10 +34551,10 @@ function subtokenize(events) {
 }
 function subcontent(events, eventIndex) {
   const token = events[eventIndex][1];
-  const context3 = events[eventIndex][2];
+  const context4 = events[eventIndex][2];
   let startPosition = eventIndex - 1;
   const startPositions = [];
-  const tokenizer = token._tokenizer || context3.parser[token.contentType](token.start);
+  const tokenizer = token._tokenizer || context4.parser[token.contentType](token.start);
   const childEvents = tokenizer.events;
   const jumps = [];
   const gaps = {};
@@ -34570,7 +34570,7 @@ function subcontent(events, eventIndex) {
     }
     startPositions.push(startPosition);
     if (!current._tokenizer) {
-      stream = context3.sliceStream(current);
+      stream = context4.sliceStream(current);
       if (!current.next) {
         stream.push(null);
       }
@@ -35059,7 +35059,7 @@ var headingAtx = {
   tokenize: tokenizeHeadingAtx,
   resolve: resolveHeadingAtx
 };
-function resolveHeadingAtx(events, context3) {
+function resolveHeadingAtx(events, context4) {
   let contentEnd = events.length - 2;
   let contentStart = 3;
   let content3;
@@ -35086,10 +35086,10 @@ function resolveHeadingAtx(events, context3) {
       contentType: "text"
     };
     splice(events, contentStart, contentEnd - contentStart + 1, [
-      ["enter", content3, context3],
-      ["enter", text5, context3],
-      ["exit", text5, context3],
-      ["exit", content3, context3]
+      ["enter", content3, context4],
+      ["enter", text5, context4],
+      ["exit", text5, context4],
+      ["exit", content3, context4]
     ]);
   }
   return events;
@@ -35942,7 +35942,7 @@ function resolveAllLabelEnd(events) {
   }
   return events;
 }
-function resolveToLabelEnd(events, context3) {
+function resolveToLabelEnd(events, context4) {
   let index2 = events.length;
   let offset = 0;
   let token;
@@ -35986,27 +35986,27 @@ function resolveToLabelEnd(events, context3) {
     end: Object.assign({}, events[close - 2][1].start)
   };
   media = [
-    ["enter", group, context3],
-    ["enter", label, context3]
+    ["enter", group, context4],
+    ["enter", label, context4]
   ];
   media = push(media, events.slice(open + 1, open + offset + 3));
-  media = push(media, [["enter", text5, context3]]);
+  media = push(media, [["enter", text5, context4]]);
   media = push(
     media,
     resolveAll(
-      context3.parser.constructs.insideSpan.null,
+      context4.parser.constructs.insideSpan.null,
       events.slice(open + offset + 4, close - 3),
-      context3
+      context4
     )
   );
   media = push(media, [
-    ["exit", text5, context3],
+    ["exit", text5, context4],
     events[close - 2],
     events[close - 1],
-    ["exit", label, context3]
+    ["exit", label, context4]
   ]);
   media = push(media, events.slice(close + 1));
-  media = push(media, [["exit", group, context3]]);
+  media = push(media, [["exit", group, context4]]);
   splice(events, open, events.length, media);
   return events;
 }
@@ -36450,7 +36450,7 @@ var setextUnderline = {
   tokenize: tokenizeSetextUnderline,
   resolveTo: resolveToSetextUnderline
 };
-function resolveToSetextUnderline(events, context3) {
+function resolveToSetextUnderline(events, context4) {
   let index2 = events.length;
   let content3;
   let text5;
@@ -36480,13 +36480,13 @@ function resolveToSetextUnderline(events, context3) {
   };
   events[text5][1].type = "setextHeadingText";
   if (definition3) {
-    events.splice(text5, 0, ["enter", heading2, context3]);
-    events.splice(definition3 + 1, 0, ["exit", events[content3][1], context3]);
+    events.splice(text5, 0, ["enter", heading2, context4]);
+    events.splice(definition3 + 1, 0, ["exit", events[content3][1], context4]);
     events[content3][1].end = Object.assign({}, events[definition3][1].end);
   } else {
     events[content3][1] = heading2;
   }
-  events.push(["exit", heading2, context3]);
+  events.push(["exit", heading2, context4]);
   return events;
 }
 function tokenizeSetextUnderline(effects, ok3, nok) {
@@ -36638,7 +36638,7 @@ function initializeFactory(field) {
 }
 function createResolver(extraResolver) {
   return resolveAllText;
-  function resolveAllText(events, context3) {
+  function resolveAllText(events, context4) {
     let index2 = -1;
     let enter;
     while (++index2 <= events.length) {
@@ -36656,15 +36656,15 @@ function createResolver(extraResolver) {
         enter = void 0;
       }
     }
-    return extraResolver ? extraResolver(events, context3) : events;
+    return extraResolver ? extraResolver(events, context4) : events;
   }
 }
-function resolveAllLineSuffixes(events, context3) {
+function resolveAllLineSuffixes(events, context4) {
   let eventIndex = 0;
   while (++eventIndex <= events.length) {
     if ((eventIndex === events.length || events[eventIndex][1].type === "lineEnding") && events[eventIndex - 1][1].type === "data") {
       const data = events[eventIndex - 1][1];
-      const chunks = context3.sliceStream(data);
+      const chunks = context4.sliceStream(data);
       let index2 = chunks.length;
       let bufferIndex = -1;
       let size = 0;
@@ -36708,8 +36708,8 @@ function resolveAllLineSuffixes(events, context3) {
           events.splice(
             eventIndex,
             0,
-            ["enter", token, context3],
-            ["exit", token, context3]
+            ["enter", token, context4],
+            ["exit", token, context4]
           );
           eventIndex += 2;
         }
@@ -36748,7 +36748,7 @@ function createTokenizer(parser, initialize, from) {
       interrupt: true
     })
   };
-  const context3 = {
+  const context4 = {
     previous: null,
     code: null,
     containerState: {},
@@ -36760,12 +36760,12 @@ function createTokenizer(parser, initialize, from) {
     defineSkip,
     write
   };
-  let state = initialize.tokenize.call(context3, effects);
+  let state = initialize.tokenize.call(context4, effects);
   let expectedCode;
   if (initialize.resolveAll) {
     resolveAllConstructs.push(initialize);
   }
-  return context3;
+  return context4;
   function write(slice) {
     chunks = push(chunks, slice);
     main2();
@@ -36773,8 +36773,8 @@ function createTokenizer(parser, initialize, from) {
       return [];
     }
     addResult(initialize, 0);
-    context3.events = resolveAll(resolveAllConstructs, context3.events, context3);
-    return context3.events;
+    context4.events = resolveAll(resolveAllConstructs, context4.events, context4);
+    return context4.events;
   }
   function sliceSerialize(token, expandTabs) {
     return serializeChunks(sliceStream(token), expandTabs);
@@ -36837,28 +36837,28 @@ function createTokenizer(parser, initialize, from) {
         point3._index++;
       }
     }
-    context3.previous = code3;
+    context4.previous = code3;
     consumed = true;
   }
   function enter(type, fields) {
     const token = fields || {};
     token.type = type;
     token.start = now();
-    context3.events.push(["enter", token, context3]);
+    context4.events.push(["enter", token, context4]);
     stack.push(token);
     return token;
   }
   function exit3(type) {
     const token = stack.pop();
     token.end = now();
-    context3.events.push(["exit", token, context3]);
+    context4.events.push(["exit", token, context4]);
     return token;
   }
-  function onsuccessfulconstruct(construct, info4) {
-    addResult(construct, info4.from);
+  function onsuccessfulconstruct(construct, info5) {
+    addResult(construct, info5.from);
   }
-  function onsuccessfulcheck(_, info4) {
-    info4.restore();
+  function onsuccessfulcheck(_, info5) {
+    info5.restore();
   }
   function constructFactory(onreturn, fields) {
     return hook;
@@ -36866,7 +36866,7 @@ function createTokenizer(parser, initialize, from) {
       let listOfConstructs;
       let constructIndex;
       let currentConstruct;
-      let info4;
+      let info5;
       return Array.isArray(constructs2) ? handleListOfConstructs(constructs2) : "tokenize" in constructs2 ? (
         // @ts-expect-error Looks like a construct.
         handleListOfConstructs([constructs2])
@@ -36896,19 +36896,19 @@ function createTokenizer(parser, initialize, from) {
       function handleConstruct(construct) {
         return start;
         function start(code3) {
-          info4 = store();
+          info5 = store();
           currentConstruct = construct;
           if (!construct.partial) {
-            context3.currentConstruct = construct;
+            context4.currentConstruct = construct;
           }
-          if (construct.name && context3.parser.constructs.disable.null.includes(construct.name)) {
+          if (construct.name && context4.parser.constructs.disable.null.includes(construct.name)) {
             return nok(code3);
           }
           return construct.tokenize.call(
             // If we do have fields, create an object w/ `context` as its
             // prototype.
             // This allows a “live binding”, which is needed for `interrupt`.
-            fields ? Object.assign(Object.create(context3), fields) : context3,
+            fields ? Object.assign(Object.create(context4), fields) : context4,
             effects,
             ok3,
             nok
@@ -36917,12 +36917,12 @@ function createTokenizer(parser, initialize, from) {
       }
       function ok3(code3) {
         consumed = true;
-        onreturn(currentConstruct, info4);
+        onreturn(currentConstruct, info5);
         return returnState;
       }
       function nok(code3) {
         consumed = true;
-        info4.restore();
+        info5.restore();
         if (++constructIndex < listOfConstructs.length) {
           return handleConstruct(listOfConstructs[constructIndex]);
         }
@@ -36936,21 +36936,21 @@ function createTokenizer(parser, initialize, from) {
     }
     if (construct.resolve) {
       splice(
-        context3.events,
+        context4.events,
         from2,
-        context3.events.length - from2,
-        construct.resolve(context3.events.slice(from2), context3)
+        context4.events.length - from2,
+        construct.resolve(context4.events.slice(from2), context4)
       );
     }
     if (construct.resolveTo) {
-      context3.events = construct.resolveTo(context3.events, context3);
+      context4.events = construct.resolveTo(context4.events, context4);
     }
   }
   function store() {
     const startPoint = now();
-    const startPrevious = context3.previous;
-    const startCurrentConstruct = context3.currentConstruct;
-    const startEventsIndex = context3.events.length;
+    const startPrevious = context4.previous;
+    const startCurrentConstruct = context4.currentConstruct;
+    const startEventsIndex = context4.events.length;
     const startStack = Array.from(stack);
     return {
       restore,
@@ -36958,9 +36958,9 @@ function createTokenizer(parser, initialize, from) {
     };
     function restore() {
       point3 = startPoint;
-      context3.previous = startPrevious;
-      context3.currentConstruct = startCurrentConstruct;
-      context3.events.length = startEventsIndex;
+      context4.previous = startPrevious;
+      context4.currentConstruct = startCurrentConstruct;
+      context4.events.length = startEventsIndex;
       stack = startStack;
       accountForPotentialSkip();
     }
@@ -37392,7 +37392,7 @@ function compiler(options) {
       type: "root",
       children: []
     };
-    const context3 = {
+    const context4 = {
       stack: [tree],
       tokenStack: [],
       config: config2,
@@ -37423,16 +37423,16 @@ function compiler(options) {
             {
               sliceSerialize: events[index2][2].sliceSerialize
             },
-            context3
+            context4
           ),
           events[index2][1]
         );
       }
     }
-    if (context3.tokenStack.length > 0) {
-      const tail = context3.tokenStack[context3.tokenStack.length - 1];
+    if (context4.tokenStack.length > 0) {
+      const tail = context4.tokenStack[context4.tokenStack.length - 1];
       const handler = tail[1] || defaultOnError;
-      handler.call(context3, void 0, tail[0]);
+      handler.call(context4, void 0, tail[0]);
     }
     tree.position = {
       start: point2(
@@ -37699,14 +37699,14 @@ function compiler(options) {
     tail.position.end = point2(token.end);
   }
   function onexitlineending(token) {
-    const context3 = this.stack[this.stack.length - 1];
+    const context4 = this.stack[this.stack.length - 1];
     if (this.data.atHardBreak) {
-      const tail = context3.children[context3.children.length - 1];
+      const tail = context4.children[context4.children.length - 1];
       tail.position.end = point2(token.end);
       this.data.atHardBreak = void 0;
       return;
     }
-    if (!this.data.setextHeadingSlurpLineEnding && config2.canContainEols.includes(context3.type)) {
+    if (!this.data.setextHeadingSlurpLineEnding && config2.canContainEols.includes(context4.type)) {
       onenterdata.call(this, token);
       onexitdata.call(this, token);
     }
@@ -38098,9 +38098,9 @@ function map(left, right) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/blockquote.js
-function blockquote(node2, _, state, info4) {
+function blockquote(node2, _, state, info5) {
   const exit3 = state.enter("blockquote");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   tracker.move("> ");
   tracker.shift(2);
   const value = state.indentLines(
@@ -38135,11 +38135,11 @@ function listInScope(stack, list4, none) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/break.js
-function hardBreak(_, _1, state, info4) {
+function hardBreak(_, _1, state, info5) {
   let index2 = -1;
   while (++index2 < state.unsafe.length) {
     if (state.unsafe[index2].character === "\n" && patternInScope(state.stack, state.unsafe[index2])) {
-      return /[ \t]/.test(info4.before) ? "" : " ";
+      return /[ \t]/.test(info5.before) ? "" : " ";
     }
   }
   return "\\\n";
@@ -38191,7 +38191,7 @@ function checkFence(state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/code.js
-function code(node2, _, state, info4) {
+function code(node2, _, state, info5) {
   const marker = checkFence(state);
   const raw = node2.value || "";
   const suffix = marker === "`" ? "GraveAccent" : "Tilde";
@@ -38201,7 +38201,7 @@ function code(node2, _, state, info4) {
     exit4();
     return value2;
   }
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   const sequence = marker.repeat(Math.max(longestStreak(raw, marker) + 1, 3));
   const exit3 = state.enter("codeFenced");
   let value = tracker.move(sequence);
@@ -38254,12 +38254,12 @@ function checkQuote(state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/definition.js
-function definition2(node2, _, state, info4) {
+function definition2(node2, _, state, info5) {
   const quote = checkQuote(state);
   const suffix = quote === '"' ? "Quote" : "Apostrophe";
   const exit3 = state.enter("definition");
   let subexit = state.enter("label");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move("[");
   value += tracker.move(
     state.safe(state.associationId(node2), {
@@ -38322,10 +38322,10 @@ function checkEmphasis(state) {
 
 // node_modules/mdast-util-to-markdown/lib/handle/emphasis.js
 emphasis.peek = emphasisPeek;
-function emphasis(node2, _, state, info4) {
+function emphasis(node2, _, state, info5) {
   const marker = checkEmphasis(state);
   const exit3 = state.enter("emphasis");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move(marker);
   value += tracker.move(
     state.containerPhrasing(node2, {
@@ -38555,9 +38555,9 @@ function formatHeadingAsSetext(node2, state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/heading.js
-function heading(node2, _, state, info4) {
+function heading(node2, _, state, info5) {
   const rank = Math.max(Math.min(6, node2.depth || 1), 1);
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   if (formatHeadingAsSetext(node2, state)) {
     const exit4 = state.enter("headingSetext");
     const subexit2 = state.enter("phrasing");
@@ -38607,12 +38607,12 @@ function htmlPeek() {
 
 // node_modules/mdast-util-to-markdown/lib/handle/image.js
 image.peek = imagePeek;
-function image(node2, _, state, info4) {
+function image(node2, _, state, info5) {
   const quote = checkQuote(state);
   const suffix = quote === '"' ? "Quote" : "Apostrophe";
   const exit3 = state.enter("image");
   let subexit = state.enter("label");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move("![");
   value += tracker.move(
     state.safe(node2.alt, { before: value, after: "]", ...tracker.current() })
@@ -38664,11 +38664,11 @@ function imagePeek() {
 
 // node_modules/mdast-util-to-markdown/lib/handle/image-reference.js
 imageReference.peek = imageReferencePeek;
-function imageReference(node2, _, state, info4) {
+function imageReference(node2, _, state, info5) {
   const type = node2.referenceType;
   const exit3 = state.enter("imageReference");
   let subexit = state.enter("label");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move("![");
   const alt = state.safe(node2.alt, {
     before: value,
@@ -38750,10 +38750,10 @@ function formatLinkAsAutolink(node2, state) {
 
 // node_modules/mdast-util-to-markdown/lib/handle/link.js
 link.peek = linkPeek;
-function link(node2, _, state, info4) {
+function link(node2, _, state, info5) {
   const quote = checkQuote(state);
   const suffix = quote === '"' ? "Quote" : "Apostrophe";
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let exit3;
   let subexit;
   if (formatLinkAsAutolink(node2, state)) {
@@ -38830,11 +38830,11 @@ function linkPeek(node2, _, state) {
 
 // node_modules/mdast-util-to-markdown/lib/handle/link-reference.js
 linkReference.peek = linkReferencePeek;
-function linkReference(node2, _, state, info4) {
+function linkReference(node2, _, state, info5) {
   const type = node2.referenceType;
   const exit3 = state.enter("linkReference");
   let subexit = state.enter("label");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move("[");
   const text5 = state.containerPhrasing(node2, {
     before: value,
@@ -38921,7 +38921,7 @@ function checkRule(state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/list.js
-function list3(node2, parent, state, info4) {
+function list3(node2, parent, state, info5) {
   const exit3 = state.enter("list");
   const bulletCurrent = state.bulletCurrent;
   let bullet = node2.ordered ? checkBulletOrdered(state) : checkBullet(state);
@@ -38953,7 +38953,7 @@ function list3(node2, parent, state, info4) {
     bullet = bulletOther;
   }
   state.bulletCurrent = bullet;
-  const value = state.containerFlow(node2, info4);
+  const value = state.containerFlow(node2, info5);
   state.bulletLastUsed = bullet;
   state.bulletCurrent = bulletCurrent;
   exit3();
@@ -38972,7 +38972,7 @@ function checkListItemIndent(state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/list-item.js
-function listItem(node2, parent, state, info4) {
+function listItem(node2, parent, state, info5) {
   const listItemIndent = checkListItemIndent(state);
   let bullet = state.bulletCurrent || checkBullet(state);
   if (parent && parent.type === "list" && parent.ordered) {
@@ -38982,7 +38982,7 @@ function listItem(node2, parent, state, info4) {
   if (listItemIndent === "tab" || listItemIndent === "mixed" && (parent && parent.type === "list" && parent.spread || node2.spread)) {
     size = Math.ceil(size / 4) * 4;
   }
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   tracker.move(bullet + " ".repeat(size - bullet.length));
   tracker.shift(size);
   const exit3 = state.enter("listItem");
@@ -39001,10 +39001,10 @@ function listItem(node2, parent, state, info4) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/paragraph.js
-function paragraph(node2, _, state, info4) {
+function paragraph(node2, _, state, info5) {
   const exit3 = state.enter("paragraph");
   const subexit = state.enter("phrasing");
-  const value = state.containerPhrasing(node2, info4);
+  const value = state.containerPhrasing(node2, info5);
   subexit();
   exit3();
   return value;
@@ -39039,12 +39039,12 @@ var phrasing = (
 );
 
 // node_modules/mdast-util-to-markdown/lib/handle/root.js
-function root(node2, _, state, info4) {
+function root(node2, _, state, info5) {
   const hasPhrasing = node2.children.some(function(d) {
     return phrasing(d);
   });
   const fn = hasPhrasing ? state.containerPhrasing : state.containerFlow;
-  return fn.call(state, node2, info4);
+  return fn.call(state, node2, info5);
 }
 
 // node_modules/mdast-util-to-markdown/lib/util/check-strong.js
@@ -39060,10 +39060,10 @@ function checkStrong(state) {
 
 // node_modules/mdast-util-to-markdown/lib/handle/strong.js
 strong.peek = strongPeek;
-function strong(node2, _, state, info4) {
+function strong(node2, _, state, info5) {
   const marker = checkStrong(state);
   const exit3 = state.enter("strong");
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   let value = tracker.move(marker + marker);
   value += tracker.move(
     state.containerPhrasing(node2, {
@@ -39081,8 +39081,8 @@ function strongPeek(_, _1, state) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/handle/text.js
-function text3(node2, _, state, info4) {
-  return state.safe(node2.value, info4);
+function text3(node2, _, state, info5) {
+  return state.safe(node2.value, info5);
 }
 
 // node_modules/mdast-util-to-markdown/lib/util/check-rule-repetition.js
@@ -39297,14 +39297,14 @@ function compilePattern(pattern) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/util/container-phrasing.js
-function containerPhrasing(parent, state, info4) {
+function containerPhrasing(parent, state, info5) {
   const indexStack = state.indexStack;
   const children = parent.children || [];
   const results = [];
   let index2 = -1;
-  let before = info4.before;
+  let before = info5.before;
   indexStack.push(-1);
-  let tracker = state.createTracker(info4);
+  let tracker = state.createTracker(info5);
   while (++index2 < children.length) {
     const child = children[index2];
     let after;
@@ -39319,7 +39319,7 @@ function containerPhrasing(parent, state, info4) {
         ...tracker.current()
       }).charAt(0) : "";
     } else {
-      after = info4.after;
+      after = info5.after;
     }
     if (results.length > 0 && (before === "\r" || before === "\n") && child.type === "html") {
       results[results.length - 1] = results[results.length - 1].replace(
@@ -39327,7 +39327,7 @@ function containerPhrasing(parent, state, info4) {
         " "
       );
       before = " ";
-      tracker = state.createTracker(info4);
+      tracker = state.createTracker(info5);
       tracker.move(results.join(""));
     }
     results.push(
@@ -39346,10 +39346,10 @@ function containerPhrasing(parent, state, info4) {
 }
 
 // node_modules/mdast-util-to-markdown/lib/util/container-flow.js
-function containerFlow(parent, state, info4) {
+function containerFlow(parent, state, info5) {
   const indexStack = state.indexStack;
   const children = parent.children || [];
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   const results = [];
   let index2 = -1;
   indexStack.push(-1);
@@ -39586,11 +39586,11 @@ function joinDefinition(left, right) {
     return 0;
   }
 }
-function containerPhrasingBound(parent, info4) {
-  return containerPhrasing(parent, this, info4);
+function containerPhrasingBound(parent, info5) {
+  return containerPhrasing(parent, this, info5);
 }
-function containerFlowBound(parent, info4) {
-  return containerFlow(parent, this, info4);
+function containerFlowBound(parent, info5) {
+  return containerFlow(parent, this, info5);
 }
 function safeBound(value, config2) {
   return safe(this, value, config2);
@@ -41344,8 +41344,8 @@ function exitFootnoteCallString(token) {
 function exitFootnoteCall(token) {
   this.exit(token);
 }
-function footnoteReference(node2, _, state, info4) {
-  const tracker = state.createTracker(info4);
+function footnoteReference(node2, _, state, info5) {
+  const tracker = state.createTracker(info5);
   let value = tracker.move("[^");
   const exit3 = state.enter("footnoteReference");
   const subexit = state.enter("reference");
@@ -41364,8 +41364,8 @@ function footnoteReference(node2, _, state, info4) {
 function footnoteReferencePeek() {
   return "[";
 }
-function footnoteDefinition(node2, _, state, info4) {
-  const tracker = state.createTracker(info4);
+function footnoteDefinition(node2, _, state, info5) {
+  const tracker = state.createTracker(info5);
   let value = tracker.move("[^");
   const exit3 = state.enter("footnoteDefinition");
   const subexit = state.enter("label");
@@ -41429,8 +41429,8 @@ function enterStrikethrough(token) {
 function exitStrikethrough(token) {
   this.exit(token);
 }
-function handleDelete(node2, _, state, info4) {
-  const tracker = state.createTracker(info4);
+function handleDelete(node2, _, state, info5) {
+  const tracker = state.createTracker(info5);
   const exit3 = state.enter("strikethrough");
   let value = tracker.move("~~");
   value += state.containerPhrasing(node2, {
@@ -41677,19 +41677,19 @@ function gfmTableToMarkdown(options) {
       tableRow: handleTableRow
     }
   };
-  function handleTable(node2, _, state, info4) {
-    return serializeData(handleTableAsData(node2, state, info4), node2.align);
+  function handleTable(node2, _, state, info5) {
+    return serializeData(handleTableAsData(node2, state, info5), node2.align);
   }
-  function handleTableRow(node2, _, state, info4) {
-    const row = handleTableRowAsData(node2, state, info4);
+  function handleTableRow(node2, _, state, info5) {
+    const row = handleTableRowAsData(node2, state, info5);
     const value = serializeData([row]);
     return value.slice(0, value.indexOf("\n"));
   }
-  function handleTableCell(node2, _, state, info4) {
+  function handleTableCell(node2, _, state, info5) {
     const exit3 = state.enter("tableCell");
     const subexit = state.enter("phrasing");
     const value = state.containerPhrasing(node2, {
-      ...info4,
+      ...info5,
       before: around,
       after: around
     });
@@ -41708,24 +41708,24 @@ function gfmTableToMarkdown(options) {
       stringLength
     });
   }
-  function handleTableAsData(node2, state, info4) {
+  function handleTableAsData(node2, state, info5) {
     const children = node2.children;
     let index2 = -1;
     const result = [];
     const subexit = state.enter("table");
     while (++index2 < children.length) {
-      result[index2] = handleTableRowAsData(children[index2], state, info4);
+      result[index2] = handleTableRowAsData(children[index2], state, info5);
     }
     subexit();
     return result;
   }
-  function handleTableRowAsData(node2, state, info4) {
+  function handleTableRowAsData(node2, state, info5) {
     const children = node2.children;
     let index2 = -1;
     const result = [];
     const subexit = state.enter("tableRow");
     while (++index2 < children.length) {
-      result[index2] = handleTableCell(children[index2], node2, state, info4);
+      result[index2] = handleTableCell(children[index2], node2, state, info5);
     }
     subexit();
     return result;
@@ -41791,16 +41791,16 @@ function exitParagraphWithTaskListItem(token) {
   }
   this.exit(token);
 }
-function listItemWithTaskListItem(node2, parent, state, info4) {
+function listItemWithTaskListItem(node2, parent, state, info5) {
   const head = node2.children[0];
   const checkable = typeof node2.checked === "boolean" && head && head.type === "paragraph";
   const checkbox = "[" + (node2.checked ? "x" : " ") + "] ";
-  const tracker = state.createTracker(info4);
+  const tracker = state.createTracker(info5);
   if (checkable) {
     tracker.move(checkbox);
   }
   let value = handle.listItem(node2, parent, state, {
-    ...info4,
+    ...info5,
     ...tracker.current()
   });
   if (checkable) {
@@ -42246,7 +42246,7 @@ function tokenizePotentialGfmFootnoteCall(effects, ok3, nok) {
     return ok3(code3);
   }
 }
-function resolveToPotentialGfmFootnoteCall(events, context3) {
+function resolveToPotentialGfmFootnoteCall(events, context4) {
   let index2 = events.length;
   let labelStart;
   while (index2--) {
@@ -42285,22 +42285,22 @@ function resolveToPotentialGfmFootnoteCall(events, context3) {
     // Take the `labelImageMarker` (now `data`, the `!`)
     events[index2 + 1],
     events[index2 + 2],
-    ["enter", call, context3],
+    ["enter", call, context4],
     // The `[`
     events[index2 + 3],
     events[index2 + 4],
     // The `^`.
-    ["enter", marker, context3],
-    ["exit", marker, context3],
+    ["enter", marker, context4],
+    ["exit", marker, context4],
     // Everything in between.
-    ["enter", string4, context3],
-    ["enter", chunk, context3],
-    ["exit", chunk, context3],
-    ["exit", string4, context3],
+    ["enter", string4, context4],
+    ["enter", chunk, context4],
+    ["exit", chunk, context4],
+    ["exit", string4, context4],
     // The ending (`]`, properly parsed and labelled).
     events[events.length - 2],
     events[events.length - 1],
-    ["exit", call, context3]
+    ["exit", call, context4]
   ];
   events.splice(index2, events.length - index2 + 1, ...replacement);
   return events;
@@ -42489,7 +42489,7 @@ function gfmStrikethrough(options) {
       null: [126]
     }
   };
-  function resolveAllStrikethrough(events, context3) {
+  function resolveAllStrikethrough(events, context4) {
     let index2 = -1;
     while (++index2 < events.length) {
       if (events[index2][0] === "enter" && events[index2][1].type === "strikethroughSequenceTemporary" && events[index2][1]._close) {
@@ -42510,25 +42510,25 @@ function gfmStrikethrough(options) {
               end: Object.assign({}, events[index2][1].start)
             };
             const nextEvents = [
-              ["enter", strikethrough, context3],
-              ["enter", events[open][1], context3],
-              ["exit", events[open][1], context3],
-              ["enter", text5, context3]
+              ["enter", strikethrough, context4],
+              ["enter", events[open][1], context4],
+              ["exit", events[open][1], context4],
+              ["enter", text5, context4]
             ];
-            const insideSpan2 = context3.parser.constructs.insideSpan.null;
+            const insideSpan2 = context4.parser.constructs.insideSpan.null;
             if (insideSpan2) {
               splice(
                 nextEvents,
                 nextEvents.length,
                 0,
-                resolveAll(insideSpan2, events.slice(open + 1, index2), context3)
+                resolveAll(insideSpan2, events.slice(open + 1, index2), context4)
               );
             }
             splice(nextEvents, nextEvents.length, 0, [
-              ["exit", text5, context3],
-              ["enter", events[index2][1], context3],
-              ["exit", events[index2][1], context3],
-              ["exit", strikethrough, context3]
+              ["exit", text5, context4],
+              ["enter", events[index2][1], context4],
+              ["exit", events[index2][1], context4],
+              ["exit", strikethrough, context4]
             ]);
             splice(events, open - 1, index2 - open + 3, nextEvents);
             index2 = open + nextEvents.length - 2;
@@ -42919,7 +42919,7 @@ function tokenizeTable(effects, ok3, nok) {
     return bodyRowData(code3);
   }
 }
-function resolveTable(events, context3) {
+function resolveTable(events, context4) {
   let index2 = -1;
   let inFirstCellAwaitingPipe = true;
   let rowKind = 0;
@@ -42938,7 +42938,7 @@ function resolveTable(events, context3) {
       if (token.type === "tableHead") {
         afterHeadAwaitingFirstBodyRow = false;
         if (lastTableEnd !== 0) {
-          flushTableEnd(map5, context3, lastTableEnd, currentTable, currentBody);
+          flushTableEnd(map5, context4, lastTableEnd, currentTable, currentBody);
           currentBody = void 0;
           lastTableEnd = 0;
         }
@@ -42948,7 +42948,7 @@ function resolveTable(events, context3) {
           // Note: correct end is set later.
           end: Object.assign({}, token.end)
         };
-        map5.add(index2, 0, [["enter", currentTable, context3]]);
+        map5.add(index2, 0, [["enter", currentTable, context4]]);
       } else if (token.type === "tableRow" || token.type === "tableDelimiterRow") {
         inFirstCellAwaitingPipe = true;
         currentCell = void 0;
@@ -42962,7 +42962,7 @@ function resolveTable(events, context3) {
             // Note: correct end is set later.
             end: Object.assign({}, token.end)
           };
-          map5.add(index2, 0, [["enter", currentBody, context3]]);
+          map5.add(index2, 0, [["enter", currentBody, context4]]);
         }
         rowKind = token.type === "tableDelimiterRow" ? 2 : currentBody ? 3 : 1;
       } else if (rowKind && (token.type === "data" || token.type === "tableDelimiterMarker" || token.type === "tableDelimiterFiller")) {
@@ -42972,7 +42972,7 @@ function resolveTable(events, context3) {
             cell[0] = cell[1];
             currentCell = flushCell(
               map5,
-              context3,
+              context4,
               lastCell,
               rowKind,
               void 0,
@@ -42990,7 +42990,7 @@ function resolveTable(events, context3) {
             cell[0] = cell[1];
             currentCell = flushCell(
               map5,
-              context3,
+              context4,
               lastCell,
               rowKind,
               void 0,
@@ -43010,14 +43010,14 @@ function resolveTable(events, context3) {
         cell[0] = cell[1];
         currentCell = flushCell(
           map5,
-          context3,
+          context4,
           lastCell,
           rowKind,
           index2,
           currentCell
         );
       } else if (cell[1] !== 0) {
-        currentCell = flushCell(map5, context3, cell, rowKind, index2, currentCell);
+        currentCell = flushCell(map5, context4, cell, rowKind, index2, currentCell);
       }
       rowKind = 0;
     } else if (rowKind && (token.type === "data" || token.type === "tableDelimiterMarker" || token.type === "tableDelimiterFiller")) {
@@ -43025,45 +43025,45 @@ function resolveTable(events, context3) {
     }
   }
   if (lastTableEnd !== 0) {
-    flushTableEnd(map5, context3, lastTableEnd, currentTable, currentBody);
+    flushTableEnd(map5, context4, lastTableEnd, currentTable, currentBody);
   }
-  map5.consume(context3.events);
+  map5.consume(context4.events);
   index2 = -1;
-  while (++index2 < context3.events.length) {
-    const event = context3.events[index2];
+  while (++index2 < context4.events.length) {
+    const event = context4.events[index2];
     if (event[0] === "enter" && event[1].type === "table") {
-      event[1]._align = gfmTableAlign(context3.events, index2);
+      event[1]._align = gfmTableAlign(context4.events, index2);
     }
   }
   return events;
 }
-function flushCell(map5, context3, range, rowKind, rowEnd, previousCell) {
+function flushCell(map5, context4, range, rowKind, rowEnd, previousCell) {
   const groupName = rowKind === 1 ? "tableHeader" : rowKind === 2 ? "tableDelimiter" : "tableData";
   const valueName = "tableContent";
   if (range[0] !== 0) {
-    previousCell.end = Object.assign({}, getPoint(context3.events, range[0]));
-    map5.add(range[0], 0, [["exit", previousCell, context3]]);
+    previousCell.end = Object.assign({}, getPoint(context4.events, range[0]));
+    map5.add(range[0], 0, [["exit", previousCell, context4]]);
   }
-  const now = getPoint(context3.events, range[1]);
+  const now = getPoint(context4.events, range[1]);
   previousCell = {
     type: groupName,
     start: Object.assign({}, now),
     // Note: correct end is set later.
     end: Object.assign({}, now)
   };
-  map5.add(range[1], 0, [["enter", previousCell, context3]]);
+  map5.add(range[1], 0, [["enter", previousCell, context4]]);
   if (range[2] !== 0) {
-    const relatedStart = getPoint(context3.events, range[2]);
-    const relatedEnd = getPoint(context3.events, range[3]);
+    const relatedStart = getPoint(context4.events, range[2]);
+    const relatedEnd = getPoint(context4.events, range[3]);
     const valueToken = {
       type: valueName,
       start: Object.assign({}, relatedStart),
       end: Object.assign({}, relatedEnd)
     };
-    map5.add(range[2], 0, [["enter", valueToken, context3]]);
+    map5.add(range[2], 0, [["enter", valueToken, context4]]);
     if (rowKind !== 2) {
-      const start = context3.events[range[2]];
-      const end = context3.events[range[3]];
+      const start = context4.events[range[2]];
+      const end = context4.events[range[3]];
       start[1].end = Object.assign({}, end[1].end);
       start[1].type = "chunkText";
       start[1].contentType = "text";
@@ -43073,24 +43073,24 @@ function flushCell(map5, context3, range, rowKind, rowEnd, previousCell) {
         map5.add(a, b, []);
       }
     }
-    map5.add(range[3] + 1, 0, [["exit", valueToken, context3]]);
+    map5.add(range[3] + 1, 0, [["exit", valueToken, context4]]);
   }
   if (rowEnd !== void 0) {
-    previousCell.end = Object.assign({}, getPoint(context3.events, rowEnd));
-    map5.add(rowEnd, 0, [["exit", previousCell, context3]]);
+    previousCell.end = Object.assign({}, getPoint(context4.events, rowEnd));
+    map5.add(rowEnd, 0, [["exit", previousCell, context4]]);
     previousCell = void 0;
   }
   return previousCell;
 }
-function flushTableEnd(map5, context3, index2, table, tableBody) {
+function flushTableEnd(map5, context4, index2, table, tableBody) {
   const exits = [];
-  const related = getPoint(context3.events, index2);
+  const related = getPoint(context4.events, index2);
   if (tableBody) {
     tableBody.end = Object.assign({}, related);
-    exits.push(["exit", tableBody, context3]);
+    exits.push(["exit", tableBody, context4]);
   }
   table.end = Object.assign({}, related);
-  exits.push(["exit", table, context3]);
+  exits.push(["exit", table, context4]);
   map5.add(index2 + 1, 0, exits);
 }
 function getPoint(events, index2) {
@@ -43322,38 +43322,84 @@ function containsAnchor(listItem2) {
   });
 }
 
-// src/locations/description.ts
+// src/locations/comment.ts
 var core = __toESM(require_core());
 var github = __toESM(require_github());
-var DescriptionLocation = class {
-  constructor(context3) {
-    this.octokit = context3.octokit;
+var CommentLocationAdapter = class {
+  constructor(context4) {
+    this.octokit = context4.octokit;
   }
   async update(pullRequest, visualization) {
-    core.startGroup(`Update: PR #${pullRequest.number} (DESCRIPTION)`);
+    core.startGroup(`Update: PR #${pullRequest.number} (COMMENT)`);
     core.info("Visualization:");
     core.info(visualization);
-    const description = injectVisualization(visualization, pullRequest.body ?? "");
-    core.info("Description:");
-    core.info(description);
-    await this.octokit.rest.pulls.update({
+    const { data: comments } = await this.octokit.rest.issues.listComments({
       ...github.context.repo,
-      pull_number: pullRequest.number,
-      body: description
+      issue_number: pullRequest.number
     });
+    const existingComment = comments.find((comment) => comment.body?.includes(ANCHOR));
+    if (existingComment) {
+      const content3 = injectVisualization(visualization, existingComment.body ?? "");
+      await this.octokit.rest.issues.updateComment({
+        ...github.context.repo,
+        comment_id: existingComment.id,
+        issue_number: pullRequest.number,
+        body: content3
+      });
+    } else {
+      const content3 = injectVisualization(visualization, "");
+      await this.octokit.rest.issues.createComment({
+        ...github.context.repo,
+        issue_number: pullRequest.number,
+        body: content3
+      });
+    }
     core.endGroup();
   }
 };
 
+// src/locations/description.ts
+var core2 = __toESM(require_core());
+var github2 = __toESM(require_github());
+var DescriptionLocationAdapter = class {
+  constructor(context4) {
+    this.octokit = context4.octokit;
+  }
+  async update(pullRequest, visualization) {
+    core2.startGroup(`Update: PR #${pullRequest.number} (DESCRIPTION)`);
+    core2.info("Visualization:");
+    core2.info(visualization);
+    const description = injectVisualization(visualization, pullRequest.body ?? "");
+    core2.info("Description:");
+    core2.info(description);
+    await this.octokit.rest.pulls.update({
+      ...github2.context.repo,
+      pull_number: pullRequest.number,
+      body: description
+    });
+    core2.endGroup();
+  }
+};
+
+// src/locations/factory.ts
+function createLocationAdapter(context4) {
+  switch (context4.location) {
+    case "description":
+      return new DescriptionLocationAdapter(context4);
+    case "comment":
+      return new CommentLocationAdapter(context4);
+  }
+}
+
 // src/main.ts
-async function main(context3) {
+async function main(context4) {
   const {
     currentPullRequest,
     pullRequests,
     mainBranch,
     perennialBranches,
     skipSingleStacks
-  } = context3;
+  } = context4;
   const repoGraph = new import_graphology.DirectedGraph();
   repoGraph.mergeNode(mainBranch, {
     type: "perennial",
@@ -43417,8 +43463,8 @@ async function main(context3) {
     jobs.push(async () => {
       const stackGraph2 = getStackGraph(stackNode, repoGraph);
       const visualization = renderVisualization(stackGraph2, terminatingRefs);
-      const target = new DescriptionLocation(context3);
-      await target.update(stackNode, visualization);
+      const location = createLocationAdapter(context4);
+      await location.update(stackNode, visualization);
     });
   });
   await Promise.all(jobs.map((job) => job()));
@@ -43452,7 +43498,7 @@ function getStackGraph(pullRequest, repoGraph) {
 }
 
 // src/inputs.ts
-var core2 = __toESM(require_core());
+var core3 = __toESM(require_core());
 
 // node_modules/zod/lib/index.mjs
 var lib_exports = {};
@@ -47317,84 +47363,84 @@ var locationInputSchema = z.enum(["description", "comment"]);
 // src/inputs.ts
 var inputs = {
   getToken() {
-    return core2.getInput("github-token", { required: true, trimWhitespace: true });
+    return core3.getInput("github-token", { required: true, trimWhitespace: true });
   },
   getLocation() {
-    const location = core2.getInput("location", { required: false, trimWhitespace: true });
+    const location = core3.getInput("location", { required: false, trimWhitespace: true });
     try {
       return locationInputSchema.parse(location);
     } catch {
-      core2.setFailed(`Invalid 'location' input: ${location}`);
+      core3.setFailed(`Invalid 'location' input: ${location}`);
       process.exit(1);
     }
   },
   getSkipSingleStacks() {
-    const input = core2.getBooleanInput("skip-single-stacks", {
+    const input = core3.getBooleanInput("skip-single-stacks", {
       required: false,
       trimWhitespace: true
     });
-    core2.startGroup("Inputs: Skip single stacks");
-    core2.info(input.toString());
-    core2.endGroup();
+    core3.startGroup("Inputs: Skip single stacks");
+    core3.info(input.toString());
+    core3.endGroup();
     return input;
   },
   getHistoryLimit() {
-    const input = core2.getInput("history-limit", {
+    const input = core3.getInput("history-limit", {
       required: false,
       trimWhitespace: true
     });
     const historyLimit = Number.parseInt(input, 10);
-    core2.startGroup("Inputs: History limit");
-    core2.info(input);
-    core2.endGroup();
+    core3.startGroup("Inputs: History limit");
+    core3.info(input);
+    core3.endGroup();
     return historyLimit;
   },
-  async getMainBranch(octokit, config2, context3) {
+  async getMainBranch(octokit, config2, context4) {
     const {
       data: { default_branch: defaultBranch }
     } = await octokit.rest.repos.get({
-      ...context3.repo
+      ...context4.repo
     });
-    const mainBranchInput = core2.getInput("main-branch", {
+    const mainBranchInput = core3.getInput("main-branch", {
       required: false,
       trimWhitespace: true
     });
-    core2.startGroup("Inputs: Main branch from input");
-    core2.info(mainBranchInput);
-    core2.endGroup();
+    core3.startGroup("Inputs: Main branch from input");
+    core3.info(mainBranchInput);
+    core3.endGroup();
     let mainBranch = defaultBranch;
     mainBranch = config2?.branches?.main ?? mainBranch;
     mainBranch = mainBranchInput !== "" ? mainBranchInput : mainBranch;
     return mainBranch;
   },
-  async getRemoteBranches(octokit, context3) {
+  async getRemoteBranches(octokit, context4) {
     const remoteBranches = await octokit.paginate(
       "GET /repos/{owner}/{repo}/branches",
       {
-        ...context3.repo,
+        ...context4.repo,
         per_page: 100
       },
       (response) => response.data.map((branch) => branch.name)
     );
-    core2.startGroup("Inputs: Remote branches");
-    core2.info(JSON.stringify(remoteBranches));
-    core2.endGroup();
+    core3.startGroup("Inputs: Remote branches");
+    core3.info(JSON.stringify(remoteBranches));
+    core3.endGroup();
     return remoteBranches;
   },
   async getPerennialBranches(config2, remoteBranches) {
     let explicitBranches = [];
     explicitBranches = config2?.branches?.perennials ?? explicitBranches;
-    const perennialBranchesInput = core2.getMultilineInput("perennial-branches", {
+    const perennialBranchesInput = core3.getMultilineInput("perennial-branches", {
       required: false,
       trimWhitespace: true
     });
     explicitBranches = perennialBranchesInput.length > 0 ? perennialBranchesInput : explicitBranches;
-    core2.startGroup("Inputs: Explicit branches");
-    core2.info(JSON.stringify(explicitBranches));
-    core2.endGroup();
+    core3.startGroup("Inputs: Explicit branches");
+    core3.info(JSON.stringify(explicitBranches));
+    core3.endGroup();
     let perennialRegex;
     perennialRegex = config2?.branches?.["perennial-regex"] ?? perennialRegex;
-    const perennialRegexInput = core2.getInput("perennial-regex", {
+    const perennialRegexInput = core3.getInput("perennial-regex", {
       required: false,
       trimWhitespace: true
     });
@@ -47405,24 +47451,24 @@ var inputs = {
         (branch) => perennialRegex ? RegExp(perennialRegex).test(branch) : false
       )
     ];
-    core2.startGroup("Inputs: Perennial branches");
-    core2.info(JSON.stringify(perennialBranches));
-    core2.endGroup();
+    core3.startGroup("Inputs: Perennial branches");
+    core3.info(JSON.stringify(perennialBranches));
+    core3.endGroup();
     return [...new Set(perennialBranches)];
   },
-  getCurrentPullRequest(context3) {
+  getCurrentPullRequest(context4) {
     try {
-      const pullRequest = pullRequestSchema.parse(context3.payload.pull_request);
-      core2.startGroup("Inputs: Current pull request");
-      core2.info(JSON.stringify(pullRequest));
-      core2.endGroup();
+      const pullRequest = pullRequestSchema.parse(context4.payload.pull_request);
+      core3.startGroup("Inputs: Current pull request");
+      core3.info(JSON.stringify(pullRequest));
+      core3.endGroup();
       return pullRequest;
     } catch (error) {
-      core2.setFailed(`Unable to determine current pull request from action payload`);
+      core3.setFailed(`Unable to determine current pull request from action payload`);
       throw error;
     }
   },
-  async getPullRequests(octokit, context3, historyLimit) {
+  async getPullRequests(octokit, context4, historyLimit) {
     function toPullRequest(item) {
       return {
         number: item.number,
@@ -47437,7 +47483,7 @@ var inputs = {
       octokit.paginate(
         "GET /repos/{owner}/{repo}/pulls",
         {
-          ...context3.repo,
+          ...context4.repo,
           state: "open",
           per_page: 100
         },
@@ -47446,7 +47492,7 @@ var inputs = {
       octokit.paginate(
         "GET /repos/{owner}/{repo}/pulls",
         {
-          ...context3.repo,
+          ...context4.repo,
           state: "closed",
           per_page: 100
         },
@@ -47461,18 +47507,18 @@ var inputs = {
     ]);
     const pullRequests = [...openPullRequests, ...closedPullRequests];
     pullRequests.sort((a, b) => b.number - a.number);
-    core2.startGroup("Inputs: Pull requests");
-    core2.info(
+    core3.startGroup("Inputs: Pull requests");
+    core3.info(
       JSON.stringify(pullRequests.map(({ body: _, ...pullRequest }) => pullRequest))
     );
-    core2.endGroup();
+    core3.endGroup();
     return pullRequests;
   }
 };
 
 // src/config.ts
 var fs = __toESM(require("node:fs"));
-var core3 = __toESM(require_core());
+var core4 = __toESM(require_core());
 var toml = __toESM(require_toml());
 var { object, array, string: string3 } = lib_exports;
 var configSchema = object({
@@ -47493,47 +47539,49 @@ CONFIG_FILE_NAMES.forEach((file) => {
 });
 var parsed = configSchema.safeParse(toml.parse(configFile ?? ""));
 if (!parsed.success) {
-  core3.warning(
+  core4.warning(
     "Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml`/`.git-town.toml` is valid."
   );
 }
 var config = configFile && parsed.success ? parsed.data : void 0;
-core3.startGroup("Config");
-core3.info(JSON.stringify(config));
-core3.endGroup();
+core4.startGroup("Config");
+core4.info(JSON.stringify(config));
+core4.endGroup();
 
 // src/index.ts
 void run();
 async function run() {
   try {
     const validTriggers = ["pull_request", "pull_request_target"];
-    if (!validTriggers.includes(github2.context.eventName)) {
-      core4.setFailed(
+    if (!validTriggers.includes(github3.context.eventName)) {
+      core5.setFailed(
         `Action only supports the following triggers: ${validTriggers.map((trigger) => `\`${trigger}\``).join(", ")}`
       );
       return;
     }
-    const octokit = github2.getOctokit(inputs.getToken());
+    const octokit = github3.getOctokit(inputs.getToken());
+    const location = inputs.getLocation();
+    const skipSingleStacks = inputs.getSkipSingleStacks();
     const historyLimit = inputs.getHistoryLimit();
     const [mainBranch, remoteBranches, pullRequests] = await Promise.all([
-      inputs.getMainBranch(octokit, config, github2.context),
-      inputs.getRemoteBranches(octokit, github2.context),
-      inputs.getPullRequests(octokit, github2.context, historyLimit)
+      inputs.getMainBranch(octokit, config, github3.context),
+      inputs.getRemoteBranches(octokit, github3.context),
+      inputs.getPullRequests(octokit, github3.context, historyLimit)
     ]);
     const perennialBranches = await inputs.getPerennialBranches(config, remoteBranches);
-    const context3 = {
+    const context4 = {
       octokit,
-      currentPullRequest: inputs.getCurrentPullRequest(github2.context),
+      currentPullRequest: inputs.getCurrentPullRequest(github3.context),
       pullRequests,
       mainBranch,
-      remoteBranches,
       perennialBranches,
-      skipSingleStacks: inputs.getSkipSingleStacks()
+      skipSingleStacks,
+      location
     };
-    void main(context3);
+    void main(context4);
   } catch (error) {
     if (error instanceof Error) {
-      core4.setFailed(error.message);
+      core5.setFailed(error.message);
     }
     throw error;
   }
