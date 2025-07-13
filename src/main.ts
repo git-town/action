@@ -3,7 +3,7 @@ import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
 import { renderVisualization } from './renderer'
-import { DescriptionTarget } from './locations/description'
+import { DescriptionLocation } from './locations/description'
 
 export async function main(context: Context) {
   const {
@@ -105,7 +105,7 @@ export async function main(context: Context) {
       const stackGraph = getStackGraph(stackNode, repoGraph)
       const visualization = renderVisualization(stackGraph, terminatingRefs)
 
-      const target = new DescriptionTarget(context)
+      const target = new DescriptionLocation(context)
       await target.update(stackNode, visualization)
     })
   })

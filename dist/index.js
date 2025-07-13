@@ -43325,7 +43325,7 @@ function containsAnchor(listItem2) {
 
 // src/locations/description.ts
 var github = __toESM(require_github());
-var DescriptionTarget = class {
+var DescriptionLocation = class {
   constructor(context3) {
     this.octokit = context3.octokit;
   }
@@ -43412,7 +43412,7 @@ async function main(context3) {
       core.info(`Updating PR #${stackNode.number}`);
       const stackGraph2 = getStackGraph(stackNode, repoGraph);
       const visualization = renderVisualization(stackGraph2, terminatingRefs);
-      const target = new DescriptionTarget(context3);
+      const target = new DescriptionLocation(context3);
       await target.update(stackNode, visualization);
     });
   });

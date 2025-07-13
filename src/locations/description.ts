@@ -1,9 +1,9 @@
 import * as github from '@actions/github'
 import { injectVisualization } from '../renderer'
 import type { Context, Octokit, PullRequest } from '../types'
-import type { Target } from './types'
+import type { Location } from './types'
 
-export class DescriptionTarget implements Target {
+export class DescriptionLocation implements Location {
   private octokit: Octokit
 
   constructor(context: Context) {
