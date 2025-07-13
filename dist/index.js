@@ -27049,6 +27049,97 @@ var require_graphology_traversal = __commonJS({
   }
 });
 
+// node_modules/extend/index.js
+var require_extend = __commonJS({
+  "node_modules/extend/index.js"(exports2, module2) {
+    "use strict";
+    var hasOwn = Object.prototype.hasOwnProperty;
+    var toStr = Object.prototype.toString;
+    var defineProperty = Object.defineProperty;
+    var gOPD = Object.getOwnPropertyDescriptor;
+    var isArray = function isArray2(arr) {
+      if (typeof Array.isArray === "function") {
+        return Array.isArray(arr);
+      }
+      return toStr.call(arr) === "[object Array]";
+    };
+    var isPlainObject2 = function isPlainObject3(obj) {
+      if (!obj || toStr.call(obj) !== "[object Object]") {
+        return false;
+      }
+      var hasOwnConstructor = hasOwn.call(obj, "constructor");
+      var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, "isPrototypeOf");
+      if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
+        return false;
+      }
+      var key;
+      for (key in obj) {
+      }
+      return typeof key === "undefined" || hasOwn.call(obj, key);
+    };
+    var setProperty = function setProperty2(target, options) {
+      if (defineProperty && options.name === "__proto__") {
+        defineProperty(target, options.name, {
+          enumerable: true,
+          configurable: true,
+          value: options.newValue,
+          writable: true
+        });
+      } else {
+        target[options.name] = options.newValue;
+      }
+    };
+    var getProperty = function getProperty2(obj, name) {
+      if (name === "__proto__") {
+        if (!hasOwn.call(obj, name)) {
+          return void 0;
+        } else if (gOPD) {
+          return gOPD(obj, name).value;
+        }
+      }
+      return obj[name];
+    };
+    module2.exports = function extend2() {
+      var options, name, src, copy, copyIsArray, clone;
+      var target = arguments[0];
+      var i = 1;
+      var length = arguments.length;
+      var deep = false;
+      if (typeof target === "boolean") {
+        deep = target;
+        target = arguments[1] || {};
+        i = 2;
+      }
+      if (target == null || typeof target !== "object" && typeof target !== "function") {
+        target = {};
+      }
+      for (; i < length; ++i) {
+        options = arguments[i];
+        if (options != null) {
+          for (name in options) {
+            src = getProperty(target, name);
+            copy = getProperty(options, name);
+            if (target !== copy) {
+              if (deep && copy && (isPlainObject2(copy) || (copyIsArray = isArray(copy)))) {
+                if (copyIsArray) {
+                  copyIsArray = false;
+                  clone = src && isArray(src) ? src : [];
+                } else {
+                  clone = src && isPlainObject2(src) ? src : {};
+                }
+                setProperty(target, { name, newValue: extend2(deep, clone, copy) });
+              } else if (typeof copy !== "undefined") {
+                setProperty(target, { name, newValue: copy });
+              }
+            }
+          }
+        }
+      }
+      return target;
+    };
+  }
+});
+
 // node_modules/graphology-dag/has-cycle.js
 var require_has_cycle = __commonJS({
   "node_modules/graphology-dag/has-cycle.js"(exports2, module2) {
@@ -27248,97 +27339,6 @@ var require_graphology_dag = __commonJS({
     exports2.topologicalSort = sort.topologicalSort;
     exports2.topologicalGenerations = sort.topologicalGenerations;
     exports2.forEachTopologicalGeneration = sort.forEachTopologicalGeneration;
-  }
-});
-
-// node_modules/extend/index.js
-var require_extend = __commonJS({
-  "node_modules/extend/index.js"(exports2, module2) {
-    "use strict";
-    var hasOwn = Object.prototype.hasOwnProperty;
-    var toStr = Object.prototype.toString;
-    var defineProperty = Object.defineProperty;
-    var gOPD = Object.getOwnPropertyDescriptor;
-    var isArray = function isArray2(arr) {
-      if (typeof Array.isArray === "function") {
-        return Array.isArray(arr);
-      }
-      return toStr.call(arr) === "[object Array]";
-    };
-    var isPlainObject2 = function isPlainObject3(obj) {
-      if (!obj || toStr.call(obj) !== "[object Object]") {
-        return false;
-      }
-      var hasOwnConstructor = hasOwn.call(obj, "constructor");
-      var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, "isPrototypeOf");
-      if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
-        return false;
-      }
-      var key;
-      for (key in obj) {
-      }
-      return typeof key === "undefined" || hasOwn.call(obj, key);
-    };
-    var setProperty = function setProperty2(target, options) {
-      if (defineProperty && options.name === "__proto__") {
-        defineProperty(target, options.name, {
-          enumerable: true,
-          configurable: true,
-          value: options.newValue,
-          writable: true
-        });
-      } else {
-        target[options.name] = options.newValue;
-      }
-    };
-    var getProperty = function getProperty2(obj, name) {
-      if (name === "__proto__") {
-        if (!hasOwn.call(obj, name)) {
-          return void 0;
-        } else if (gOPD) {
-          return gOPD(obj, name).value;
-        }
-      }
-      return obj[name];
-    };
-    module2.exports = function extend2() {
-      var options, name, src, copy, copyIsArray, clone;
-      var target = arguments[0];
-      var i = 1;
-      var length = arguments.length;
-      var deep = false;
-      if (typeof target === "boolean") {
-        deep = target;
-        target = arguments[1] || {};
-        i = 2;
-      }
-      if (target == null || typeof target !== "object" && typeof target !== "function") {
-        target = {};
-      }
-      for (; i < length; ++i) {
-        options = arguments[i];
-        if (options != null) {
-          for (name in options) {
-            src = getProperty(target, name);
-            copy = getProperty(options, name);
-            if (target !== copy) {
-              if (deep && copy && (isPlainObject2(copy) || (copyIsArray = isArray(copy)))) {
-                if (copyIsArray) {
-                  copyIsArray = false;
-                  clone = src && isArray(src) ? src : [];
-                } else {
-                  clone = src && isPlainObject2(src) ? src : {};
-                }
-                setProperty(target, { name, newValue: extend2(deep, clone, copy) });
-              } else if (typeof copy !== "undefined") {
-                setProperty(target, { name, newValue: copy });
-              }
-            }
-          }
-        }
-      }
-      return target;
-    };
   }
 });
 
@@ -31095,8 +31095,7 @@ var github2 = __toESM(require_github());
 var core = __toESM(require_core());
 var github = __toESM(require_github());
 var import_graphology = __toESM(require_graphology_cjs());
-var import_graphology_traversal = __toESM(require_graphology_traversal());
-var import_graphology_dag = __toESM(require_graphology_dag());
+var import_graphology_traversal2 = __toESM(require_graphology_traversal());
 
 // node_modules/mdast-util-to-string/lib/index.js
 var emptyOptions = {};
@@ -43207,14 +43206,125 @@ function remarkGfm(options) {
   toMarkdownExtensions.push(gfmToMarkdown(settings));
 }
 
-// src/remark.ts
+// src/renderer.ts
+var import_graphology_dag = __toESM(require_graphology_dag());
+var import_graphology_traversal = __toESM(require_graphology_traversal());
+var ANCHOR = "<!-- branch-stack -->";
+var PULL_REQUEST_NODE_REGEX = /#\d+ :point_left:/;
 var remark2 = remark().use(remarkGfm).data("settings", {
   bullet: "-"
 });
+function renderVisualization(graph, terminatingRefs) {
+  const lines = [];
+  const rootRef = (0, import_graphology_dag.topologicalSort)(graph)[0];
+  (0, import_graphology_traversal.dfsFromNode)(
+    graph,
+    rootRef,
+    (_, stackNode, depth) => {
+      if (!stackNode.shouldPrint)
+        return;
+      const tabSize = depth * 2;
+      const indentation = new Array(tabSize).fill(" ").join("");
+      let line = indentation;
+      if (stackNode.type === "orphan-branch") {
+        line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`;
+      }
+      if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
+        line += `- \`${stackNode.ref}\``;
+      }
+      if (stackNode.type === "pull-request") {
+        line += `- #${stackNode.number}`;
+      }
+      if (stackNode.isCurrent) {
+        line += " :point_left:";
+      }
+      if (depth === 0) {
+        line += ` ${ANCHOR}`;
+      }
+      lines.push(line);
+    },
+    { mode: "directed" }
+  );
+  return lines.join("\n");
+}
+function injectVisualization(visualization, content3) {
+  const contentAst = remark2.parse(content3);
+  const visualizationAst = remark2.parse(visualization);
+  const standaloneAnchorIndex = contentAst.children.findIndex(
+    (node2) => node2.type === "html" && node2.value === ANCHOR
+  );
+  if (standaloneAnchorIndex >= 0) {
+    removeUnanchoredBranchStack(contentAst);
+    contentAst.children.splice(standaloneAnchorIndex, 1, ...visualizationAst.children);
+    return remark2.stringify(contentAst);
+  }
+  const inlineAnchorIndex = findInlineAnchor(contentAst);
+  const isMissingAnchor = inlineAnchorIndex === -1;
+  if (isMissingAnchor) {
+    removeUnanchoredBranchStack(contentAst);
+    contentAst.children.push(...visualizationAst.children);
+    return remark2.stringify(contentAst);
+  }
+  contentAst.children.splice(inlineAnchorIndex, 1, ...visualizationAst.children);
+  return remark2.stringify(contentAst);
+}
+function removeUnanchoredBranchStack(descriptionAst) {
+  const branchStackIndex = descriptionAst.children.findIndex(
+    function matchesBranchStackHeuristic(node2) {
+      if (node2.type !== "list") {
+        return false;
+      }
+      const child = node2.children[0];
+      if (node2.children.length !== 1 || !child) {
+        return false;
+      }
+      const result = containsPullRequestNode(child);
+      return result;
+    }
+  );
+  if (branchStackIndex === -1) {
+    return;
+  }
+  descriptionAst.children.splice(branchStackIndex, 1);
+}
+function containsPullRequestNode(listItem2) {
+  return listItem2.children.some((node2) => {
+    if (node2.type === "list" && node2.children.length > 0) {
+      return node2.children.some(containsPullRequestNode);
+    }
+    if (node2.type !== "paragraph") {
+      return false;
+    }
+    const result = node2.children.some(
+      (child) => child.type === "text" && PULL_REQUEST_NODE_REGEX.test(child.value)
+    );
+    return result;
+  });
+}
+function findInlineAnchor(descriptionAst) {
+  return descriptionAst.children.findIndex((node2) => {
+    if (node2.type !== "list") {
+      return;
+    }
+    return node2.children.some(containsAnchor);
+  });
+}
+function containsAnchor(listItem2) {
+  return listItem2.children.some((node2) => {
+    if (node2.type === "list") {
+      return node2.children.some(containsAnchor);
+    }
+    if (node2.type !== "paragraph") {
+      return false;
+    }
+    const result = node2.children.some(
+      (child) => child.type === "html" && child.value === ANCHOR
+    );
+    return result;
+  });
+}
 
 // src/main.ts
-var ANCHOR = "<!-- branch-stack -->";
-var PULL_REQUEST_NODE_REGEX = /#\d+ :point_left:/;
 async function main({
   octokit,
   currentPullRequest,
@@ -43288,18 +43398,15 @@ async function main({
       try {
         core.startGroup(`PR #${stackNode.number}`);
         const stackGraph2 = getStackGraph(stackNode, repoGraph);
-        const output = getOutput(stackGraph2, terminatingRefs);
-        core.info("--- Output ---");
+        const visualization = renderVisualization(stackGraph2, terminatingRefs);
+        core.info("--- Visualization ---");
         core.info("");
-        output.split("\n").forEach(core.info);
+        visualization.split("\n").forEach(core.info);
         core.info("");
-        core.info("--- End output ---");
+        core.info("--- End visualization ---");
         core.info("");
         let description = stackNode.body ?? "";
-        description = updateDescription({
-          description,
-          output
-        });
+        description = injectVisualization(visualization, description);
         core.info("--- Updated description ---");
         core.info("");
         description.split("\n").forEach(core.info);
@@ -43342,7 +43449,7 @@ async function main({
 function getStackGraph(pullRequest, repoGraph) {
   const stackGraph = repoGraph.copy();
   stackGraph.setNodeAttribute(pullRequest.head.ref, "isCurrent", true);
-  (0, import_graphology_traversal.bfsFromNode)(
+  (0, import_graphology_traversal2.bfsFromNode)(
     stackGraph,
     pullRequest.head.ref,
     (ref, attributes) => {
@@ -43351,7 +43458,7 @@ function getStackGraph(pullRequest, repoGraph) {
     },
     { mode: "inbound" }
   );
-  (0, import_graphology_traversal.dfsFromNode)(
+  (0, import_graphology_traversal2.dfsFromNode)(
     stackGraph,
     pullRequest.head.ref,
     (ref) => {
@@ -43365,118 +43472,6 @@ function getStackGraph(pullRequest, repoGraph) {
     }
   });
   return stackGraph;
-}
-function getOutput(graph, terminatingRefs) {
-  const lines = [];
-  const rootRef = (0, import_graphology_dag.topologicalSort)(graph)[0];
-  (0, import_graphology_traversal.dfsFromNode)(
-    graph,
-    rootRef,
-    (_, stackNode, depth) => {
-      if (!stackNode.shouldPrint)
-        return;
-      const tabSize = depth * 2;
-      const indentation = new Array(tabSize).fill(" ").join("");
-      let line = indentation;
-      if (stackNode.type === "orphan-branch") {
-        line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`;
-      }
-      if (stackNode.type === "perennial" && terminatingRefs.includes(stackNode.ref)) {
-        line += `- \`${stackNode.ref}\``;
-      }
-      if (stackNode.type === "pull-request") {
-        line += `- #${stackNode.number}`;
-      }
-      if (stackNode.isCurrent) {
-        line += " :point_left:";
-      }
-      if (depth === 0) {
-        line += ` ${ANCHOR}`;
-      }
-      lines.push(line);
-    },
-    { mode: "directed" }
-  );
-  return lines.join("\n");
-}
-function updateDescription({
-  description,
-  output
-}) {
-  const descriptionAst = remark2.parse(description);
-  const outputAst = remark2.parse(output);
-  const standaloneAnchorIndex = descriptionAst.children.findIndex(
-    (node2) => node2.type === "html" && node2.value === ANCHOR
-  );
-  if (standaloneAnchorIndex >= 0) {
-    removeUnanchoredBranchStack(descriptionAst);
-    descriptionAst.children.splice(standaloneAnchorIndex, 1, ...outputAst.children);
-    return remark2.stringify(descriptionAst);
-  }
-  const inlineAnchorIndex = findInlineAnchor(descriptionAst);
-  const isMissingAnchor = inlineAnchorIndex === -1;
-  if (isMissingAnchor) {
-    removeUnanchoredBranchStack(descriptionAst);
-    descriptionAst.children.push(...outputAst.children);
-    return remark2.stringify(descriptionAst);
-  }
-  descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children);
-  return remark2.stringify(descriptionAst);
-}
-function removeUnanchoredBranchStack(descriptionAst) {
-  const branchStackIndex = descriptionAst.children.findIndex(
-    function matchesBranchStackHeuristic(node2) {
-      if (node2.type !== "list") {
-        return false;
-      }
-      const child = node2.children[0];
-      if (node2.children.length !== 1 || !child) {
-        return false;
-      }
-      const result = containsPullRequestNode(child);
-      return result;
-    }
-  );
-  if (branchStackIndex === -1) {
-    return;
-  }
-  descriptionAst.children.splice(branchStackIndex, 1);
-}
-function containsPullRequestNode(listItem2) {
-  return listItem2.children.some((node2) => {
-    if (node2.type === "list" && node2.children.length > 0) {
-      return node2.children.some(containsPullRequestNode);
-    }
-    if (node2.type !== "paragraph") {
-      return false;
-    }
-    const result = node2.children.some(
-      (child) => child.type === "text" && PULL_REQUEST_NODE_REGEX.test(child.value)
-    );
-    return result;
-  });
-}
-function findInlineAnchor(descriptionAst) {
-  return descriptionAst.children.findIndex((node2) => {
-    if (node2.type !== "list") {
-      return;
-    }
-    return node2.children.some(containsAnchor);
-  });
-}
-function containsAnchor(listItem2) {
-  return listItem2.children.some((node2) => {
-    if (node2.type === "list") {
-      return node2.children.some(containsAnchor);
-    }
-    if (node2.type !== "paragraph") {
-      return false;
-    }
-    const result = node2.children.some(
-      (child) => child.type === "html" && child.value === ANCHOR
-    );
-    return result;
-  });
 }
 
 // src/inputs.ts

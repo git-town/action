@@ -2,13 +2,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
-import { topologicalSort } from 'graphology-dag'
-import type { ListItem, Root } from 'mdast'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
-import { remark } from './remark'
-
-const ANCHOR = '<!-- branch-stack -->'
-export const PULL_REQUEST_NODE_REGEX = /#\d+ :point_left:/
+import { renderVisualization, injectVisualization } from './renderer'
 
 export async function main({
   octokit,
@@ -105,20 +100,17 @@ export async function main({
         core.startGroup(`PR #${stackNode.number}`)
 
         const stackGraph = getStackGraph(stackNode, repoGraph)
-        const output = getOutput(stackGraph, terminatingRefs)
+        const visualization = renderVisualization(stackGraph, terminatingRefs)
 
-        core.info('--- Output ---')
+        core.info('--- Visualization ---')
         core.info('')
-        output.split('\n').forEach(core.info)
+        visualization.split('\n').forEach(core.info)
         core.info('')
-        core.info('--- End output ---')
+        core.info('--- End visualization ---')
         core.info('')
 
         let description = stackNode.body ?? ''
-        description = updateDescription({
-          description,
-          output,
-        })
+        description = injectVisualization(visualization, description)
 
         core.info('--- Updated description ---')
         core.info('')
@@ -198,160 +190,4 @@ export function getStackGraph(
   })
 
   return stackGraph
-}
-
-export function getOutput(
-  graph: DirectedGraph<StackNodeAttributes>,
-  terminatingRefs: string[]
-) {
-  const lines: string[] = []
-
-  // `dfs` is bugged and doesn't traverse in topological order.
-  // `dfsFromNode` does, so we'll do the topological sort ourselves
-  // start traversal from the root.
-  const rootRef = topologicalSort(graph)[0]
-
-  dfsFromNode(
-    graph,
-    rootRef,
-    (_, stackNode, depth) => {
-      if (!stackNode.shouldPrint) return
-
-      const tabSize = depth * 2
-      const indentation = new Array(tabSize).fill(' ').join('')
-
-      let line = indentation
-
-      if (stackNode.type === 'orphan-branch') {
-        line += `- \`${stackNode.ref}\` - :warning: No PR associated with branch`
-      }
-
-      if (stackNode.type === 'perennial' && terminatingRefs.includes(stackNode.ref)) {
-        line += `- \`${stackNode.ref}\``
-      }
-
-      if (stackNode.type === 'pull-request') {
-        line += `- #${stackNode.number}`
-      }
-
-      if (stackNode.isCurrent) {
-        line += ' :point_left:'
-      }
-
-      if (depth === 0) {
-        line += ` ${ANCHOR}`
-      }
-
-      lines.push(line)
-    },
-    { mode: 'directed' }
-  )
-
-  return lines.join('\n')
-}
-
-export function updateDescription({
-  description,
-  output,
-}: {
-  description: string
-  output: string
-}) {
-  const descriptionAst = remark.parse(description)
-  const outputAst = remark.parse(output)
-
-  const standaloneAnchorIndex = descriptionAst.children.findIndex(
-    (node) => node.type === 'html' && node.value === ANCHOR
-  )
-
-  if (standaloneAnchorIndex >= 0) {
-    removeUnanchoredBranchStack(descriptionAst)
-
-    descriptionAst.children.splice(standaloneAnchorIndex, 1, ...outputAst.children)
-    return remark.stringify(descriptionAst)
-  }
-
-  const inlineAnchorIndex = findInlineAnchor(descriptionAst)
-
-  const isMissingAnchor = inlineAnchorIndex === -1
-  if (isMissingAnchor) {
-    removeUnanchoredBranchStack(descriptionAst)
-
-    descriptionAst.children.push(...outputAst.children)
-    return remark.stringify(descriptionAst)
-  }
-
-  descriptionAst.children.splice(inlineAnchorIndex, 1, ...outputAst.children)
-  return remark.stringify(descriptionAst)
-}
-
-function removeUnanchoredBranchStack(descriptionAst: Root) {
-  const branchStackIndex = descriptionAst.children.findIndex(
-    function matchesBranchStackHeuristic(node) {
-      if (node.type !== 'list') {
-        return false
-      }
-
-      const child = node.children[0]
-      if (node.children.length !== 1 || !child) {
-        return false
-      }
-
-      const result = containsPullRequestNode(child)
-
-      return result
-    }
-  )
-
-  if (branchStackIndex === -1) {
-    return
-  }
-
-  descriptionAst.children.splice(branchStackIndex, 1)
-}
-
-function containsPullRequestNode(listItem: ListItem) {
-  return listItem.children.some((node) => {
-    if (node.type === 'list' && node.children.length > 0) {
-      return node.children.some(containsPullRequestNode)
-    }
-
-    if (node.type !== 'paragraph') {
-      return false
-    }
-
-    const result = node.children.some(
-      (child) => child.type === 'text' && PULL_REQUEST_NODE_REGEX.test(child.value)
-    )
-
-    return result
-  })
-}
-
-function findInlineAnchor(descriptionAst: Root): number {
-  return descriptionAst.children.findIndex((node) => {
-    if (node.type !== 'list') {
-      return
-    }
-
-    return node.children.some(containsAnchor)
-  })
-}
-
-function containsAnchor(listItem: ListItem): boolean {
-  return listItem.children.some((node) => {
-    if (node.type === 'list') {
-      return node.children.some(containsAnchor)
-    }
-
-    if (node.type !== 'paragraph') {
-      return false
-    }
-
-    const result = node.children.some(
-      (child) => child.type === 'html' && child.value === ANCHOR
-    )
-
-    return result
-  })
 }
