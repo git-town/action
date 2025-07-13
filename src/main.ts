@@ -1,25 +1,26 @@
-import * as core from '@actions/core'
-import * as github from '@actions/github'
 import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
-import { renderVisualization, injectVisualization } from './renderer'
+import { renderVisualization } from './renderer'
+import { DescriptionLocation } from './locations/description'
 
-export async function main({
-  octokit,
-  currentPullRequest,
-  pullRequests,
-  mainBranch,
-  perennialBranches,
-  skipSingleStacks,
-}: Context) {
+export async function main(context: Context) {
+  const {
+    currentPullRequest,
+    pullRequests,
+    mainBranch,
+    perennialBranches,
+    skipSingleStacks,
+  } = context
   const repoGraph = new DirectedGraph<StackNodeAttributes>()
 
+  // Add main branch as node to repo graph
   repoGraph.mergeNode(mainBranch, {
     type: 'perennial',
     ref: mainBranch,
   })
 
+  // Add all known perennial branches as nodes to repo graph
   perennialBranches.forEach((perennialBranch) => {
     repoGraph.mergeNode(perennialBranch, {
       type: 'perennial',
@@ -27,10 +28,10 @@ export async function main({
     })
   })
 
+  // Add open pull requests as nodes to repo graph
   const openPullRequests = pullRequests.filter(
     (pullRequest) => pullRequest.state === 'open'
   )
-
   openPullRequests.forEach((openPullRequest) => {
     repoGraph.mergeNode(openPullRequest.head.ref, {
       type: 'pull-request',
@@ -38,6 +39,7 @@ export async function main({
     })
   })
 
+  // Link stacked pull requests with edges in repo graph
   openPullRequests.forEach((openPullRequest) => {
     const hasExistingBase = repoGraph.hasNode(openPullRequest.base.ref)
     if (hasExistingBase) {
@@ -46,6 +48,9 @@ export async function main({
       return
     }
 
+    // Attempt to link pull requests whose base pull request is already closed.
+    // This may fail if the `history-limit` input is set and the base is not
+    // present in the action's retrieved pull requests.
     const basePullRequest = pullRequests.find(
       (basePullRequest) => basePullRequest.head.ref === openPullRequest.base.ref
     )
@@ -88,7 +93,6 @@ export async function main({
   }
 
   const jobs: Array<() => Promise<void>> = []
-  const failedJobs: number[] = []
 
   stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== 'pull-request' || !stackNode.shouldPrint) {
@@ -96,65 +100,15 @@ export async function main({
     }
 
     jobs.push(async () => {
-      try {
-        core.startGroup(`PR #${stackNode.number}`)
+      const stackGraph = getStackGraph(stackNode, repoGraph)
+      const visualization = renderVisualization(stackGraph, terminatingRefs)
 
-        const stackGraph = getStackGraph(stackNode, repoGraph)
-        const visualization = renderVisualization(stackGraph, terminatingRefs)
-
-        core.info('--- Visualization ---')
-        core.info('')
-        visualization.split('\n').forEach(core.info)
-        core.info('')
-        core.info('--- End visualization ---')
-        core.info('')
-
-        let description = stackNode.body ?? ''
-        description = injectVisualization(visualization, description)
-
-        core.info('--- Updated description ---')
-        core.info('')
-        description.split('\n').forEach(core.info)
-        core.info('')
-        core.info('--- End updated description ---')
-        core.info('')
-
-        core.info('Updating PR via GitHub API...')
-        const response = await octokit.rest.pulls.update({
-          ...github.context.repo,
-          pull_number: stackNode.number,
-          body: description,
-        })
-        core.info('✅ Done')
-        core.info('')
-
-        core.info('--- API response ---')
-        core.info('')
-        const updatedBody = response.data.body ?? ''
-        updatedBody.split('\n').forEach(core.info)
-        core.info('')
-        core.info('--- End API response ---')
-      } catch (error) {
-        failedJobs.push(stackNode.number)
-
-        if (error instanceof Error) {
-          core.error(`Unable to update PR: ${error.message}`)
-        } else {
-          core.error(String(error))
-        }
-      } finally {
-        core.endGroup()
-      }
+      const target = new DescriptionLocation(context)
+      await target.update(stackNode, visualization)
     })
   })
 
-  await Promise.allSettled(jobs.map((job) => job()))
-
-  if (failedJobs.length > 0) {
-    core.setFailed(
-      `Action failed for ${failedJobs.map((pullRequestNumber) => `#${pullRequestNumber}`).join(', ')}`
-    )
-  }
+  await Promise.all(jobs.map((job) => job()))
 }
 
 export function getStackGraph(

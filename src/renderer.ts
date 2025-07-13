@@ -20,8 +20,8 @@ export function renderVisualization(
   const lines: string[] = []
 
   // `dfs` is bugged and doesn't traverse in topological order.
-  // `dfsFromNode` does, so we'll do the topological sort ourselves
-  // start traversal from the root.
+  // `dfsFromNode` does, so we'll do the topological sort ourselves,
+  // starting traversal from the root.
   const rootRef = topologicalSort(graph)[0]
 
   dfsFromNode(
