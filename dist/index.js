@@ -18973,22 +18973,22 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(message + os.EOL);
     }
     exports2.info = info4;
-    function startGroup3(name) {
+    function startGroup4(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup3;
-    function endGroup3() {
+    exports2.startGroup = startGroup4;
+    function endGroup4() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup3;
+    exports2.endGroup = endGroup4;
     function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup3(name);
+        startGroup4(name);
         let result;
         try {
           result = yield fn();
         } finally {
-          endGroup3();
+          endGroup4();
         }
         return result;
       });
@@ -31092,7 +31092,6 @@ var core4 = __toESM(require_core());
 var github2 = __toESM(require_github());
 
 // src/main.ts
-var core = __toESM(require_core());
 var import_graphology = __toESM(require_graphology_cjs());
 var import_graphology_traversal2 = __toESM(require_graphology_traversal());
 
@@ -43324,18 +43323,25 @@ function containsAnchor(listItem2) {
 }
 
 // src/locations/description.ts
+var core = __toESM(require_core());
 var github = __toESM(require_github());
 var DescriptionLocation = class {
   constructor(context3) {
     this.octokit = context3.octokit;
   }
   async update(pullRequest, visualization) {
+    core.startGroup(`Update: PR #${pullRequest.number}`);
+    core.info("Visualization:");
+    core.info(visualization);
     const description = injectVisualization(visualization, pullRequest.body ?? "");
+    core.info("Description:");
+    core.info(description);
     await this.octokit.rest.pulls.update({
       ...github.context.repo,
       pull_number: pullRequest.number,
       body: description
     });
+    core.endGroup();
   }
 };
 
@@ -43409,7 +43415,6 @@ async function main(context3) {
       return;
     }
     jobs.push(async () => {
-      core.info(`Updating PR #${stackNode.number}`);
       const stackGraph2 = getStackGraph(stackNode, repoGraph);
       const visualization = renderVisualization(stackGraph2, terminatingRefs);
       const target = new DescriptionLocation(context3);

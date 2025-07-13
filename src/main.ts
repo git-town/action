@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import { DirectedGraph } from 'graphology'
 import { bfsFromNode, dfsFromNode } from 'graphology-traversal'
 import type { PullRequest, Context, StackNodeAttributes } from './types'
@@ -101,7 +100,6 @@ export async function main(context: Context) {
     }
 
     jobs.push(async () => {
-      core.info(`Updating PR #${stackNode.number}`)
       const stackGraph = getStackGraph(stackNode, repoGraph)
       const visualization = renderVisualization(stackGraph, terminatingRefs)
 

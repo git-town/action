@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { injectVisualization } from '../renderer'
 import type { Context, Octokit, PullRequest } from '../types'
@@ -11,12 +12,20 @@ export class DescriptionLocation implements Location {
   }
 
   async update(pullRequest: PullRequest, visualization: string) {
+    core.startGroup(`Update: PR #${pullRequest.number}`)
+    core.info('Visualization:')
+    core.info(visualization)
+
     const description = injectVisualization(visualization, pullRequest.body ?? '')
+    core.info('Description:')
+    core.info(description)
 
     await this.octokit.rest.pulls.update({
       ...github.context.repo,
       pull_number: pullRequest.number,
       body: description,
     })
+
+    core.endGroup()
   }
 }
