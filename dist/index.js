@@ -748,18 +748,18 @@ var require_tunnel = __commonJS({
             res.statusCode
           );
           socket.destroy();
-          var error2 = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
-          error2.code = "ECONNRESET";
-          options.request.emit("error", error2);
+          var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
+          error.code = "ECONNRESET";
+          options.request.emit("error", error);
           self.removeSocket(placeholder);
           return;
         }
         if (head.length > 0) {
           debug("got illegal response body from proxy");
           socket.destroy();
-          var error2 = new Error("got illegal response body from proxy");
-          error2.code = "ECONNRESET";
-          options.request.emit("error", error2);
+          var error = new Error("got illegal response body from proxy");
+          error.code = "ECONNRESET";
+          options.request.emit("error", error);
           self.removeSocket(placeholder);
           return;
         }
@@ -774,9 +774,9 @@ var require_tunnel = __commonJS({
           cause.message,
           cause.stack
         );
-        var error2 = new Error("tunneling socket could not be established, cause=" + cause.message);
-        error2.code = "ECONNRESET";
-        options.request.emit("error", error2);
+        var error = new Error("tunneling socket could not be established, cause=" + cause.message);
+        error.code = "ECONNRESET";
+        options.request.emit("error", error);
         self.removeSocket(placeholder);
       }
     };
@@ -5901,7 +5901,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         throw new TypeError("Body is unusable");
       }
       const promise = createDeferredPromise();
-      const errorSteps = (error2) => promise.reject(error2);
+      const errorSteps = (error) => promise.reject(error);
       const successSteps = (data) => {
         try {
           promise.resolve(convertBytesToJSValue(data));
@@ -6187,16 +6187,16 @@ var require_request = __commonJS({
           this.onError(err);
         }
       }
-      onError(error2) {
+      onError(error) {
         this.onFinally();
         if (channels.error.hasSubscribers) {
-          channels.error.publish({ request: this, error: error2 });
+          channels.error.publish({ request: this, error });
         }
         if (this.aborted) {
           return;
         }
         this.aborted = true;
-        return this[kHandler].onError(error2);
+        return this[kHandler].onError(error);
       }
       onFinally() {
         if (this.errorHandler) {
@@ -7068,8 +7068,8 @@ var require_RedirectHandler = __commonJS({
       onUpgrade(statusCode, headers, socket) {
         this.handler.onUpgrade(statusCode, headers, socket);
       }
-      onError(error2) {
-        this.handler.onError(error2);
+      onError(error) {
+        this.handler.onError(error);
       }
       onHeaders(statusCode, headers, resume, statusText) {
         this.location = this.history.length >= this.maxRedirections || util2.isDisturbed(this.opts.body) ? null : parseLocation(statusCode, headers);
@@ -10815,13 +10815,13 @@ var require_mock_utils = __commonJS({
       if (mockDispatch2.data.callback) {
         mockDispatch2.data = { ...mockDispatch2.data, ...mockDispatch2.data.callback(opts) };
       }
-      const { data: { statusCode, data, headers, trailers, error: error2 }, delay, persist } = mockDispatch2;
+      const { data: { statusCode, data, headers, trailers, error }, delay, persist } = mockDispatch2;
       const { timesInvoked, times } = mockDispatch2;
       mockDispatch2.consumed = !persist && timesInvoked >= times;
       mockDispatch2.pending = timesInvoked < times;
-      if (error2 !== null) {
+      if (error !== null) {
         deleteMockDispatch(this[kDispatches], key);
-        handler.onError(error2);
+        handler.onError(error);
         return true;
       }
       if (typeof delay === "number" && delay > 0) {
@@ -10859,19 +10859,19 @@ var require_mock_utils = __commonJS({
         if (agent.isMockActive) {
           try {
             mockDispatch.call(this, opts, handler);
-          } catch (error2) {
-            if (error2 instanceof MockNotMatchedError) {
+          } catch (error) {
+            if (error instanceof MockNotMatchedError) {
               const netConnect = agent[kGetNetConnect]();
               if (netConnect === false) {
-                throw new MockNotMatchedError(`${error2.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
+                throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
               }
               if (checkNetConnect(netConnect, origin)) {
                 originalDispatch.call(this, opts, handler);
               } else {
-                throw new MockNotMatchedError(`${error2.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
+                throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
               }
             } else {
-              throw error2;
+              throw error;
             }
           }
         } else {
@@ -11034,11 +11034,11 @@ var require_mock_interceptor = __commonJS({
       /**
        * Mock an undici request with a defined error.
        */
-      replyWithError(error2) {
-        if (typeof error2 === "undefined") {
+      replyWithError(error) {
+        if (typeof error === "undefined") {
           throw new InvalidArgumentError("error must be defined");
         }
-        const newMockDispatch = addMockDispatch(this[kDispatches], this[kDispatchKey], { error: error2 });
+        const newMockDispatch = addMockDispatch(this[kDispatches], this[kDispatchKey], { error });
         return new MockScope(newMockDispatch);
       }
       /**
@@ -13364,17 +13364,17 @@ var require_fetch = __commonJS({
         this.emit("terminated", reason);
       }
       // https://fetch.spec.whatwg.org/#fetch-controller-abort
-      abort(error2) {
+      abort(error) {
         if (this.state !== "ongoing") {
           return;
         }
         this.state = "aborted";
-        if (!error2) {
-          error2 = new DOMException2("The operation was aborted.", "AbortError");
+        if (!error) {
+          error = new DOMException2("The operation was aborted.", "AbortError");
         }
-        this.serializedAbortReason = error2;
-        this.connection?.destroy(error2);
-        this.emit("terminated", error2);
+        this.serializedAbortReason = error;
+        this.connection?.destroy(error);
+        this.emit("terminated", error);
       }
     };
     function fetch(input, init = {}) {
@@ -13478,13 +13478,13 @@ var require_fetch = __commonJS({
         performance.markResourceTiming(timingInfo, originalURL.href, initiatorType, globalThis2, cacheState);
       }
     }
-    function abortFetch(p, request, responseObject, error2) {
-      if (!error2) {
-        error2 = new DOMException2("The operation was aborted.", "AbortError");
+    function abortFetch(p, request, responseObject, error) {
+      if (!error) {
+        error = new DOMException2("The operation was aborted.", "AbortError");
       }
-      p.reject(error2);
+      p.reject(error);
       if (request.body != null && isReadable(request.body?.stream)) {
-        request.body.stream.cancel(error2).catch((err) => {
+        request.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -13496,7 +13496,7 @@ var require_fetch = __commonJS({
       }
       const response = responseObject[kState];
       if (response.body != null && isReadable(response.body?.stream)) {
-        response.body.stream.cancel(error2).catch((err) => {
+        response.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -14276,13 +14276,13 @@ var require_fetch = __commonJS({
               fetchParams.controller.ended = true;
               this.body.push(null);
             },
-            onError(error2) {
+            onError(error) {
               if (this.abort) {
                 fetchParams.controller.off("terminated", this.abort);
               }
-              this.body?.destroy(error2);
-              fetchParams.controller.terminate(error2);
-              reject(error2);
+              this.body?.destroy(error);
+              fetchParams.controller.terminate(error);
+              reject(error);
             },
             onUpgrade(status, headersList, socket) {
               if (status !== 101) {
@@ -14748,8 +14748,8 @@ var require_util4 = __commonJS({
                   }
                   fr[kResult] = result;
                   fireAProgressEvent("load", fr);
-                } catch (error2) {
-                  fr[kError] = error2;
+                } catch (error) {
+                  fr[kError] = error;
                   fireAProgressEvent("error", fr);
                 }
                 if (fr[kState] !== "loading") {
@@ -14758,13 +14758,13 @@ var require_util4 = __commonJS({
               });
               break;
             }
-          } catch (error2) {
+          } catch (error) {
             if (fr[kAborted]) {
               return;
             }
             queueMicrotask(() => {
               fr[kState] = "done";
-              fr[kError] = error2;
+              fr[kError] = error;
               fireAProgressEvent("error", fr);
               if (fr[kState] !== "loading") {
                 fireAProgressEvent("loadend", fr);
@@ -16780,11 +16780,11 @@ var require_connection = __commonJS({
         });
       }
     }
-    function onSocketError(error2) {
+    function onSocketError(error) {
       const { ws } = this;
       ws[kReadyState] = states.CLOSING;
       if (channels.socketError.hasSubscribers) {
-        channels.socketError.publish(error2);
+        channels.socketError.publish(error);
       }
       this.destroy();
     }
@@ -18424,12 +18424,12 @@ var require_oidc_utils = __commonJS({
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
           const httpclient = _OidcClient.createHttpClient();
-          const res = yield httpclient.getJson(id_token_url).catch((error2) => {
+          const res = yield httpclient.getJson(id_token_url).catch((error) => {
             throw new Error(`Failed to get ID Token. 
  
-        Error Code : ${error2.statusCode}
+        Error Code : ${error.statusCode}
  
-        Error Message: ${error2.message}`);
+        Error Message: ${error.message}`);
           });
           const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
           if (!id_token) {
@@ -18450,8 +18450,8 @@ var require_oidc_utils = __commonJS({
             const id_token = yield _OidcClient.getCall(id_token_url);
             core_1.setSecret(id_token);
             return id_token;
-          } catch (error2) {
-            throw new Error(`Error message: ${error2.message}`);
+          } catch (error) {
+            throw new Error(`Error message: ${error.message}`);
           }
         });
       }
@@ -18944,11 +18944,11 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issue("echo", enabled ? "on" : "off");
     }
     exports2.setCommandEcho = setCommandEcho;
-    function setFailed4(message) {
+    function setFailed3(message) {
       process.exitCode = ExitCode.Failure;
-      error2(message);
+      error(message);
     }
-    exports2.setFailed = setFailed4;
+    exports2.setFailed = setFailed3;
     function isDebug() {
       return process.env["RUNNER_DEBUG"] === "1";
     }
@@ -18957,10 +18957,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("debug", {}, message);
     }
     exports2.debug = debug;
-    function error2(message, properties = {}) {
+    function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.error = error2;
+    exports2.error = error;
     function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -18973,22 +18973,22 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(message + os.EOL);
     }
     exports2.info = info4;
-    function startGroup4(name) {
+    function startGroup3(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup4;
-    function endGroup4() {
+    exports2.startGroup = startGroup3;
+    function endGroup3() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup4;
+    exports2.endGroup = endGroup3;
     function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup4(name);
+        startGroup3(name);
         let result;
         try {
           result = yield fn();
         } finally {
-          endGroup4();
+          endGroup3();
         }
         return result;
       });
@@ -19265,8 +19265,8 @@ var require_add = __commonJS({
       }
       if (kind === "error") {
         hook = function(method, options) {
-          return Promise.resolve().then(method.bind(null, options)).catch(function(error2) {
-            return orig(error2, options);
+          return Promise.resolve().then(method.bind(null, options)).catch(function(error) {
+            return orig(error, options);
           });
         };
       }
@@ -19999,7 +19999,7 @@ var require_dist_node5 = __commonJS({
         }
         if (status >= 400) {
           const data = await getResponseData(response);
-          const error2 = new import_request_error.RequestError(toErrorMessage(data), status, {
+          const error = new import_request_error.RequestError(toErrorMessage(data), status, {
             response: {
               url,
               status,
@@ -20008,7 +20008,7 @@ var require_dist_node5 = __commonJS({
             },
             request: requestOptions
           });
-          throw error2;
+          throw error;
         }
         return parseSuccessResponseBody ? await getResponseData(response) : response.body;
       }).then((data) => {
@@ -20018,17 +20018,17 @@ var require_dist_node5 = __commonJS({
           headers,
           data
         };
-      }).catch((error2) => {
-        if (error2 instanceof import_request_error.RequestError)
-          throw error2;
-        else if (error2.name === "AbortError")
-          throw error2;
-        let message = error2.message;
-        if (error2.name === "TypeError" && "cause" in error2) {
-          if (error2.cause instanceof Error) {
-            message = error2.cause.message;
-          } else if (typeof error2.cause === "string") {
-            message = error2.cause;
+      }).catch((error) => {
+        if (error instanceof import_request_error.RequestError)
+          throw error;
+        else if (error.name === "AbortError")
+          throw error;
+        let message = error.message;
+        if (error.name === "TypeError" && "cause" in error) {
+          if (error.cause instanceof Error) {
+            message = error.cause.message;
+          } else if (typeof error.cause === "string") {
+            message = error.cause;
           }
         }
         throw new import_request_error.RequestError(message, 500, {
@@ -22694,9 +22694,9 @@ var require_dist_node10 = __commonJS({
                 /<([^>]+)>;\s*rel="next"/
               ) || [])[1];
               return { value: normalizedResponse };
-            } catch (error2) {
-              if (error2.status !== 409)
-                throw error2;
+            } catch (error) {
+              if (error.status !== 409)
+                throw error;
               url = "";
               return {
                 value: {
@@ -27474,7 +27474,7 @@ var require_parser = __commonJS({
             peg$reportedPos
           );
         }
-        function error2(message) {
+        function error(message) {
           throw peg$buildException(message, null, peg$reportedPos);
         }
         function peg$computePosDetails(pos) {
@@ -31093,7 +31093,6 @@ var github2 = __toESM(require_github());
 
 // src/main.ts
 var core = __toESM(require_core());
-var github = __toESM(require_github());
 var import_graphology = __toESM(require_graphology_cjs());
 var import_graphology_traversal2 = __toESM(require_graphology_traversal());
 
@@ -39615,9 +39614,9 @@ function remarkStringify(options) {
 }
 
 // node_modules/bail/index.js
-function bail(error2) {
-  if (error2) {
-    throw error2;
+function bail(error) {
+  if (error) {
+    throw error;
   }
 }
 
@@ -39649,11 +39648,11 @@ function trough() {
       throw new TypeError("Expected function as last argument, not " + callback);
     }
     next(null, ...values);
-    function next(error2, ...output) {
+    function next(error, ...output) {
       const fn = fns[++middlewareIndex];
       let index2 = -1;
-      if (error2) {
-        callback(error2);
+      if (error) {
+        callback(error);
         return;
       }
       while (++index2 < values.length) {
@@ -39690,10 +39689,10 @@ function wrap(middleware, callback) {
     }
     try {
       result = middleware.apply(this, parameters);
-    } catch (error2) {
+    } catch (error) {
       const exception = (
         /** @type {Error} */
-        error2
+        error
       );
       if (fnExpectsCallback && called) {
         throw exception;
@@ -39710,10 +39709,10 @@ function wrap(middleware, callback) {
       }
     }
   }
-  function done(error2, ...output) {
+  function done(error, ...output) {
     if (!called) {
       called = true;
-      callback(error2, ...output);
+      callback(error, ...output);
     }
   }
   function then(value) {
@@ -40601,9 +40600,9 @@ var Processor = class _Processor extends CallableInstance {
         /** @type {unknown} */
         self.parse(realFile)
       );
-      self.run(parseTree, realFile, function(error2, tree, file2) {
-        if (error2 || !tree || !file2) {
-          return realDone(error2);
+      self.run(parseTree, realFile, function(error, tree, file2) {
+        if (error || !tree || !file2) {
+          return realDone(error);
         }
         const compileTree = (
           /** @type {CompileTree extends undefined ? Node : CompileTree} */
@@ -40617,14 +40616,14 @@ var Processor = class _Processor extends CallableInstance {
           file2.result = compileResult;
         }
         realDone(
-          error2,
+          error,
           /** @type {VFileWithOutput<CompileResult>} */
           file2
         );
       });
-      function realDone(error2, file2) {
-        if (error2 || !file2) {
-          reject(error2);
+      function realDone(error, file2) {
+        if (error || !file2) {
+          reject(error);
         } else if (resolve) {
           resolve(file2);
         } else {
@@ -40675,9 +40674,9 @@ var Processor = class _Processor extends CallableInstance {
     assertDone("processSync", "process", complete);
     ok2(result, "we either bailed on an error or have a tree");
     return result;
-    function realDone(error2, file2) {
+    function realDone(error, file2) {
       complete = true;
-      bail(error2);
+      bail(error);
       result = file2;
     }
   }
@@ -40735,13 +40734,13 @@ var Processor = class _Processor extends CallableInstance {
       );
       const realFile = vfile(file);
       transformers.run(tree, realFile, realDone);
-      function realDone(error2, outputTree, file2) {
+      function realDone(error, outputTree, file2) {
         const resultingTree = (
           /** @type {TailTree extends undefined ? Node : TailTree} */
           outputTree || tree
         );
-        if (error2) {
-          reject(error2);
+        if (error) {
+          reject(error);
         } else if (resolve) {
           resolve(resultingTree);
         } else {
@@ -40775,8 +40774,8 @@ var Processor = class _Processor extends CallableInstance {
     assertDone("runSync", "run", complete);
     ok2(result, "we either bailed on an error or have a tree");
     return result;
-    function realDone(error2, tree2) {
-      bail(error2);
+    function realDone(error, tree2) {
+      bail(error);
       result = tree2;
       complete = true;
     }
@@ -43324,15 +43323,31 @@ function containsAnchor(listItem2) {
   });
 }
 
+// src/locations/description.ts
+var github = __toESM(require_github());
+var DescriptionTarget = class {
+  constructor(context3) {
+    this.octokit = context3.octokit;
+  }
+  async update(pullRequest, visualization) {
+    const description = injectVisualization(visualization, pullRequest.body ?? "");
+    await this.octokit.rest.pulls.update({
+      ...github.context.repo,
+      pull_number: pullRequest.number,
+      body: description
+    });
+  }
+};
+
 // src/main.ts
-async function main({
-  octokit,
-  currentPullRequest,
-  pullRequests,
-  mainBranch,
-  perennialBranches,
-  skipSingleStacks
-}) {
+async function main(context3) {
+  const {
+    currentPullRequest,
+    pullRequests,
+    mainBranch,
+    perennialBranches,
+    skipSingleStacks
+  } = context3;
   const repoGraph = new import_graphology.DirectedGraph();
   repoGraph.mergeNode(mainBranch, {
     type: "perennial",
@@ -43389,62 +43404,19 @@ async function main({
     return;
   }
   const jobs = [];
-  const failedJobs = [];
   stackGraph.forEachNode((_, stackNode) => {
     if (stackNode.type !== "pull-request" || !stackNode.shouldPrint) {
       return;
     }
     jobs.push(async () => {
-      try {
-        core.startGroup(`PR #${stackNode.number}`);
-        const stackGraph2 = getStackGraph(stackNode, repoGraph);
-        const visualization = renderVisualization(stackGraph2, terminatingRefs);
-        core.info("--- Visualization ---");
-        core.info("");
-        visualization.split("\n").forEach(core.info);
-        core.info("");
-        core.info("--- End visualization ---");
-        core.info("");
-        let description = stackNode.body ?? "";
-        description = injectVisualization(visualization, description);
-        core.info("--- Updated description ---");
-        core.info("");
-        description.split("\n").forEach(core.info);
-        core.info("");
-        core.info("--- End updated description ---");
-        core.info("");
-        core.info("Updating PR via GitHub API...");
-        const response = await octokit.rest.pulls.update({
-          ...github.context.repo,
-          pull_number: stackNode.number,
-          body: description
-        });
-        core.info("\u2705 Done");
-        core.info("");
-        core.info("--- API response ---");
-        core.info("");
-        const updatedBody = response.data.body ?? "";
-        updatedBody.split("\n").forEach(core.info);
-        core.info("");
-        core.info("--- End API response ---");
-      } catch (error2) {
-        failedJobs.push(stackNode.number);
-        if (error2 instanceof Error) {
-          core.error(`Unable to update PR: ${error2.message}`);
-        } else {
-          core.error(String(error2));
-        }
-      } finally {
-        core.endGroup();
-      }
+      core.info(`Updating PR #${stackNode.number}`);
+      const stackGraph2 = getStackGraph(stackNode, repoGraph);
+      const visualization = renderVisualization(stackGraph2, terminatingRefs);
+      const target = new DescriptionTarget(context3);
+      await target.update(stackNode, visualization);
     });
   });
-  await Promise.allSettled(jobs.map((job) => job()));
-  if (failedJobs.length > 0) {
-    core.setFailed(
-      `Action failed for ${failedJobs.map((pullRequestNumber) => `#${pullRequestNumber}`).join(", ")}`
-    );
-  }
+  await Promise.all(jobs.map((job) => job()));
 }
 function getStackGraph(pullRequest, repoGraph) {
   const stackGraph = repoGraph.copy();
@@ -43769,8 +43741,8 @@ var ZodError = class extends Error {
       return issue.message;
     };
     const fieldErrors = { _errors: [] };
-    const processError = (error2) => {
-      for (const issue of error2.issues) {
+    const processError = (error) => {
+      for (const issue of error.issues) {
         if (issue.code === "invalid_union") {
           issue.unionErrors.map(processError);
         } else if (issue.code === "invalid_return_type") {
@@ -43827,8 +43799,8 @@ var ZodError = class extends Error {
   }
 };
 ZodError.create = (issues) => {
-  const error2 = new ZodError(issues);
-  return error2;
+  const error = new ZodError(issues);
+  return error;
 };
 var errorMap = (issue, _ctx) => {
   let message;
@@ -44066,8 +44038,8 @@ var handleResult = (ctx, result) => {
       get error() {
         if (this._error)
           return this._error;
-        const error2 = new ZodError(ctx.common.issues);
-        this._error = error2;
+        const error = new ZodError(ctx.common.issues);
+        this._error = error;
         return this._error;
       }
     };
@@ -46483,7 +46455,7 @@ var ZodFunction = class _ZodFunction extends ZodType {
       });
       return INVALID;
     }
-    function makeArgsIssue(args, error2) {
+    function makeArgsIssue(args, error) {
       return makeIssue({
         data: args,
         path: ctx.path,
@@ -46495,11 +46467,11 @@ var ZodFunction = class _ZodFunction extends ZodType {
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_arguments,
-          argumentsError: error2
+          argumentsError: error
         }
       });
     }
-    function makeReturnsIssue(returns, error2) {
+    function makeReturnsIssue(returns, error) {
       return makeIssue({
         data: returns,
         path: ctx.path,
@@ -46511,7 +46483,7 @@ var ZodFunction = class _ZodFunction extends ZodType {
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_return_type,
-          returnTypeError: error2
+          returnTypeError: error
         }
       });
     }
@@ -46520,15 +46492,15 @@ var ZodFunction = class _ZodFunction extends ZodType {
     if (this._def.returns instanceof ZodPromise) {
       const me = this;
       return OK(async function(...args) {
-        const error2 = new ZodError([]);
+        const error = new ZodError([]);
         const parsedArgs = await me._def.args.parseAsync(args, params).catch((e) => {
-          error2.addIssue(makeArgsIssue(args, e));
-          throw error2;
+          error.addIssue(makeArgsIssue(args, e));
+          throw error;
         });
         const result = await Reflect.apply(fn, this, parsedArgs);
         const parsedReturns = await me._def.returns._def.type.parseAsync(result, params).catch((e) => {
-          error2.addIssue(makeReturnsIssue(result, e));
-          throw error2;
+          error.addIssue(makeReturnsIssue(result, e));
+          throw error;
         });
         return parsedReturns;
       });
@@ -47428,9 +47400,9 @@ var inputs = {
       core2.info(JSON.stringify(pullRequest));
       core2.endGroup();
       return pullRequest;
-    } catch (error2) {
+    } catch (error) {
       core2.setFailed(`Unable to determine current pull request from action payload`);
-      throw error2;
+      throw error;
     }
   },
   async getPullRequests(octokit, context3, historyLimit) {
@@ -47542,11 +47514,11 @@ async function run() {
       skipSingleStacks: inputs.getSkipSingleStacks()
     };
     void main(context3);
-  } catch (error2) {
-    if (error2 instanceof Error) {
-      core4.setFailed(error2.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      core4.setFailed(error.message);
     }
-    throw error2;
+    throw error;
   }
 }
 /*! Bundled license information:
