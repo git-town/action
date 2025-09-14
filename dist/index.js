@@ -9213,6 +9213,14 @@ var require_pool = __commonJS({
         this[kOptions] = { ...util2.deepClone(options), connect, allowH2 };
         this[kOptions].interceptors = options.interceptors ? { ...options.interceptors } : void 0;
         this[kFactory] = factory;
+        this.on("connectionError", (origin2, targets, error) => {
+          for (const target of targets) {
+            const idx = this[kClients].indexOf(target);
+            if (idx !== -1) {
+              this[kClients].splice(idx, 1);
+            }
+          }
+        });
       }
       [kGetDispatcher]() {
         let dispatcher = this[kClients].find((dispatcher2) => !dispatcher2[kNeedDrain]);
@@ -11885,6 +11893,7 @@ var require_headers = __commonJS({
       isValidHeaderName,
       isValidHeaderValue
     } = require_util2();
+    var util2 = require("util");
     var { webidl } = require_webidl();
     var assert = require("assert");
     var kHeadersMap = Symbol("headers map");
@@ -12238,6 +12247,9 @@ var require_headers = __commonJS({
       [Symbol.toStringTag]: {
         value: "Headers",
         configurable: true
+      },
+      [util2.inspect.custom]: {
+        enumerable: false
       }
     });
     webidl.converters.HeadersInit = function(V) {
@@ -15829,8 +15841,6 @@ var require_constants4 = __commonJS({
 var require_util6 = __commonJS({
   "node_modules/undici/lib/cookies/util.js"(exports2, module2) {
     "use strict";
-    var assert = require("assert");
-    var { kHeadersList } = require_symbols();
     function isCTLExcludingHtab(value) {
       if (value.length === 0) {
         return false;
@@ -15961,25 +15971,13 @@ var require_util6 = __commonJS({
       }
       return out.join("; ");
     }
-    var kHeadersListNode;
-    function getHeadersList(headers) {
-      if (headers[kHeadersList]) {
-        return headers[kHeadersList];
-      }
-      if (!kHeadersListNode) {
-        kHeadersListNode = Object.getOwnPropertySymbols(headers).find(
-          (symbol) => symbol.description === "headers list"
-        );
-        assert(kHeadersListNode, "Headers cannot be parsed");
-      }
-      const headersList = headers[kHeadersListNode];
-      assert(headersList);
-      return headersList;
-    }
     module2.exports = {
       isCTLExcludingHtab,
-      stringify: stringify2,
-      getHeadersList
+      validateCookieName,
+      validateCookiePath,
+      validateCookieValue,
+      toIMFDate,
+      stringify: stringify2
     };
   }
 });
@@ -16129,7 +16127,7 @@ var require_cookies = __commonJS({
   "node_modules/undici/lib/cookies/index.js"(exports2, module2) {
     "use strict";
     var { parseSetCookie } = require_parse();
-    var { stringify: stringify2, getHeadersList } = require_util6();
+    var { stringify: stringify2 } = require_util6();
     var { webidl } = require_webidl();
     var { Headers } = require_headers();
     function getCookies(headers) {
@@ -16161,11 +16159,11 @@ var require_cookies = __commonJS({
     function getSetCookies(headers) {
       webidl.argumentLengthCheck(arguments, 1, { header: "getSetCookies" });
       webidl.brandCheck(headers, Headers, { strict: false });
-      const cookies = getHeadersList(headers).cookies;
+      const cookies = headers.getSetCookie();
       if (!cookies) {
         return [];
       }
-      return cookies.map((pair) => parseSetCookie(Array.isArray(pair) ? pair[1] : pair));
+      return cookies.map((pair) => parseSetCookie(pair));
     }
     function setCookie(headers, cookie) {
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
@@ -19380,7 +19378,7 @@ var require_dist_node2 = __commonJS({
     });
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "9.0.4";
+    var VERSION = "9.0.6";
     var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
     var DEFAULTS = {
       method: "GET",
@@ -19469,9 +19467,9 @@ var require_dist_node2 = __commonJS({
         return `${name}=${encodeURIComponent(parameters[name])}`;
       }).join("&");
     }
-    var urlVariableRegex = /\{[^}]+\}/g;
+    var urlVariableRegex = /\{[^{}}]+\}/g;
     function removeNonChars(variableName) {
-      return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+      return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
     }
     function extractUrlVariableNames(url) {
       const matches = url.match(urlVariableRegex);
@@ -19651,7 +19649,7 @@ var require_dist_node2 = __commonJS({
         }
         if (url.endsWith("/graphql")) {
           if (options.mediaType.previews?.length) {
-            const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+            const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
               return `application/vnd.github.${preview}-preview${format}`;
@@ -19853,7 +19851,7 @@ var require_dist_node4 = __commonJS({
         if (options.request.headers.authorization) {
           requestCopy.headers = Object.assign({}, options.request.headers, {
             authorization: options.request.headers.authorization.replace(
-              / .*$/,
+              /(?<! ) .*$/,
               " [REDACTED]"
             )
           });
@@ -19913,7 +19911,7 @@ var require_dist_node5 = __commonJS({
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_endpoint = require_dist_node2();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "8.2.0";
+    var VERSION = "8.4.1";
     function isPlainObject2(value) {
       if (typeof value !== "object" || value === null)
         return false;
@@ -19930,7 +19928,7 @@ var require_dist_node5 = __commonJS({
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a, _b, _c;
+      var _a, _b, _c, _d;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
       const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
       if (isPlainObject2(requestOptions.body) || Array.isArray(requestOptions.body)) {
@@ -19951,8 +19949,9 @@ var require_dist_node5 = __commonJS({
       return fetch(requestOptions.url, {
         method: requestOptions.method,
         body: requestOptions.body,
+        redirect: (_c = requestOptions.request) == null ? void 0 : _c.redirect,
         headers: requestOptions.headers,
-        signal: (_c = requestOptions.request) == null ? void 0 : _c.signal,
+        signal: (_d = requestOptions.request) == null ? void 0 : _d.signal,
         // duplex must be set if request.body is ReadableStream or Async Iterables.
         // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
         ...requestOptions.body && { duplex: "half" }
@@ -19963,7 +19962,7 @@ var require_dist_node5 = __commonJS({
           headers[keyAndValue[0]] = keyAndValue[1];
         }
         if ("deprecation" in headers) {
-          const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
+          const matches = headers.link && headers.link.match(/<([^<>]+)>; rel="deprecation"/);
           const deprecationLink = matches && matches.pop();
           log.warn(
             `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -22647,7 +22646,7 @@ var require_dist_node10 = __commonJS({
       paginatingEndpoints: () => paginatingEndpoints
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var VERSION = "9.2.1";
+    var VERSION = "9.2.2";
     function normalizePaginatedListResponse(response) {
       if (!response.data) {
         return {
@@ -22691,7 +22690,7 @@ var require_dist_node10 = __commonJS({
               const response = await requestMethod({ method, url, headers });
               const normalizedResponse = normalizePaginatedListResponse(response);
               url = ((normalizedResponse.headers.link || "").match(
-                /<([^>]+)>;\s*rel="next"/
+                /<([^<>]+)>;\s*rel="next"/
               ) || [])[1];
               return { value: normalizedResponse };
             } catch (error) {
