@@ -69,30 +69,25 @@ var require_utils = __commonJS({
 var require_command = __commonJS({
   "node_modules/@actions/core/lib/command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -489,30 +484,25 @@ var init_esm_node = __esm({
 var require_file_command = __commonJS({
   "node_modules/@actions/core/lib/file-command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1346,8 +1336,7 @@ var require_util = __commonJS({
         return host.substring(1, idx2);
       }
       const idx = host.indexOf(":");
-      if (idx === -1)
-        return host;
+      if (idx === -1) return host;
       return host.substring(0, idx);
     }
     function getServerName(host) {
@@ -1417,8 +1406,7 @@ var require_util = __commonJS({
       return headerNameLowerCasedRecord[value] || value.toLowerCase();
     }
     function parseHeaders(headers, obj = {}) {
-      if (!Array.isArray(headers))
-        return headers;
+      if (!Array.isArray(headers)) return headers;
       for (let i = 0; i < headers.length; i += 2) {
         const key = headers[i].toString().toLowerCase();
         let val = obj[key];
@@ -1592,8 +1580,7 @@ var require_util = __commonJS({
       return `${val}`;
     }
     function parseRangeHeader(range) {
-      if (range == null || range === "")
-        return { start: 0, end: null, size: null };
+      if (range == null || range === "") return { start: 0, end: null, size: null };
       const m = range ? range.match(/^bytes (\d+)-(\d+)\/(\d+)?$/) : null;
       return m ? {
         start: parseInt(m[1]),
@@ -2252,6 +2239,7 @@ var require_decodeText = __commonJS({
             return decoders.utf8;
           case "latin1":
           case "ascii":
+          // TODO: Make these a separate, strict decoder?
           case "us-ascii":
           case "iso-8859-1":
           case "iso8859-1":
@@ -2951,6 +2939,7 @@ var require_basename = __commonJS({
       for (var i = path2.length - 1; i >= 0; --i) {
         switch (path2.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path2 = path2.slice(i + 1);
             return path2 === ".." || path2 === "." ? "" : path2;
@@ -4185,7 +4174,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -4211,14 +4214,11 @@ var require_util2 = __commonJS({
       if (url.href === "about:blank" || url.href === "about:srcdoc") {
         return true;
       }
-      if (url.protocol === "data:")
-        return true;
-      if (url.protocol === "file:")
-        return true;
+      if (url.protocol === "data:") return true;
+      if (url.protocol === "file:") return true;
       return isOriginPotentiallyTrustworthy(url.origin);
       function isOriginPotentiallyTrustworthy(origin) {
-        if (origin == null || origin === "null")
-          return false;
+        if (origin == null || origin === "null") return false;
         const originAsURL = new URL(origin);
         if (originAsURL.protocol === "https:" || originAsURL.protocol === "wss:") {
           return true;
@@ -5188,12 +5188,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail2 = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail2 > 0 && isHTTPWhiteSpace(str[trail2]); trail2--)
-          ;
+        for (; trail2 > 0 && isHTTPWhiteSpace(str[trail2]); trail2--) ;
       }
       return str.slice(lead, trail2 + 1);
     }
@@ -5204,12 +5202,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail2 = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail2 > 0 && isASCIIWhitespace(str[trail2]); trail2--)
-          ;
+        for (; trail2 > 0 && isASCIIWhitespace(str[trail2]); trail2--) ;
       }
       return str.slice(lead, trail2 + 1);
     }
@@ -5810,8 +5806,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           const contentType = this.headers.get("Content-Type");
           if (/multipart\/form-data/.test(contentType)) {
             const headers = {};
-            for (const [key, value] of this.headers)
-              headers[key.toLowerCase()] = value;
+            for (const [key, value] of this.headers) headers[key.toLowerCase()] = value;
             const responseFormData = new FormData();
             let busboy;
             try {
@@ -5852,9 +5847,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
               busboy.on("finish", resolve);
               busboy.on("error", (err) => reject(new TypeError(err)));
             });
-            if (this.body !== null)
-              for await (const chunk of consumeBody(this[kState].body))
-                busboy.write(chunk);
+            if (this.body !== null) for await (const chunk of consumeBody(this[kState].body)) busboy.write(chunk);
             busboy.end();
             await busboyResolve;
             return responseFormData;
@@ -6244,12 +6237,9 @@ var require_request = __commonJS({
         const headers = {};
         for (const header of rawHeaders) {
           const [key, value] = header.split(": ");
-          if (value == null || value.length === 0)
-            continue;
-          if (headers[key])
-            headers[key] += `,${value}`;
-          else
-            headers[key] = value;
+          if (value == null || value.length === 0) continue;
+          if (headers[key]) headers[key] += `,${value}`;
+          else headers[key] = value;
         }
         return headers;
       }
@@ -6283,10 +6273,8 @@ var require_request = __commonJS({
         }
       } else if (request.contentType === null && key.length === 12 && key.toLowerCase() === "content-type") {
         request.contentType = val;
-        if (skipAppend)
-          request.headers[key] = processHeaderValue(key, val, skipAppend);
-        else
-          request.headers += processHeaderValue(key, val);
+        if (skipAppend) request.headers[key] = processHeaderValue(key, val, skipAppend);
+        else request.headers += processHeaderValue(key, val);
       } else if (key.length === 17 && key.toLowerCase() === "transfer-encoding") {
         throw new InvalidArgumentError("invalid transfer-encoding header");
       } else if (key.length === 10 && key.toLowerCase() === "connection") {
@@ -6308,19 +6296,15 @@ var require_request = __commonJS({
         if (Array.isArray(val)) {
           for (let i = 0; i < val.length; i++) {
             if (skipAppend) {
-              if (request.headers[key])
-                request.headers[key] += `,${processHeaderValue(key, val[i], skipAppend)}`;
-              else
-                request.headers[key] = processHeaderValue(key, val[i], skipAppend);
+              if (request.headers[key]) request.headers[key] += `,${processHeaderValue(key, val[i], skipAppend)}`;
+              else request.headers[key] = processHeaderValue(key, val[i], skipAppend);
             } else {
               request.headers += processHeaderValue(key, val[i]);
             }
           }
         } else {
-          if (skipAppend)
-            request.headers[key] = processHeaderValue(key, val, skipAppend);
-          else
-            request.headers += processHeaderValue(key, val);
+          if (skipAppend) request.headers[key] = processHeaderValue(key, val, skipAppend);
+          else request.headers += processHeaderValue(key, val);
         }
       }
     }
@@ -8437,10 +8421,8 @@ upgrade: ${upgrade}\r
     function writeH2(client, session, request) {
       const { body, method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let headers;
-      if (typeof reqHeaders === "string")
-        headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
-      else
-        headers = reqHeaders;
+      if (typeof reqHeaders === "string") headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
+      else headers = reqHeaders;
       if (upgrade) {
         errorRequest(client, request, new Error("Upgrade not supported for H2"));
         return false;
@@ -8476,8 +8458,7 @@ upgrade: ${upgrade}\r
         }
         stream.once("close", () => {
           h2State.openStreams -= 1;
-          if (h2State.openStreams === 0)
-            session.unref();
+          if (h2State.openStreams === 0) session.unref();
         });
         return true;
       }
@@ -9213,6 +9194,14 @@ var require_pool = __commonJS({
         this[kOptions] = { ...util2.deepClone(options), connect, allowH2 };
         this[kOptions].interceptors = options.interceptors ? { ...options.interceptors } : void 0;
         this[kFactory] = factory;
+        this.on("connectionError", (origin2, targets, error) => {
+          for (const target of targets) {
+            const idx = this[kClients].indexOf(target);
+            if (idx !== -1) {
+              this[kClients].splice(idx, 1);
+            }
+          }
+        });
       }
       [kGetDispatcher]() {
         let dispatcher = this[kClients].find((dispatcher2) => !dispatcher2[kNeedDrain]);
@@ -9258,8 +9247,7 @@ var require_balanced_pool = __commonJS({
     var kMaxWeightPerServer = Symbol("kMaxWeightPerServer");
     var kErrorPenalty = Symbol("kErrorPenalty");
     function getGreatestCommonDivisor(a, b) {
-      if (b === 0)
-        return a;
+      if (b === 0) return a;
       return getGreatestCommonDivisor(b, a % b);
     }
     function defaultFactory(origin, opts) {
@@ -11631,8 +11619,7 @@ var require_RetryHandler = __commonJS({
         }
       }
       onBodySent(chunk) {
-        if (this.handler.onBodySent)
-          return this.handler.onBodySent(chunk);
+        if (this.handler.onBodySent) return this.handler.onBodySent(chunk);
       }
       static [kRetryHandlerDefaultRetry](err, { state, opts }, cb) {
         const { statusCode, code: code3, headers } = err;
@@ -11885,6 +11872,7 @@ var require_headers = __commonJS({
       isValidHeaderName,
       isValidHeaderValue
     } = require_util2();
+    var util2 = require("util");
     var { webidl } = require_webidl();
     var assert = require("assert");
     var kHeadersMap = Symbol("headers map");
@@ -11895,10 +11883,8 @@ var require_headers = __commonJS({
     function headerValueNormalize(potentialValue) {
       let i = 0;
       let j = potentialValue.length;
-      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1)))
-        --j;
-      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i)))
-        ++i;
+      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1))) --j;
+      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i))) ++i;
       return i === 0 && j === potentialValue.length ? potentialValue : potentialValue.substring(i, j);
     }
     function fill(headers, object2) {
@@ -12238,6 +12224,9 @@ var require_headers = __commonJS({
       [Symbol.toStringTag]: {
         value: "Headers",
         configurable: true
+      },
+      [util2.inspect.custom]: {
+        enumerable: false
       }
     });
     webidl.converters.HeadersInit = function(V) {
@@ -14059,7 +14048,7 @@ var require_fetch = __commonJS({
             fetchParams.controller.terminate(e);
           }
         };
-        requestBody = async function* () {
+        requestBody = (async function* () {
           try {
             for await (const bytes of request.body.stream) {
               yield* processBodyChunk(bytes);
@@ -14068,7 +14057,7 @@ var require_fetch = __commonJS({
           } catch (err) {
             processBodyError(err);
           }
-        }();
+        })();
       }
       try {
         const { body, status, statusText, headersList, socket } = await dispatch({ body: requestBody });
@@ -15213,8 +15202,7 @@ var require_cache = __commonJS({
       }
       async matchAll(request = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request !== void 0)
-          request = webidl.converters.RequestInfo(request);
+        if (request !== void 0) request = webidl.converters.RequestInfo(request);
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
@@ -15483,8 +15471,7 @@ var require_cache = __commonJS({
        */
       async keys(request = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request !== void 0)
-          request = webidl.converters.RequestInfo(request);
+        if (request !== void 0) request = webidl.converters.RequestInfo(request);
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
@@ -15829,8 +15816,6 @@ var require_constants4 = __commonJS({
 var require_util6 = __commonJS({
   "node_modules/undici/lib/cookies/util.js"(exports2, module2) {
     "use strict";
-    var assert = require("assert");
-    var { kHeadersList } = require_symbols();
     function isCTLExcludingHtab(value) {
       if (value.length === 0) {
         return false;
@@ -15961,25 +15946,13 @@ var require_util6 = __commonJS({
       }
       return out.join("; ");
     }
-    var kHeadersListNode;
-    function getHeadersList(headers) {
-      if (headers[kHeadersList]) {
-        return headers[kHeadersList];
-      }
-      if (!kHeadersListNode) {
-        kHeadersListNode = Object.getOwnPropertySymbols(headers).find(
-          (symbol) => symbol.description === "headers list"
-        );
-        assert(kHeadersListNode, "Headers cannot be parsed");
-      }
-      const headersList = headers[kHeadersListNode];
-      assert(headersList);
-      return headersList;
-    }
     module2.exports = {
       isCTLExcludingHtab,
-      stringify: stringify2,
-      getHeadersList
+      validateCookieName,
+      validateCookiePath,
+      validateCookieValue,
+      toIMFDate,
+      stringify: stringify2
     };
   }
 });
@@ -16129,7 +16102,7 @@ var require_cookies = __commonJS({
   "node_modules/undici/lib/cookies/index.js"(exports2, module2) {
     "use strict";
     var { parseSetCookie } = require_parse();
-    var { stringify: stringify2, getHeadersList } = require_util6();
+    var { stringify: stringify2 } = require_util6();
     var { webidl } = require_webidl();
     var { Headers } = require_headers();
     function getCookies(headers) {
@@ -16161,11 +16134,11 @@ var require_cookies = __commonJS({
     function getSetCookies(headers) {
       webidl.argumentLengthCheck(arguments, 1, { header: "getSetCookies" });
       webidl.brandCheck(headers, Headers, { strict: false });
-      const cookies = getHeadersList(headers).cookies;
+      const cookies = headers.getSetCookie();
       if (!cookies) {
         return [];
       }
-      return cookies.map((pair) => parseSetCookie(Array.isArray(pair) ? pair[1] : pair));
+      return cookies.map((pair) => parseSetCookie(pair));
     }
     function setCookie(headers, cookie) {
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
@@ -17635,9 +17608,8 @@ var require_undici = __commonJS({
 var require_lib = __commonJS({
   "node_modules/@actions/http-client/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -17645,24 +17617,20 @@ var require_lib = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -18758,30 +18726,25 @@ var require_summary = __commonJS({
 var require_path_utils = __commonJS({
   "node_modules/@actions/core/lib/path-utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -18808,30 +18771,25 @@ var require_path_utils = __commonJS({
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -19095,9 +19053,8 @@ var require_context = __commonJS({
 var require_utils3 = __commonJS({
   "node_modules/@actions/github/lib/internal/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -19105,24 +19062,20 @@ var require_utils3 = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -19380,7 +19333,7 @@ var require_dist_node2 = __commonJS({
     });
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "9.0.4";
+    var VERSION = "9.0.6";
     var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
     var DEFAULTS = {
       method: "GET",
@@ -19469,9 +19422,9 @@ var require_dist_node2 = __commonJS({
         return `${name}=${encodeURIComponent(parameters[name])}`;
       }).join("&");
     }
-    var urlVariableRegex = /\{[^}]+\}/g;
+    var urlVariableRegex = /\{[^{}}]+\}/g;
     function removeNonChars(variableName) {
-      return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+      return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
     }
     function extractUrlVariableNames(url) {
       const matches = url.match(urlVariableRegex);
@@ -19651,7 +19604,7 @@ var require_dist_node2 = __commonJS({
         }
         if (url.endsWith("/graphql")) {
           if (options.mediaType.previews?.length) {
-            const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+            const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
               return `application/vnd.github.${preview}-preview${format}`;
@@ -19722,8 +19675,7 @@ var require_wrappy = __commonJS({
   "node_modules/wrappy/wrappy.js"(exports2, module2) {
     module2.exports = wrappy;
     function wrappy(fn, cb) {
-      if (fn && cb)
-        return wrappy(fn)(cb);
+      if (fn && cb) return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
       Object.keys(fn).forEach(function(k) {
@@ -19770,8 +19722,7 @@ var require_once = __commonJS({
     });
     function once(fn) {
       var f = function() {
-        if (f.called)
-          return f.value;
+        if (f.called) return f.value;
         f.called = true;
         return f.value = fn.apply(this, arguments);
       };
@@ -19853,7 +19804,7 @@ var require_dist_node4 = __commonJS({
         if (options.request.headers.authorization) {
           requestCopy.headers = Object.assign({}, options.request.headers, {
             authorization: options.request.headers.authorization.replace(
-              / .*$/,
+              /(?<! ) .*$/,
               " [REDACTED]"
             )
           });
@@ -19913,7 +19864,7 @@ var require_dist_node5 = __commonJS({
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_endpoint = require_dist_node2();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "8.2.0";
+    var VERSION = "8.4.1";
     function isPlainObject2(value) {
       if (typeof value !== "object" || value === null)
         return false;
@@ -19930,7 +19881,7 @@ var require_dist_node5 = __commonJS({
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a, _b, _c;
+      var _a, _b, _c, _d;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
       const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
       if (isPlainObject2(requestOptions.body) || Array.isArray(requestOptions.body)) {
@@ -19951,8 +19902,9 @@ var require_dist_node5 = __commonJS({
       return fetch(requestOptions.url, {
         method: requestOptions.method,
         body: requestOptions.body,
+        redirect: (_c = requestOptions.request) == null ? void 0 : _c.redirect,
         headers: requestOptions.headers,
-        signal: (_c = requestOptions.request) == null ? void 0 : _c.signal,
+        signal: (_d = requestOptions.request) == null ? void 0 : _d.signal,
         // duplex must be set if request.body is ReadableStream or Async Iterables.
         // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
         ...requestOptions.body && { duplex: "half" }
@@ -19963,7 +19915,7 @@ var require_dist_node5 = __commonJS({
           headers[keyAndValue[0]] = keyAndValue[1];
         }
         if ("deprecation" in headers) {
-          const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
+          const matches = headers.link && headers.link.match(/<([^<>]+)>; rel="deprecation"/);
           const deprecationLink = matches && matches.pop();
           log.warn(
             `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -22647,7 +22599,7 @@ var require_dist_node10 = __commonJS({
       paginatingEndpoints: () => paginatingEndpoints
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var VERSION = "9.2.1";
+    var VERSION = "9.2.2";
     function normalizePaginatedListResponse(response) {
       if (!response.data) {
         return {
@@ -22691,7 +22643,7 @@ var require_dist_node10 = __commonJS({
               const response = await requestMethod({ method, url, headers });
               const normalizedResponse = normalizePaginatedListResponse(response);
               url = ((normalizedResponse.headers.link || "").match(
-                /<([^>]+)>;\s*rel="next"/
+                /<([^<>]+)>;\s*rel="next"/
               ) || [])[1];
               return { value: normalizedResponse };
             } catch (error) {
@@ -23001,9 +22953,8 @@ var require_dist_node10 = __commonJS({
 var require_utils4 = __commonJS({
   "node_modules/@actions/github/lib/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -23011,24 +22962,20 @@ var require_utils4 = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -23066,9 +23013,8 @@ var require_utils4 = __commonJS({
 var require_github = __commonJS({
   "node_modules/@actions/github/lib/github.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -23076,24 +23022,20 @@ var require_github = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -23126,8 +23068,7 @@ var require_iterator = __commonJS({
     Iterator.of = function() {
       var args = arguments, l = args.length, i = 0;
       return new Iterator(function() {
-        if (i >= l)
-          return { done: true };
+        if (i >= l) return { done: true };
         return { done: false, value: args[i++] };
       });
     };
@@ -23140,14 +23081,12 @@ var require_iterator = __commonJS({
     Iterator.fromSequence = function(sequence) {
       var i = 0, l = sequence.length;
       return new Iterator(function() {
-        if (i >= l)
-          return { done: true };
+        if (i >= l) return { done: true };
         return { done: false, value: sequence[i++] };
       });
     };
     Iterator.is = function(value) {
-      if (value instanceof Iterator)
-        return true;
+      if (value instanceof Iterator) return true;
       return typeof value === "object" && value !== null && typeof value.next === "function";
     };
     module2.exports = Iterator;
@@ -23172,12 +23111,10 @@ var require_iter = __commonJS({
     function iterOrNull(target) {
       if (typeof target === "string" || Array.isArray(target) || ARRAY_BUFFER_SUPPORT && ArrayBuffer.isView(target))
         return Iterator.fromSequence(target);
-      if (typeof target !== "object" || target === null)
-        return null;
+      if (typeof target !== "object" || target === null) return null;
       if (SYMBOL_SUPPORT && typeof target[Symbol.iterator] === "function")
         return target[Symbol.iterator]();
-      if (typeof target.next === "function")
-        return target;
+      if (typeof target.next === "function") return target;
       return null;
     }
     module2.exports = function iter(target) {
@@ -23199,12 +23136,10 @@ var require_take = __commonJS({
       var l = arguments.length > 1 ? n : Infinity, array2 = l !== Infinity ? new Array(l) : [], step, i = 0;
       var iterator = iter(iterable);
       while (true) {
-        if (i === l)
-          return array2;
+        if (i === l) return array2;
         step = iterator.next();
         if (step.done) {
-          if (i !== n)
-            array2.length = i;
+          if (i !== n) array2.length = i;
           return array2;
         }
         array2[i++] = step.value;
@@ -23227,8 +23162,7 @@ var require_chain = __commonJS({
         do {
           if (current === null) {
             i++;
-            if (i >= iterables.length)
-              return { done: true };
+            if (i >= iterables.length) return { done: true };
             current = iter(iterables[i]);
           }
           step = current.next();
@@ -23285,12 +23219,9 @@ var require_graphology_cjs = __commonJS({
       return _setPrototypeOf(o, p);
     }
     function _isNativeReflectConstruct() {
-      if (typeof Reflect === "undefined" || !Reflect.construct)
-        return false;
-      if (Reflect.construct.sham)
-        return false;
-      if (typeof Proxy === "function")
-        return true;
+      if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+      if (Reflect.construct.sham) return false;
+      if (typeof Proxy === "function") return true;
       try {
         Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
         }));
@@ -23308,8 +23239,7 @@ var require_graphology_cjs = __commonJS({
           a.push.apply(a, args2);
           var Constructor = Function.bind.apply(Parent2, a);
           var instance = new Constructor();
-          if (Class2)
-            _setPrototypeOf(instance, Class2.prototype);
+          if (Class2) _setPrototypeOf(instance, Class2.prototype);
           return instance;
         };
       }
@@ -23321,14 +23251,12 @@ var require_graphology_cjs = __commonJS({
     function _wrapNativeSuper(Class) {
       var _cache = typeof Map === "function" ? /* @__PURE__ */ new Map() : void 0;
       _wrapNativeSuper = function _wrapNativeSuper2(Class2) {
-        if (Class2 === null || !_isNativeFunction(Class2))
-          return Class2;
+        if (Class2 === null || !_isNativeFunction(Class2)) return Class2;
         if (typeof Class2 !== "function") {
           throw new TypeError("Super expression must either be null or a function");
         }
         if (typeof _cache !== "undefined") {
-          if (_cache.has(Class2))
-            return _cache.get(Class2);
+          if (_cache.has(Class2)) return _cache.get(Class2);
           _cache.set(Class2, Wrapper);
         }
         function Wrapper() {
@@ -23355,8 +23283,7 @@ var require_graphology_cjs = __commonJS({
     function assignPolyfill() {
       var target = arguments[0];
       for (var i = 1, l = arguments.length; i < l; i++) {
-        if (!arguments[i])
-          continue;
+        if (!arguments[i]) continue;
         for (var k in arguments[i]) {
           target[k] = arguments[i][k];
         }
@@ -23364,13 +23291,11 @@ var require_graphology_cjs = __commonJS({
       return target;
     }
     var assign = assignPolyfill;
-    if (typeof Object.assign === "function")
-      assign = Object.assign;
+    if (typeof Object.assign === "function") assign = Object.assign;
     function getMatchingEdge(graph, source, target, type) {
       var sourceData = graph._nodes.get(source);
       var edge = null;
-      if (!sourceData)
-        return edge;
+      if (!sourceData) return edge;
       if (type === "mixed") {
         edge = sourceData.out && sourceData.out[target] || sourceData.undirected && sourceData.undirected[target];
       } else if (type === "directed") {
@@ -23412,10 +23337,8 @@ var require_graphology_cjs = __commonJS({
       Object.defineProperty(target, name, descriptor);
     }
     function validateHints(hints) {
-      if (!isPlainObject2(hints))
-        return false;
-      if (hints.attributes && !Array.isArray(hints.attributes))
-        return false;
+      if (!isPlainObject2(hints)) return false;
+      if (hints.attributes && !Array.isArray(hints.attributes)) return false;
       return true;
     }
     function incrementalIdStartingFromRandomByte() {
@@ -23424,7 +23347,7 @@ var require_graphology_cjs = __commonJS({
         return i++;
       };
     }
-    var GraphError = /* @__PURE__ */ function(_Error) {
+    var GraphError = /* @__PURE__ */ (function(_Error) {
       _inheritsLoose(GraphError2, _Error);
       function GraphError2(message) {
         var _this;
@@ -23434,43 +23357,40 @@ var require_graphology_cjs = __commonJS({
         return _this;
       }
       return GraphError2;
-    }(/* @__PURE__ */ _wrapNativeSuper(Error));
-    var InvalidArgumentsGraphError = /* @__PURE__ */ function(_GraphError) {
+    })(/* @__PURE__ */ _wrapNativeSuper(Error));
+    var InvalidArgumentsGraphError = /* @__PURE__ */ (function(_GraphError) {
       _inheritsLoose(InvalidArgumentsGraphError2, _GraphError);
       function InvalidArgumentsGraphError2(message) {
         var _this2;
         _this2 = _GraphError.call(this, message) || this;
         _this2.name = "InvalidArgumentsGraphError";
-        if (typeof Error.captureStackTrace === "function")
-          Error.captureStackTrace(_assertThisInitialized(_this2), InvalidArgumentsGraphError2.prototype.constructor);
+        if (typeof Error.captureStackTrace === "function") Error.captureStackTrace(_assertThisInitialized(_this2), InvalidArgumentsGraphError2.prototype.constructor);
         return _this2;
       }
       return InvalidArgumentsGraphError2;
-    }(GraphError);
-    var NotFoundGraphError = /* @__PURE__ */ function(_GraphError2) {
+    })(GraphError);
+    var NotFoundGraphError = /* @__PURE__ */ (function(_GraphError2) {
       _inheritsLoose(NotFoundGraphError2, _GraphError2);
       function NotFoundGraphError2(message) {
         var _this3;
         _this3 = _GraphError2.call(this, message) || this;
         _this3.name = "NotFoundGraphError";
-        if (typeof Error.captureStackTrace === "function")
-          Error.captureStackTrace(_assertThisInitialized(_this3), NotFoundGraphError2.prototype.constructor);
+        if (typeof Error.captureStackTrace === "function") Error.captureStackTrace(_assertThisInitialized(_this3), NotFoundGraphError2.prototype.constructor);
         return _this3;
       }
       return NotFoundGraphError2;
-    }(GraphError);
-    var UsageGraphError = /* @__PURE__ */ function(_GraphError3) {
+    })(GraphError);
+    var UsageGraphError = /* @__PURE__ */ (function(_GraphError3) {
       _inheritsLoose(UsageGraphError2, _GraphError3);
       function UsageGraphError2(message) {
         var _this4;
         _this4 = _GraphError3.call(this, message) || this;
         _this4.name = "UsageGraphError";
-        if (typeof Error.captureStackTrace === "function")
-          Error.captureStackTrace(_assertThisInitialized(_this4), UsageGraphError2.prototype.constructor);
+        if (typeof Error.captureStackTrace === "function") Error.captureStackTrace(_assertThisInitialized(_this4), UsageGraphError2.prototype.constructor);
         return _this4;
       }
       return UsageGraphError2;
-    }(GraphError);
+    })(GraphError);
     function MixedNodeData(key, attributes) {
       this.key = key;
       this.attributes = attributes;
@@ -23518,13 +23438,11 @@ var require_graphology_cjs = __commonJS({
     EdgeData.prototype.attach = function() {
       var outKey = "out";
       var inKey = "in";
-      if (this.undirected)
-        outKey = inKey = "undirected";
+      if (this.undirected) outKey = inKey = "undirected";
       var source = this.source.key;
       var target = this.target.key;
       this.source[outKey][target] = this;
-      if (this.undirected && source === target)
-        return;
+      if (this.undirected && source === target) return;
       this.target[inKey][source] = this;
     };
     EdgeData.prototype.attachMulti = function() {
@@ -23532,8 +23450,7 @@ var require_graphology_cjs = __commonJS({
       var inKey = "in";
       var source = this.source.key;
       var target = this.target.key;
-      if (this.undirected)
-        outKey = inKey = "undirected";
+      if (this.undirected) outKey = inKey = "undirected";
       var adj = this.source[outKey];
       var head = adj[target];
       if (typeof head === "undefined") {
@@ -23553,8 +23470,7 @@ var require_graphology_cjs = __commonJS({
       var target = this.target.key;
       var outKey = "out";
       var inKey = "in";
-      if (this.undirected)
-        outKey = inKey = "undirected";
+      if (this.undirected) outKey = inKey = "undirected";
       delete this.source[outKey][target];
       delete this.target[inKey][source];
     };
@@ -23563,8 +23479,7 @@ var require_graphology_cjs = __commonJS({
       var target = this.target.key;
       var outKey = "out";
       var inKey = "in";
-      if (this.undirected)
-        outKey = inKey = "undirected";
+      if (this.undirected) outKey = inKey = "undirected";
       if (this.previous === void 0) {
         if (this.next === void 0) {
           delete this.source[outKey][target];
@@ -23590,15 +23505,13 @@ var require_graphology_cjs = __commonJS({
       nodeOrEdge = "" + nodeOrEdge;
       if (mode === NODE) {
         nodeData = graph._nodes.get(nodeOrEdge);
-        if (!nodeData)
-          throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nodeOrEdge, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nodeOrEdge, '" node in the graph.'));
         arg1 = nameOrEdge;
         arg2 = add1;
       } else if (mode === OPPOSITE) {
         nameOrEdge = "" + nameOrEdge;
         edgeData = graph._edges.get(nameOrEdge);
-        if (!edgeData)
-          throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nameOrEdge, '" edge in the graph.'));
+        if (!edgeData) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nameOrEdge, '" edge in the graph.'));
         var source = edgeData.source.key;
         var target = edgeData.target.key;
         if (nodeOrEdge === source) {
@@ -23612,8 +23525,7 @@ var require_graphology_cjs = __commonJS({
         arg2 = add2;
       } else {
         edgeData = graph._edges.get(nodeOrEdge);
-        if (!edgeData)
-          throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nodeOrEdge, '" edge in the graph.'));
+        if (!edgeData) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(nodeOrEdge, '" edge in the graph.'));
         if (mode === SOURCE) {
           nodeData = edgeData.source;
         } else {
@@ -23658,8 +23570,7 @@ var require_graphology_cjs = __commonJS({
     function attachNodeAttributeUpdater(Class, method, mode) {
       Class.prototype[method] = function(nodeOrEdge, nameOrEdge, add1, add2) {
         var _findRelevantNodeData5 = findRelevantNodeData(this, method, mode, nodeOrEdge, nameOrEdge, add1, add2), data = _findRelevantNodeData5[0], name = _findRelevantNodeData5[1], updater = _findRelevantNodeData5[2];
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": updater should be a function."));
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.".concat(method, ": updater should be a function."));
         var attributes = data.attributes;
         var value = updater(attributes[name]);
         attributes[name] = value;
@@ -23688,8 +23599,7 @@ var require_graphology_cjs = __commonJS({
     function attachNodeAttributesReplacer(Class, method, mode) {
       Class.prototype[method] = function(nodeOrEdge, nameOrEdge, add1) {
         var _findRelevantNodeData7 = findRelevantNodeData(this, method, mode, nodeOrEdge, nameOrEdge, add1), data = _findRelevantNodeData7[0], attributes = _findRelevantNodeData7[1];
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
         data.attributes = attributes;
         this.emit("nodeAttributesUpdated", {
           key: data.key,
@@ -23702,8 +23612,7 @@ var require_graphology_cjs = __commonJS({
     function attachNodeAttributesMerger(Class, method, mode) {
       Class.prototype[method] = function(nodeOrEdge, nameOrEdge, add1) {
         var _findRelevantNodeData8 = findRelevantNodeData(this, method, mode, nodeOrEdge, nameOrEdge, add1), data = _findRelevantNodeData8[0], attributes = _findRelevantNodeData8[1];
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
         assign(data.attributes, attributes);
         this.emit("nodeAttributesUpdated", {
           key: data.key,
@@ -23717,8 +23626,7 @@ var require_graphology_cjs = __commonJS({
     function attachNodeAttributesUpdater(Class, method, mode) {
       Class.prototype[method] = function(nodeOrEdge, nameOrEdge, add1) {
         var _findRelevantNodeData9 = findRelevantNodeData(this, method, mode, nodeOrEdge, nameOrEdge, add1), data = _findRelevantNodeData9[0], updater = _findRelevantNodeData9[1];
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided updater is not a function."));
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided updater is not a function."));
         data.attributes = updater(data.attributes);
         this.emit("nodeAttributesUpdated", {
           key: data.key,
@@ -23786,24 +23694,19 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributeGetter(Class, method, type) {
       Class.prototype[method] = function(element, name) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element;
           var target = "" + name;
           name = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
         return data.attributes[name];
       };
@@ -23811,22 +23714,17 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributesGetter(Class, method, type) {
       Class.prototype[method] = function(element) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 1) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element, target = "" + arguments[1];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
         return data.attributes;
       };
@@ -23834,24 +23732,19 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributeChecker(Class, method, type) {
       Class.prototype[method] = function(element, name) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element;
           var target = "" + name;
           name = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
         return data.attributes.hasOwnProperty(name);
       };
@@ -23859,25 +23752,20 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributeSetter(Class, method, type) {
       Class.prototype[method] = function(element, name, value) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 3) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element;
           var target = "" + name;
           name = arguments[2];
           value = arguments[3];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
         data.attributes[name] = value;
         this.emit("edgeAttributesUpdated", {
@@ -23892,28 +23780,22 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributeUpdater(Class, method, type) {
       Class.prototype[method] = function(element, name, updater) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 3) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element;
           var target = "" + name;
           name = arguments[2];
           updater = arguments[3];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": updater should be a function."));
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.".concat(method, ": updater should be a function."));
         data.attributes[name] = updater(data.attributes[name]);
         this.emit("edgeAttributesUpdated", {
           key: data.key,
@@ -23927,24 +23809,19 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributeRemover(Class, method, type) {
       Class.prototype[method] = function(element, name) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element;
           var target = "" + name;
           name = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
         delete data.attributes[name];
         this.emit("edgeAttributesUpdated", {
@@ -23959,26 +23836,20 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributesReplacer(Class, method, type) {
       Class.prototype[method] = function(element, attributes) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element, target = "" + attributes;
           attributes = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
         data.attributes = attributes;
         this.emit("edgeAttributesUpdated", {
           key: data.key,
@@ -23991,26 +23862,20 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributesMerger(Class, method, type) {
       Class.prototype[method] = function(element, attributes) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element, target = "" + attributes;
           attributes = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided attributes are not a plain object."));
         assign(data.attributes, attributes);
         this.emit("edgeAttributesUpdated", {
           key: data.key,
@@ -24024,26 +23889,20 @@ var require_graphology_cjs = __commonJS({
     function attachEdgeAttributesUpdater(Class, method, type) {
       Class.prototype[method] = function(element, updater) {
         var data;
-        if (this.type !== "mixed" && type !== "mixed" && type !== this.type)
-          throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
+        if (this.type !== "mixed" && type !== "mixed" && type !== this.type) throw new UsageGraphError("Graph.".concat(method, ": cannot find this type of edges in your ").concat(this.type, " graph."));
         if (arguments.length > 2) {
-          if (this.multi)
-            throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
+          if (this.multi) throw new UsageGraphError("Graph.".concat(method, ": cannot use a {source,target} combo when asking about an edge's attributes in a MultiGraph since we cannot infer the one you want information about."));
           var source = "" + element, target = "" + updater;
           updater = arguments[2];
           data = getMatchingEdge(this, source, target, type);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find an edge for the given path ("').concat(source, '" - "').concat(target, '").'));
         } else {
-          if (type !== "mixed")
-            throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
+          if (type !== "mixed") throw new UsageGraphError("Graph.".concat(method, ": calling this method with only a key (vs. a source and target) does not make sense since an edge with this key could have the other type."));
           element = "" + element;
           data = this._edges.get(element);
-          if (!data)
-            throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
+          if (!data) throw new NotFoundGraphError("Graph.".concat(method, ': could not find the "').concat(element, '" edge in the graph.'));
         }
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided updater is not a function."));
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.".concat(method, ": provided updater is not a function."));
         data.attributes = updater(data.attributes);
         this.emit("edgeAttributesUpdated", {
           key: data.key,
@@ -24136,12 +23995,10 @@ var require_graphology_cjs = __commonJS({
     function forEachSimple(breakable, object2, callback, avoid) {
       var shouldBreak = false;
       for (var k in object2) {
-        if (k === avoid)
-          continue;
+        if (k === avoid) continue;
         var edgeData = object2[k];
         shouldBreak = callback(edgeData.key, edgeData.attributes, edgeData.source.key, edgeData.target.key, edgeData.source.attributes, edgeData.target.attributes, edgeData.undirected);
-        if (breakable && shouldBreak)
-          return edgeData.key;
+        if (breakable && shouldBreak) return edgeData.key;
       }
       return;
     }
@@ -24149,15 +24006,13 @@ var require_graphology_cjs = __commonJS({
       var edgeData, source, target;
       var shouldBreak = false;
       for (var k in object2) {
-        if (k === avoid)
-          continue;
+        if (k === avoid) continue;
         edgeData = object2[k];
         do {
           source = edgeData.source;
           target = edgeData.target;
           shouldBreak = callback(edgeData.key, edgeData.attributes, source.key, target.key, source.attributes, target.attributes, edgeData.undirected);
-          if (breakable && shouldBreak)
-            return edgeData.key;
+          if (breakable && shouldBreak) return edgeData.key;
           edgeData = edgeData.next;
         } while (edgeData !== void 0);
       }
@@ -24171,10 +24026,9 @@ var require_graphology_cjs = __commonJS({
       return new Iterator__default["default"](function next() {
         do {
           if (!edgeData) {
-            if (i >= l)
-              return {
-                done: true
-              };
+            if (i >= l) return {
+              done: true
+            };
             var k = keys[i++];
             if (k === avoid) {
               edgeData = void 0;
@@ -24201,22 +24055,18 @@ var require_graphology_cjs = __commonJS({
     }
     function forEachForKeySimple(breakable, object2, k, callback) {
       var edgeData = object2[k];
-      if (!edgeData)
-        return;
+      if (!edgeData) return;
       var sourceData = edgeData.source;
       var targetData = edgeData.target;
-      if (callback(edgeData.key, edgeData.attributes, sourceData.key, targetData.key, sourceData.attributes, targetData.attributes, edgeData.undirected) && breakable)
-        return edgeData.key;
+      if (callback(edgeData.key, edgeData.attributes, sourceData.key, targetData.key, sourceData.attributes, targetData.attributes, edgeData.undirected) && breakable) return edgeData.key;
     }
     function forEachForKeyMulti(breakable, object2, k, callback) {
       var edgeData = object2[k];
-      if (!edgeData)
-        return;
+      if (!edgeData) return;
       var shouldBreak = false;
       do {
         shouldBreak = callback(edgeData.key, edgeData.attributes, edgeData.source.key, edgeData.target.key, edgeData.source.attributes, edgeData.target.attributes, edgeData.undirected);
-        if (breakable && shouldBreak)
-          return edgeData.key;
+        if (breakable && shouldBreak) return edgeData.key;
         edgeData = edgeData.next;
       } while (edgeData !== void 0);
       return;
@@ -24225,10 +24075,9 @@ var require_graphology_cjs = __commonJS({
       var edgeData = object2[k];
       if (edgeData.next !== void 0) {
         return new Iterator__default["default"](function() {
-          if (!edgeData)
-            return {
-              done: true
-            };
+          if (!edgeData) return {
+            done: true
+          };
           var value = {
             edge: edgeData.key,
             attributes: edgeData.attributes,
@@ -24256,11 +24105,9 @@ var require_graphology_cjs = __commonJS({
       });
     }
     function createEdgeArray(graph, type) {
-      if (graph.size === 0)
-        return [];
+      if (graph.size === 0) return [];
       if (type === "mixed" || type === graph.type) {
-        if (typeof Array.from === "function")
-          return Array.from(graph._edges.keys());
+        if (typeof Array.from === "function") return Array.from(graph._edges.keys());
         return take__default["default"](graph._edges.keys(), graph._edges.size);
       }
       var size = type === "undirected" ? graph.undirectedSize : graph.directedSize;
@@ -24270,14 +24117,12 @@ var require_graphology_cjs = __commonJS({
       var step, data;
       while (step = iterator.next(), step.done !== true) {
         data = step.value;
-        if (data.undirected === mask)
-          list4[i++] = data.key;
+        if (data.undirected === mask) list4[i++] = data.key;
       }
       return list4;
     }
     function forEachEdge(breakable, graph, type, callback) {
-      if (graph.size === 0)
-        return;
+      if (graph.size === 0) return;
       var shouldFilter = type !== "mixed" && type !== graph.type;
       var mask = type === "undirected";
       var step, data;
@@ -24285,18 +24130,15 @@ var require_graphology_cjs = __commonJS({
       var iterator = graph._edges.values();
       while (step = iterator.next(), step.done !== true) {
         data = step.value;
-        if (shouldFilter && data.undirected !== mask)
-          continue;
+        if (shouldFilter && data.undirected !== mask) continue;
         var _data = data, key = _data.key, attributes = _data.attributes, source = _data.source, target = _data.target;
         shouldBreak = callback(key, attributes, source.key, target.key, source.attributes, target.attributes, data.undirected);
-        if (breakable && shouldBreak)
-          return key;
+        if (breakable && shouldBreak) return key;
       }
       return;
     }
     function createEdgeIterator(graph, type) {
-      if (graph.size === 0)
-        return Iterator__default["default"].empty();
+      if (graph.size === 0) return Iterator__default["default"].empty();
       var shouldFilter = type !== "mixed" && type !== graph.type;
       var mask = type === "undirected";
       var iterator = graph._edges.values();
@@ -24304,11 +24146,9 @@ var require_graphology_cjs = __commonJS({
         var step, data;
         while (true) {
           step = iterator.next();
-          if (step.done)
-            return step;
+          if (step.done) return step;
           data = step.value;
-          if (shouldFilter && data.undirected !== mask)
-            continue;
+          if (shouldFilter && data.undirected !== mask) continue;
           break;
         }
         var value = {
@@ -24332,19 +24172,16 @@ var require_graphology_cjs = __commonJS({
       if (type !== "undirected") {
         if (direction !== "out") {
           found = fn(breakable, nodeData["in"], callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
         }
         if (direction !== "in") {
           found = fn(breakable, nodeData.out, callback, !direction ? nodeData.key : void 0);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
         }
       }
       if (type !== "directed") {
         found = fn(breakable, nodeData.undirected, callback);
-        if (breakable && found)
-          return found;
+        if (breakable && found) return found;
       }
       return;
     }
@@ -24358,10 +24195,8 @@ var require_graphology_cjs = __commonJS({
     function createEdgeIteratorForNode(type, direction, nodeData) {
       var iterator = Iterator__default["default"].empty();
       if (type !== "undirected") {
-        if (direction !== "out" && typeof nodeData["in"] !== "undefined")
-          iterator = chain__default["default"](iterator, createIterator(nodeData["in"]));
-        if (direction !== "in" && typeof nodeData.out !== "undefined")
-          iterator = chain__default["default"](iterator, createIterator(nodeData.out, !direction ? nodeData.key : void 0));
+        if (direction !== "out" && typeof nodeData["in"] !== "undefined") iterator = chain__default["default"](iterator, createIterator(nodeData["in"]));
+        if (direction !== "in" && typeof nodeData.out !== "undefined") iterator = chain__default["default"](iterator, createIterator(nodeData.out, !direction ? nodeData.key : void 0));
       }
       if (type !== "directed" && typeof nodeData.undirected !== "undefined") {
         iterator = chain__default["default"](iterator, createIterator(nodeData.undirected));
@@ -24374,20 +24209,17 @@ var require_graphology_cjs = __commonJS({
       if (type !== "undirected") {
         if (typeof sourceData["in"] !== "undefined" && direction !== "out") {
           found = fn(breakable, sourceData["in"], target, callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
         }
         if (typeof sourceData.out !== "undefined" && direction !== "in" && (direction || sourceData.key !== target)) {
           found = fn(breakable, sourceData.out, target, callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
         }
       }
       if (type !== "directed") {
         if (typeof sourceData.undirected !== "undefined") {
           found = fn(breakable, sourceData.undirected, target, callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
         }
       }
       return;
@@ -24402,39 +24234,31 @@ var require_graphology_cjs = __commonJS({
     function createEdgeIteratorForPath(type, direction, sourceData, target) {
       var iterator = Iterator__default["default"].empty();
       if (type !== "undirected") {
-        if (typeof sourceData["in"] !== "undefined" && direction !== "out" && target in sourceData["in"])
-          iterator = chain__default["default"](iterator, createIteratorForKey(sourceData["in"], target));
-        if (typeof sourceData.out !== "undefined" && direction !== "in" && target in sourceData.out && (direction || sourceData.key !== target))
-          iterator = chain__default["default"](iterator, createIteratorForKey(sourceData.out, target));
+        if (typeof sourceData["in"] !== "undefined" && direction !== "out" && target in sourceData["in"]) iterator = chain__default["default"](iterator, createIteratorForKey(sourceData["in"], target));
+        if (typeof sourceData.out !== "undefined" && direction !== "in" && target in sourceData.out && (direction || sourceData.key !== target)) iterator = chain__default["default"](iterator, createIteratorForKey(sourceData.out, target));
       }
       if (type !== "directed") {
-        if (typeof sourceData.undirected !== "undefined" && target in sourceData.undirected)
-          iterator = chain__default["default"](iterator, createIteratorForKey(sourceData.undirected, target));
+        if (typeof sourceData.undirected !== "undefined" && target in sourceData.undirected) iterator = chain__default["default"](iterator, createIteratorForKey(sourceData.undirected, target));
       }
       return iterator;
     }
     function attachEdgeArrayCreator(Class, description) {
       var name = description.name, type = description.type, direction = description.direction;
       Class.prototype[name] = function(source, target) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return [];
-        if (!arguments.length)
-          return createEdgeArray(this, type);
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return [];
+        if (!arguments.length) return createEdgeArray(this, type);
         if (arguments.length === 1) {
           source = "" + source;
           var nodeData = this._nodes.get(source);
-          if (typeof nodeData === "undefined")
-            throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(source, '" node in the graph.'));
+          if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(source, '" node in the graph.'));
           return createEdgeArrayForNode(this.multi, type === "mixed" ? this.type : type, direction, nodeData);
         }
         if (arguments.length === 2) {
           source = "" + source;
           target = "" + target;
           var sourceData = this._nodes.get(source);
-          if (!sourceData)
-            throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(source, '" source node in the graph.'));
-          if (!this._nodes.has(target))
-            throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(target, '" target node in the graph.'));
+          if (!sourceData) throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(source, '" source node in the graph.'));
+          if (!this._nodes.has(target)) throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(target, '" target node in the graph.'));
           return createEdgeArrayForPath(type, this.multi, direction, sourceData, target);
         }
         throw new InvalidArgumentsGraphError("Graph.".concat(name, ": too many arguments (expecting 0, 1 or 2 and got ").concat(arguments.length, ")."));
@@ -24444,8 +24268,7 @@ var require_graphology_cjs = __commonJS({
       var name = description.name, type = description.type, direction = description.direction;
       var forEachName = "forEach" + name[0].toUpperCase() + name.slice(1, -1);
       Class.prototype[forEachName] = function(source, target, callback) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return;
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return;
         if (arguments.length === 1) {
           callback = source;
           return forEachEdge(false, this, type, callback);
@@ -24454,18 +24277,15 @@ var require_graphology_cjs = __commonJS({
           source = "" + source;
           callback = target;
           var nodeData = this._nodes.get(source);
-          if (typeof nodeData === "undefined")
-            throw new NotFoundGraphError("Graph.".concat(forEachName, ': could not find the "').concat(source, '" node in the graph.'));
+          if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(forEachName, ': could not find the "').concat(source, '" node in the graph.'));
           return forEachEdgeForNode(false, this.multi, type === "mixed" ? this.type : type, direction, nodeData, callback);
         }
         if (arguments.length === 3) {
           source = "" + source;
           target = "" + target;
           var sourceData = this._nodes.get(source);
-          if (!sourceData)
-            throw new NotFoundGraphError("Graph.".concat(forEachName, ':  could not find the "').concat(source, '" source node in the graph.'));
-          if (!this._nodes.has(target))
-            throw new NotFoundGraphError("Graph.".concat(forEachName, ':  could not find the "').concat(target, '" target node in the graph.'));
+          if (!sourceData) throw new NotFoundGraphError("Graph.".concat(forEachName, ':  could not find the "').concat(source, '" source node in the graph.'));
+          if (!this._nodes.has(target)) throw new NotFoundGraphError("Graph.".concat(forEachName, ':  could not find the "').concat(target, '" target node in the graph.'));
           return forEachEdgeForPath(false, type, this.multi, direction, sourceData, target, callback);
         }
         throw new InvalidArgumentsGraphError("Graph.".concat(forEachName, ": too many arguments (expecting 1, 2 or 3 and got ").concat(arguments.length, ")."));
@@ -24477,10 +24297,8 @@ var require_graphology_cjs = __commonJS({
         var result;
         if (args.length === 0) {
           var length = 0;
-          if (type !== "directed")
-            length += this.undirectedSize;
-          if (type !== "undirected")
-            length += this.directedSize;
+          if (type !== "directed") length += this.undirectedSize;
+          if (type !== "undirected") length += this.directedSize;
           result = new Array(length);
           var i = 0;
           args.push(function(e, ea, s, t, sa, ta, u) {
@@ -24501,8 +24319,7 @@ var require_graphology_cjs = __commonJS({
         var callback = args.pop();
         var result = [];
         args.push(function(e, ea, s, t, sa, ta, u) {
-          if (callback(e, ea, s, t, sa, ta, u))
-            result.push(e);
+          if (callback(e, ea, s, t, sa, ta, u)) result.push(e);
         });
         this[forEachName].apply(this, args);
         return result;
@@ -24543,8 +24360,7 @@ var require_graphology_cjs = __commonJS({
       var name = description.name, type = description.type, direction = description.direction;
       var findEdgeName = "find" + name[0].toUpperCase() + name.slice(1, -1);
       Class.prototype[findEdgeName] = function(source, target, callback) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return false;
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return false;
         if (arguments.length === 1) {
           callback = source;
           return forEachEdge(true, this, type, callback);
@@ -24553,18 +24369,15 @@ var require_graphology_cjs = __commonJS({
           source = "" + source;
           callback = target;
           var nodeData = this._nodes.get(source);
-          if (typeof nodeData === "undefined")
-            throw new NotFoundGraphError("Graph.".concat(findEdgeName, ': could not find the "').concat(source, '" node in the graph.'));
+          if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(findEdgeName, ': could not find the "').concat(source, '" node in the graph.'));
           return forEachEdgeForNode(true, this.multi, type === "mixed" ? this.type : type, direction, nodeData, callback);
         }
         if (arguments.length === 3) {
           source = "" + source;
           target = "" + target;
           var sourceData = this._nodes.get(source);
-          if (!sourceData)
-            throw new NotFoundGraphError("Graph.".concat(findEdgeName, ':  could not find the "').concat(source, '" source node in the graph.'));
-          if (!this._nodes.has(target))
-            throw new NotFoundGraphError("Graph.".concat(findEdgeName, ':  could not find the "').concat(target, '" target node in the graph.'));
+          if (!sourceData) throw new NotFoundGraphError("Graph.".concat(findEdgeName, ':  could not find the "').concat(source, '" source node in the graph.'));
+          if (!this._nodes.has(target)) throw new NotFoundGraphError("Graph.".concat(findEdgeName, ':  could not find the "').concat(target, '" target node in the graph.'));
           return forEachEdgeForPath(true, type, this.multi, direction, sourceData, target, callback);
         }
         throw new InvalidArgumentsGraphError("Graph.".concat(findEdgeName, ": too many arguments (expecting 1, 2 or 3 and got ").concat(arguments.length, ")."));
@@ -24577,8 +24390,7 @@ var require_graphology_cjs = __commonJS({
           return callback(e, ea, s, t, sa, ta, u);
         });
         var found = this[findEdgeName].apply(this, args);
-        if (found)
-          return true;
+        if (found) return true;
         return false;
       };
       var everyName = "every" + name[0].toUpperCase() + name.slice(1, -1);
@@ -24589,8 +24401,7 @@ var require_graphology_cjs = __commonJS({
           return !callback(e, ea, s, t, sa, ta, u);
         });
         var found = this[findEdgeName].apply(this, args);
-        if (found)
-          return false;
+        if (found) return false;
         return true;
       };
     }
@@ -24598,25 +24409,20 @@ var require_graphology_cjs = __commonJS({
       var originalName = description.name, type = description.type, direction = description.direction;
       var name = originalName.slice(0, -1) + "Entries";
       Class.prototype[name] = function(source, target) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return Iterator__default["default"].empty();
-        if (!arguments.length)
-          return createEdgeIterator(this, type);
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return Iterator__default["default"].empty();
+        if (!arguments.length) return createEdgeIterator(this, type);
         if (arguments.length === 1) {
           source = "" + source;
           var sourceData = this._nodes.get(source);
-          if (!sourceData)
-            throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(source, '" node in the graph.'));
+          if (!sourceData) throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(source, '" node in the graph.'));
           return createEdgeIteratorForNode(type, direction, sourceData);
         }
         if (arguments.length === 2) {
           source = "" + source;
           target = "" + target;
           var _sourceData = this._nodes.get(source);
-          if (!_sourceData)
-            throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(source, '" source node in the graph.'));
-          if (!this._nodes.has(target))
-            throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(target, '" target node in the graph.'));
+          if (!_sourceData) throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(source, '" source node in the graph.'));
+          if (!this._nodes.has(target)) throw new NotFoundGraphError("Graph.".concat(name, ':  could not find the "').concat(target, '" target node in the graph.'));
           return createEdgeIteratorForPath(type, direction, _sourceData, target);
         }
         throw new InvalidArgumentsGraphError("Graph.".concat(name, ": too many arguments (expecting 0, 1 or 2 and got ").concat(arguments.length, ")."));
@@ -24661,16 +24467,12 @@ var require_graphology_cjs = __commonJS({
       this.B = null;
     }
     CompositeSetWrapper.prototype.wrap = function(set) {
-      if (this.A === null)
-        this.A = set;
-      else if (this.B === null)
-        this.B = set;
+      if (this.A === null) this.A = set;
+      else if (this.B === null) this.B = set;
     };
     CompositeSetWrapper.prototype.has = function(key) {
-      if (this.A !== null && key in this.A)
-        return true;
-      if (this.B !== null && key in this.B)
-        return true;
+      if (this.A !== null && key in this.A) return true;
+      if (this.B !== null && key in this.B) return true;
       return false;
     };
     function forEachInObjectOnce(breakable, visited, nodeData, object2, callback) {
@@ -24679,50 +24481,41 @@ var require_graphology_cjs = __commonJS({
         var sourceData = edgeData.source;
         var targetData = edgeData.target;
         var neighborData = sourceData === nodeData ? targetData : sourceData;
-        if (visited && visited.has(neighborData.key))
-          continue;
+        if (visited && visited.has(neighborData.key)) continue;
         var shouldBreak = callback(neighborData.key, neighborData.attributes);
-        if (breakable && shouldBreak)
-          return neighborData.key;
+        if (breakable && shouldBreak) return neighborData.key;
       }
       return;
     }
     function forEachNeighbor(breakable, type, direction, nodeData, callback) {
       if (type !== "mixed") {
-        if (type === "undirected")
-          return forEachInObjectOnce(breakable, null, nodeData, nodeData.undirected, callback);
-        if (typeof direction === "string")
-          return forEachInObjectOnce(breakable, null, nodeData, nodeData[direction], callback);
+        if (type === "undirected") return forEachInObjectOnce(breakable, null, nodeData, nodeData.undirected, callback);
+        if (typeof direction === "string") return forEachInObjectOnce(breakable, null, nodeData, nodeData[direction], callback);
       }
       var visited = new CompositeSetWrapper();
       var found;
       if (type !== "undirected") {
         if (direction !== "out") {
           found = forEachInObjectOnce(breakable, null, nodeData, nodeData["in"], callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
           visited.wrap(nodeData["in"]);
         }
         if (direction !== "in") {
           found = forEachInObjectOnce(breakable, visited, nodeData, nodeData.out, callback);
-          if (breakable && found)
-            return found;
+          if (breakable && found) return found;
           visited.wrap(nodeData.out);
         }
       }
       if (type !== "directed") {
         found = forEachInObjectOnce(breakable, visited, nodeData, nodeData.undirected, callback);
-        if (breakable && found)
-          return found;
+        if (breakable && found) return found;
       }
       return;
     }
     function createNeighborArrayForNode(type, direction, nodeData) {
       if (type !== "mixed") {
-        if (type === "undirected")
-          return Object.keys(nodeData.undirected);
-        if (typeof direction === "string")
-          return Object.keys(nodeData[direction]);
+        if (type === "undirected") return Object.keys(nodeData.undirected);
+        if (typeof direction === "string") return Object.keys(nodeData[direction]);
       }
       var neighbors = [];
       forEachNeighbor(false, type, direction, nodeData, function(key) {
@@ -24738,8 +24531,7 @@ var require_graphology_cjs = __commonJS({
         var neighborData = null;
         do {
           if (i >= l) {
-            if (visited)
-              visited.wrap(object2);
+            if (visited) visited.wrap(object2);
             return {
               done: true
             };
@@ -24764,10 +24556,8 @@ var require_graphology_cjs = __commonJS({
     }
     function createNeighborIterator(type, direction, nodeData) {
       if (type !== "mixed") {
-        if (type === "undirected")
-          return createDedupedObjectIterator(null, nodeData, nodeData.undirected);
-        if (typeof direction === "string")
-          return createDedupedObjectIterator(null, nodeData, nodeData[direction]);
+        if (type === "undirected") return createDedupedObjectIterator(null, nodeData, nodeData.undirected);
+        if (typeof direction === "string") return createDedupedObjectIterator(null, nodeData, nodeData[direction]);
       }
       var iterator = Iterator__default["default"].empty();
       var visited = new CompositeSetWrapper();
@@ -24787,12 +24577,10 @@ var require_graphology_cjs = __commonJS({
     function attachNeighborArrayCreator(Class, description) {
       var name = description.name, type = description.type, direction = description.direction;
       Class.prototype[name] = function(node2) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return [];
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return [];
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (typeof nodeData === "undefined")
-          throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(node2, '" node in the graph.'));
+        if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(name, ': could not find the "').concat(node2, '" node in the graph.'));
         return createNeighborArrayForNode(type === "mixed" ? this.type : type, direction, nodeData);
       };
     }
@@ -24800,12 +24588,10 @@ var require_graphology_cjs = __commonJS({
       var name = description.name, type = description.type, direction = description.direction;
       var forEachName = "forEach" + name[0].toUpperCase() + name.slice(1, -1);
       Class.prototype[forEachName] = function(node2, callback) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return;
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return;
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (typeof nodeData === "undefined")
-          throw new NotFoundGraphError("Graph.".concat(forEachName, ': could not find the "').concat(node2, '" node in the graph.'));
+        if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(forEachName, ': could not find the "').concat(node2, '" node in the graph.'));
         forEachNeighbor(false, type === "mixed" ? this.type : type, direction, nodeData, callback);
       };
       var mapName = "map" + name[0].toUpperCase() + name.slice(1);
@@ -24820,15 +24606,13 @@ var require_graphology_cjs = __commonJS({
       Class.prototype[filterName] = function(node2, callback) {
         var result = [];
         this[forEachName](node2, function(n, a) {
-          if (callback(n, a))
-            result.push(n);
+          if (callback(n, a)) result.push(n);
         });
         return result;
       };
       var reduceName = "reduce" + name[0].toUpperCase() + name.slice(1);
       Class.prototype[reduceName] = function(node2, callback, initialValue) {
-        if (arguments.length < 3)
-          throw new InvalidArgumentsGraphError("Graph.".concat(reduceName, ": missing initial value. You must provide it because the callback takes more than one argument and we cannot infer the initial value from the first iteration, as you could with a simple array."));
+        if (arguments.length < 3) throw new InvalidArgumentsGraphError("Graph.".concat(reduceName, ": missing initial value. You must provide it because the callback takes more than one argument and we cannot infer the initial value from the first iteration, as you could with a simple array."));
         var accumulator = initialValue;
         this[forEachName](node2, function(n, a) {
           accumulator = callback(accumulator, n, a);
@@ -24841,19 +24625,16 @@ var require_graphology_cjs = __commonJS({
       var capitalizedSingular = name[0].toUpperCase() + name.slice(1, -1);
       var findName = "find" + capitalizedSingular;
       Class.prototype[findName] = function(node2, callback) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return;
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return;
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (typeof nodeData === "undefined")
-          throw new NotFoundGraphError("Graph.".concat(findName, ': could not find the "').concat(node2, '" node in the graph.'));
+        if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(findName, ': could not find the "').concat(node2, '" node in the graph.'));
         return forEachNeighbor(true, type === "mixed" ? this.type : type, direction, nodeData, callback);
       };
       var someName = "some" + capitalizedSingular;
       Class.prototype[someName] = function(node2, callback) {
         var found = this[findName](node2, callback);
-        if (found)
-          return true;
+        if (found) return true;
         return false;
       };
       var everyName = "every" + capitalizedSingular;
@@ -24861,8 +24642,7 @@ var require_graphology_cjs = __commonJS({
         var found = this[findName](node2, function(n, a) {
           return !callback(n, a);
         });
-        if (found)
-          return false;
+        if (found) return false;
         return true;
       };
     }
@@ -24870,12 +24650,10 @@ var require_graphology_cjs = __commonJS({
       var name = description.name, type = description.type, direction = description.direction;
       var iteratorName = name.slice(0, -1) + "Entries";
       Class.prototype[iteratorName] = function(node2) {
-        if (type !== "mixed" && this.type !== "mixed" && type !== this.type)
-          return Iterator__default["default"].empty();
+        if (type !== "mixed" && this.type !== "mixed" && type !== this.type) return Iterator__default["default"].empty();
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (typeof nodeData === "undefined")
-          throw new NotFoundGraphError("Graph.".concat(iteratorName, ': could not find the "').concat(node2, '" node in the graph.'));
+        if (typeof nodeData === "undefined") throw new NotFoundGraphError("Graph.".concat(iteratorName, ': could not find the "').concat(node2, '" node in the graph.'));
         return createNeighborIterator(type === "mixed" ? this.type : type, direction, nodeData);
       };
     }
@@ -24902,8 +24680,7 @@ var require_graphology_cjs = __commonJS({
               targetData = edgeData.target;
               hasEdges = true;
               shouldBreak = callback(sourceData.key, targetData.key, sourceData.attributes, targetData.attributes, edgeData.key, edgeData.attributes, edgeData.undirected);
-              if (breakable && shouldBreak)
-                return edgeData;
+              if (breakable && shouldBreak) return edgeData;
               edgeData = edgeData.next;
             } while (edgeData);
           }
@@ -24911,25 +24688,21 @@ var require_graphology_cjs = __commonJS({
         if (type !== "directed") {
           adj = sourceData.undirected;
           for (neighbor in adj) {
-            if (assymetric && sourceData.key > neighbor)
-              continue;
+            if (assymetric && sourceData.key > neighbor) continue;
             edgeData = adj[neighbor];
             do {
               targetData = edgeData.target;
-              if (targetData.key !== neighbor)
-                targetData = edgeData.source;
+              if (targetData.key !== neighbor) targetData = edgeData.source;
               hasEdges = true;
               shouldBreak = callback(sourceData.key, targetData.key, sourceData.attributes, targetData.attributes, edgeData.key, edgeData.attributes, edgeData.undirected);
-              if (breakable && shouldBreak)
-                return edgeData;
+              if (breakable && shouldBreak) return edgeData;
               edgeData = edgeData.next;
             } while (edgeData);
           }
         }
         if (disconnectedNodes && !hasEdges) {
           shouldBreak = callback(sourceData.key, null, sourceData.attributes, null, null, null, null);
-          if (breakable && shouldBreak)
-            return null;
+          if (breakable && shouldBreak) return null;
         }
       }
       return;
@@ -24938,8 +24711,7 @@ var require_graphology_cjs = __commonJS({
       var serialized = {
         key
       };
-      if (!isEmpty(data.attributes))
-        serialized.attributes = assign({}, data.attributes);
+      if (!isEmpty(data.attributes)) serialized.attributes = assign({}, data.attributes);
       return serialized;
     }
     function serializeEdge(type, key, data) {
@@ -24948,31 +24720,21 @@ var require_graphology_cjs = __commonJS({
         source: data.source.key,
         target: data.target.key
       };
-      if (!isEmpty(data.attributes))
-        serialized.attributes = assign({}, data.attributes);
-      if (type === "mixed" && data.undirected)
-        serialized.undirected = true;
+      if (!isEmpty(data.attributes)) serialized.attributes = assign({}, data.attributes);
+      if (type === "mixed" && data.undirected) serialized.undirected = true;
       return serialized;
     }
     function validateSerializedNode(value) {
-      if (!isPlainObject2(value))
-        throw new InvalidArgumentsGraphError('Graph.import: invalid serialized node. A serialized node should be a plain object with at least a "key" property.');
-      if (!("key" in value))
-        throw new InvalidArgumentsGraphError("Graph.import: serialized node is missing its key.");
-      if ("attributes" in value && (!isPlainObject2(value.attributes) || value.attributes === null))
-        throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Attributes should be a plain object, null or omitted.");
+      if (!isPlainObject2(value)) throw new InvalidArgumentsGraphError('Graph.import: invalid serialized node. A serialized node should be a plain object with at least a "key" property.');
+      if (!("key" in value)) throw new InvalidArgumentsGraphError("Graph.import: serialized node is missing its key.");
+      if ("attributes" in value && (!isPlainObject2(value.attributes) || value.attributes === null)) throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Attributes should be a plain object, null or omitted.");
     }
     function validateSerializedEdge(value) {
-      if (!isPlainObject2(value))
-        throw new InvalidArgumentsGraphError('Graph.import: invalid serialized edge. A serialized edge should be a plain object with at least a "source" & "target" property.');
-      if (!("source" in value))
-        throw new InvalidArgumentsGraphError("Graph.import: serialized edge is missing its source.");
-      if (!("target" in value))
-        throw new InvalidArgumentsGraphError("Graph.import: serialized edge is missing its target.");
-      if ("attributes" in value && (!isPlainObject2(value.attributes) || value.attributes === null))
-        throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Attributes should be a plain object, null or omitted.");
-      if ("undirected" in value && typeof value.undirected !== "boolean")
-        throw new InvalidArgumentsGraphError("Graph.import: invalid undirectedness information. Undirected should be boolean or omitted.");
+      if (!isPlainObject2(value)) throw new InvalidArgumentsGraphError('Graph.import: invalid serialized edge. A serialized edge should be a plain object with at least a "source" & "target" property.');
+      if (!("source" in value)) throw new InvalidArgumentsGraphError("Graph.import: serialized edge is missing its source.");
+      if (!("target" in value)) throw new InvalidArgumentsGraphError("Graph.import: serialized edge is missing its target.");
+      if ("attributes" in value && (!isPlainObject2(value.attributes) || value.attributes === null)) throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Attributes should be a plain object, null or omitted.");
+      if ("undirected" in value && typeof value.undirected !== "boolean") throw new InvalidArgumentsGraphError("Graph.import: invalid undirectedness information. Undirected should be boolean or omitted.");
     }
     var INSTANCE_ID = incrementalIdStartingFromRandomByte();
     var TYPES = /* @__PURE__ */ new Set(["directed", "undirected", "mixed"]);
@@ -25015,12 +24777,10 @@ var require_graphology_cjs = __commonJS({
       type: "mixed"
     };
     function _addNode(graph, node2, attributes) {
-      if (attributes && !isPlainObject2(attributes))
-        throw new InvalidArgumentsGraphError('Graph.addNode: invalid attributes. Expecting an object but got "'.concat(attributes, '"'));
+      if (attributes && !isPlainObject2(attributes)) throw new InvalidArgumentsGraphError('Graph.addNode: invalid attributes. Expecting an object but got "'.concat(attributes, '"'));
       node2 = "" + node2;
       attributes = attributes || {};
-      if (graph._nodes.has(node2))
-        throw new UsageGraphError('Graph.addNode: the "'.concat(node2, '" node already exist in the graph.'));
+      if (graph._nodes.has(node2)) throw new UsageGraphError('Graph.addNode: the "'.concat(node2, '" node already exist in the graph.'));
       var data = new graph.NodeDataClass(node2, attributes);
       graph._nodes.set(node2, data);
       graph.emit("nodeAdded", {
@@ -25039,22 +24799,16 @@ var require_graphology_cjs = __commonJS({
       return data;
     }
     function addEdge(graph, name, mustGenerateKey, undirected, edge, source, target, attributes) {
-      if (!undirected && graph.type === "undirected")
-        throw new UsageGraphError("Graph.".concat(name, ": you cannot add a directed edge to an undirected graph. Use the #.addEdge or #.addUndirectedEdge instead."));
-      if (undirected && graph.type === "directed")
-        throw new UsageGraphError("Graph.".concat(name, ": you cannot add an undirected edge to a directed graph. Use the #.addEdge or #.addDirectedEdge instead."));
-      if (attributes && !isPlainObject2(attributes))
-        throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid attributes. Expecting an object but got "').concat(attributes, '"'));
+      if (!undirected && graph.type === "undirected") throw new UsageGraphError("Graph.".concat(name, ": you cannot add a directed edge to an undirected graph. Use the #.addEdge or #.addUndirectedEdge instead."));
+      if (undirected && graph.type === "directed") throw new UsageGraphError("Graph.".concat(name, ": you cannot add an undirected edge to a directed graph. Use the #.addEdge or #.addDirectedEdge instead."));
+      if (attributes && !isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid attributes. Expecting an object but got "').concat(attributes, '"'));
       source = "" + source;
       target = "" + target;
       attributes = attributes || {};
-      if (!graph.allowSelfLoops && source === target)
-        throw new UsageGraphError("Graph.".concat(name, ': source & target are the same ("').concat(source, `"), thus creating a loop explicitly forbidden by this graph 'allowSelfLoops' option set to false.`));
+      if (!graph.allowSelfLoops && source === target) throw new UsageGraphError("Graph.".concat(name, ': source & target are the same ("').concat(source, `"), thus creating a loop explicitly forbidden by this graph 'allowSelfLoops' option set to false.`));
       var sourceData = graph._nodes.get(source), targetData = graph._nodes.get(target);
-      if (!sourceData)
-        throw new NotFoundGraphError("Graph.".concat(name, ': source node "').concat(source, '" not found.'));
-      if (!targetData)
-        throw new NotFoundGraphError("Graph.".concat(name, ': target node "').concat(target, '" not found.'));
+      if (!sourceData) throw new NotFoundGraphError("Graph.".concat(name, ': source node "').concat(source, '" not found.'));
+      if (!targetData) throw new NotFoundGraphError("Graph.".concat(name, ': target node "').concat(target, '" not found.'));
       var eventData = {
         key: null,
         undirected,
@@ -25066,8 +24820,7 @@ var require_graphology_cjs = __commonJS({
         edge = graph._edgeKeyGenerator();
       } else {
         edge = "" + edge;
-        if (graph._edges.has(edge))
-          throw new UsageGraphError("Graph.".concat(name, ': the "').concat(edge, '" edge already exists in the graph.'));
+        if (graph._edges.has(edge)) throw new UsageGraphError("Graph.".concat(name, ': the "').concat(edge, '" edge already exists in the graph.'));
       }
       if (!graph.multi && (undirected ? typeof sourceData.undirected[target] !== "undefined" : typeof sourceData.out[target] !== "undefined")) {
         throw new UsageGraphError("Graph.".concat(name, ': an edge linking "').concat(source, '" to "').concat(target, `" already exists. If you really want to add multiple edges linking those nodes, you should create a multi graph by using the 'multi' option.`));
@@ -25090,30 +24843,22 @@ var require_graphology_cjs = __commonJS({
           graph._directedSelfLoopCount++;
         }
       }
-      if (graph.multi)
-        edgeData.attachMulti();
-      else
-        edgeData.attach();
-      if (undirected)
-        graph._undirectedSize++;
-      else
-        graph._directedSize++;
+      if (graph.multi) edgeData.attachMulti();
+      else edgeData.attach();
+      if (undirected) graph._undirectedSize++;
+      else graph._directedSize++;
       eventData.key = edge;
       graph.emit("edgeAdded", eventData);
       return edge;
     }
     function mergeEdge(graph, name, mustGenerateKey, undirected, edge, source, target, attributes, asUpdater) {
-      if (!undirected && graph.type === "undirected")
-        throw new UsageGraphError("Graph.".concat(name, ": you cannot merge/update a directed edge to an undirected graph. Use the #.mergeEdge/#.updateEdge or #.addUndirectedEdge instead."));
-      if (undirected && graph.type === "directed")
-        throw new UsageGraphError("Graph.".concat(name, ": you cannot merge/update an undirected edge to a directed graph. Use the #.mergeEdge/#.updateEdge or #.addDirectedEdge instead."));
+      if (!undirected && graph.type === "undirected") throw new UsageGraphError("Graph.".concat(name, ": you cannot merge/update a directed edge to an undirected graph. Use the #.mergeEdge/#.updateEdge or #.addUndirectedEdge instead."));
+      if (undirected && graph.type === "directed") throw new UsageGraphError("Graph.".concat(name, ": you cannot merge/update an undirected edge to a directed graph. Use the #.mergeEdge/#.updateEdge or #.addDirectedEdge instead."));
       if (attributes) {
         if (asUpdater) {
-          if (typeof attributes !== "function")
-            throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid updater function. Expecting a function but got "').concat(attributes, '"'));
+          if (typeof attributes !== "function") throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid updater function. Expecting a function but got "').concat(attributes, '"'));
         } else {
-          if (!isPlainObject2(attributes))
-            throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid attributes. Expecting an object but got "').concat(attributes, '"'));
+          if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.".concat(name, ': invalid attributes. Expecting an object but got "').concat(attributes, '"'));
         }
       }
       source = "" + source;
@@ -25123,8 +24868,7 @@ var require_graphology_cjs = __commonJS({
         updater = attributes;
         attributes = void 0;
       }
-      if (!graph.allowSelfLoops && source === target)
-        throw new UsageGraphError("Graph.".concat(name, ': source & target are the same ("').concat(source, `"), thus creating a loop explicitly forbidden by this graph 'allowSelfLoops' option set to false.`));
+      if (!graph.allowSelfLoops && source === target) throw new UsageGraphError("Graph.".concat(name, ': source & target are the same ("').concat(source, `"), thus creating a loop explicitly forbidden by this graph 'allowSelfLoops' option set to false.`));
       var sourceData = graph._nodes.get(source);
       var targetData = graph._nodes.get(target);
       var edgeData;
@@ -25145,8 +24889,7 @@ var require_graphology_cjs = __commonJS({
       }
       if (alreadyExistingEdgeData) {
         var info5 = [alreadyExistingEdgeData.key, false, false, false];
-        if (asUpdater ? !updater : !attributes)
-          return info5;
+        if (asUpdater ? !updater : !attributes) return info5;
         if (asUpdater) {
           var oldAttributes = alreadyExistingEdgeData.attributes;
           alreadyExistingEdgeData.attributes = updater(oldAttributes);
@@ -25167,8 +24910,7 @@ var require_graphology_cjs = __commonJS({
         return info5;
       }
       attributes = attributes || {};
-      if (asUpdater && updater)
-        attributes = updater(attributes);
+      if (asUpdater && updater) attributes = updater(attributes);
       var eventData = {
         key: null,
         undirected,
@@ -25180,8 +24922,7 @@ var require_graphology_cjs = __commonJS({
         edge = graph._edgeKeyGenerator();
       } else {
         edge = "" + edge;
-        if (graph._edges.has(edge))
-          throw new UsageGraphError("Graph.".concat(name, ': the "').concat(edge, '" edge already exists in the graph.'));
+        if (graph._edges.has(edge)) throw new UsageGraphError("Graph.".concat(name, ': the "').concat(edge, '" edge already exists in the graph.'));
       }
       var sourceWasAdded = false;
       var targetWasAdded = false;
@@ -25215,14 +24956,10 @@ var require_graphology_cjs = __commonJS({
           graph._directedSelfLoopCount++;
         }
       }
-      if (graph.multi)
-        edgeData.attachMulti();
-      else
-        edgeData.attach();
-      if (undirected)
-        graph._undirectedSize++;
-      else
-        graph._directedSize++;
+      if (graph.multi) edgeData.attachMulti();
+      else edgeData.attach();
+      if (undirected) graph._undirectedSize++;
+      else graph._directedSize++;
       eventData.key = edge;
       graph.emit("edgeAdded", eventData);
       return [edge, true, sourceWasAdded, targetWasAdded];
@@ -25247,14 +24984,10 @@ var require_graphology_cjs = __commonJS({
           graph._directedSelfLoopCount--;
         }
       }
-      if (graph.multi)
-        edgeData.detachMulti();
-      else
-        edgeData.detach();
-      if (undirected)
-        graph._undirectedSize--;
-      else
-        graph._directedSize--;
+      if (graph.multi) edgeData.detachMulti();
+      else edgeData.detach();
+      if (undirected) graph._undirectedSize--;
+      else graph._directedSize--;
       graph.emit("edgeDropped", {
         key: edgeData.key,
         attributes,
@@ -25263,18 +24996,15 @@ var require_graphology_cjs = __commonJS({
         undirected
       });
     }
-    var Graph = /* @__PURE__ */ function(_EventEmitter) {
+    var Graph = /* @__PURE__ */ (function(_EventEmitter) {
       _inheritsLoose(Graph2, _EventEmitter);
       function Graph2(options) {
         var _this;
         _this = _EventEmitter.call(this) || this;
         options = assign({}, DEFAULTS, options);
-        if (typeof options.multi !== "boolean")
-          throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'multi' option. Expecting a boolean but got "`.concat(options.multi, '".'));
-        if (!TYPES.has(options.type))
-          throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'type' option. Should be one of "mixed", "directed" or "undirected" but got "`.concat(options.type, '".'));
-        if (typeof options.allowSelfLoops !== "boolean")
-          throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'allowSelfLoops' option. Expecting a boolean but got "`.concat(options.allowSelfLoops, '".'));
+        if (typeof options.multi !== "boolean") throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'multi' option. Expecting a boolean but got "`.concat(options.multi, '".'));
+        if (!TYPES.has(options.type)) throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'type' option. Should be one of "mixed", "directed" or "undirected" but got "`.concat(options.type, '".'));
+        if (typeof options.allowSelfLoops !== "boolean") throw new InvalidArgumentsGraphError(`Graph.constructor: invalid 'allowSelfLoops' option. Expecting a boolean but got "`.concat(options.allowSelfLoops, '".'));
         var NodeDataClass = options.type === "mixed" ? MixedNodeData : options.type === "directed" ? DirectedNodeData : UndirectedNodeData;
         privateProperty(_assertThisInitialized(_this), "NodeDataClass", NodeDataClass);
         var instancePrefix = "geid_" + INSTANCE_ID() + "_";
@@ -25338,8 +25068,7 @@ var require_graphology_cjs = __commonJS({
         return this._nodes.has("" + node2);
       };
       _proto.hasDirectedEdge = function hasDirectedEdge(source, target) {
-        if (this.type === "undirected")
-          return false;
+        if (this.type === "undirected") return false;
         if (arguments.length === 1) {
           var edge = "" + source;
           var edgeData = this._edges.get(edge);
@@ -25348,15 +25077,13 @@ var require_graphology_cjs = __commonJS({
           source = "" + source;
           target = "" + target;
           var nodeData = this._nodes.get(source);
-          if (!nodeData)
-            return false;
+          if (!nodeData) return false;
           return nodeData.out.hasOwnProperty(target);
         }
         throw new InvalidArgumentsGraphError("Graph.hasDirectedEdge: invalid arity (".concat(arguments.length, ", instead of 1 or 2). You can either ask for an edge id or for the existence of an edge between a source & a target."));
       };
       _proto.hasUndirectedEdge = function hasUndirectedEdge(source, target) {
-        if (this.type === "directed")
-          return false;
+        if (this.type === "directed") return false;
         if (arguments.length === 1) {
           var edge = "" + source;
           var edgeData = this._edges.get(edge);
@@ -25365,8 +25092,7 @@ var require_graphology_cjs = __commonJS({
           source = "" + source;
           target = "" + target;
           var nodeData = this._nodes.get(source);
-          if (!nodeData)
-            return false;
+          if (!nodeData) return false;
           return nodeData.undirected.hasOwnProperty(target);
         }
         throw new InvalidArgumentsGraphError("Graph.hasDirectedEdge: invalid arity (".concat(arguments.length, ", instead of 1 or 2). You can either ask for an edge id or for the existence of an edge between a source & a target."));
@@ -25379,111 +25105,85 @@ var require_graphology_cjs = __commonJS({
           source = "" + source;
           target = "" + target;
           var nodeData = this._nodes.get(source);
-          if (!nodeData)
-            return false;
+          if (!nodeData) return false;
           return typeof nodeData.out !== "undefined" && nodeData.out.hasOwnProperty(target) || typeof nodeData.undirected !== "undefined" && nodeData.undirected.hasOwnProperty(target);
         }
         throw new InvalidArgumentsGraphError("Graph.hasEdge: invalid arity (".concat(arguments.length, ", instead of 1 or 2). You can either ask for an edge id or for the existence of an edge between a source & a target."));
       };
       _proto.directedEdge = function directedEdge(source, target) {
-        if (this.type === "undirected")
-          return;
+        if (this.type === "undirected") return;
         source = "" + source;
         target = "" + target;
-        if (this.multi)
-          throw new UsageGraphError("Graph.directedEdge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.directedEdges instead.");
+        if (this.multi) throw new UsageGraphError("Graph.directedEdge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.directedEdges instead.");
         var sourceData = this._nodes.get(source);
-        if (!sourceData)
-          throw new NotFoundGraphError('Graph.directedEdge: could not find the "'.concat(source, '" source node in the graph.'));
-        if (!this._nodes.has(target))
-          throw new NotFoundGraphError('Graph.directedEdge: could not find the "'.concat(target, '" target node in the graph.'));
+        if (!sourceData) throw new NotFoundGraphError('Graph.directedEdge: could not find the "'.concat(source, '" source node in the graph.'));
+        if (!this._nodes.has(target)) throw new NotFoundGraphError('Graph.directedEdge: could not find the "'.concat(target, '" target node in the graph.'));
         var edgeData = sourceData.out && sourceData.out[target] || void 0;
-        if (edgeData)
-          return edgeData.key;
+        if (edgeData) return edgeData.key;
       };
       _proto.undirectedEdge = function undirectedEdge(source, target) {
-        if (this.type === "directed")
-          return;
+        if (this.type === "directed") return;
         source = "" + source;
         target = "" + target;
-        if (this.multi)
-          throw new UsageGraphError("Graph.undirectedEdge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.undirectedEdges instead.");
+        if (this.multi) throw new UsageGraphError("Graph.undirectedEdge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.undirectedEdges instead.");
         var sourceData = this._nodes.get(source);
-        if (!sourceData)
-          throw new NotFoundGraphError('Graph.undirectedEdge: could not find the "'.concat(source, '" source node in the graph.'));
-        if (!this._nodes.has(target))
-          throw new NotFoundGraphError('Graph.undirectedEdge: could not find the "'.concat(target, '" target node in the graph.'));
+        if (!sourceData) throw new NotFoundGraphError('Graph.undirectedEdge: could not find the "'.concat(source, '" source node in the graph.'));
+        if (!this._nodes.has(target)) throw new NotFoundGraphError('Graph.undirectedEdge: could not find the "'.concat(target, '" target node in the graph.'));
         var edgeData = sourceData.undirected && sourceData.undirected[target] || void 0;
-        if (edgeData)
-          return edgeData.key;
+        if (edgeData) return edgeData.key;
       };
       _proto.edge = function edge(source, target) {
-        if (this.multi)
-          throw new UsageGraphError("Graph.edge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.edges instead.");
+        if (this.multi) throw new UsageGraphError("Graph.edge: this method is irrelevant with multigraphs since there might be multiple edges between source & target. See #.edges instead.");
         source = "" + source;
         target = "" + target;
         var sourceData = this._nodes.get(source);
-        if (!sourceData)
-          throw new NotFoundGraphError('Graph.edge: could not find the "'.concat(source, '" source node in the graph.'));
-        if (!this._nodes.has(target))
-          throw new NotFoundGraphError('Graph.edge: could not find the "'.concat(target, '" target node in the graph.'));
+        if (!sourceData) throw new NotFoundGraphError('Graph.edge: could not find the "'.concat(source, '" source node in the graph.'));
+        if (!this._nodes.has(target)) throw new NotFoundGraphError('Graph.edge: could not find the "'.concat(target, '" target node in the graph.'));
         var edgeData = sourceData.out && sourceData.out[target] || sourceData.undirected && sourceData.undirected[target] || void 0;
-        if (edgeData)
-          return edgeData.key;
+        if (edgeData) return edgeData.key;
       };
       _proto.areDirectedNeighbors = function areDirectedNeighbors(node2, neighbor) {
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areDirectedNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return false;
+        if (!nodeData) throw new NotFoundGraphError('Graph.areDirectedNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return false;
         return neighbor in nodeData["in"] || neighbor in nodeData.out;
       };
       _proto.areOutNeighbors = function areOutNeighbors(node2, neighbor) {
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areOutNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return false;
+        if (!nodeData) throw new NotFoundGraphError('Graph.areOutNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return false;
         return neighbor in nodeData.out;
       };
       _proto.areInNeighbors = function areInNeighbors(node2, neighbor) {
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areInNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return false;
+        if (!nodeData) throw new NotFoundGraphError('Graph.areInNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return false;
         return neighbor in nodeData["in"];
       };
       _proto.areUndirectedNeighbors = function areUndirectedNeighbors(node2, neighbor) {
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areUndirectedNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "directed")
-          return false;
+        if (!nodeData) throw new NotFoundGraphError('Graph.areUndirectedNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "directed") return false;
         return neighbor in nodeData.undirected;
       };
       _proto.areNeighbors = function areNeighbors(node2, neighbor) {
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.areNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
         if (this.type !== "undirected") {
-          if (neighbor in nodeData["in"] || neighbor in nodeData.out)
-            return true;
+          if (neighbor in nodeData["in"] || neighbor in nodeData.out) return true;
         }
         if (this.type !== "directed") {
-          if (neighbor in nodeData.undirected)
-            return true;
+          if (neighbor in nodeData.undirected) return true;
         }
         return false;
       };
@@ -25491,15 +25191,12 @@ var require_graphology_cjs = __commonJS({
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areInboundNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.areInboundNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
         if (this.type !== "undirected") {
-          if (neighbor in nodeData["in"])
-            return true;
+          if (neighbor in nodeData["in"]) return true;
         }
         if (this.type !== "directed") {
-          if (neighbor in nodeData.undirected)
-            return true;
+          if (neighbor in nodeData.undirected) return true;
         }
         return false;
       };
@@ -25507,59 +25204,47 @@ var require_graphology_cjs = __commonJS({
         node2 = "" + node2;
         neighbor = "" + neighbor;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.areOutboundNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.areOutboundNeighbors: could not find the "'.concat(node2, '" node in the graph.'));
         if (this.type !== "undirected") {
-          if (neighbor in nodeData.out)
-            return true;
+          if (neighbor in nodeData.out) return true;
         }
         if (this.type !== "directed") {
-          if (neighbor in nodeData.undirected)
-            return true;
+          if (neighbor in nodeData.undirected) return true;
         }
         return false;
       };
       _proto.inDegree = function inDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.inDegree: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.inDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.inDegree;
       };
       _proto.outDegree = function outDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.outDegree: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.outDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.outDegree;
       };
       _proto.directedDegree = function directedDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.directedDegree: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.directedDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.inDegree + nodeData.outDegree;
       };
       _proto.undirectedDegree = function undirectedDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.undirectedDegree: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "directed")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.undirectedDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "directed") return 0;
         return nodeData.undirectedDegree;
       };
       _proto.inboundDegree = function inboundDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.inboundDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.inboundDegree: could not find the "'.concat(node2, '" node in the graph.'));
         var degree = 0;
         if (this.type !== "directed") {
           degree += nodeData.undirectedDegree;
@@ -25572,8 +25257,7 @@ var require_graphology_cjs = __commonJS({
       _proto.outboundDegree = function outboundDegree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.outboundDegree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.outboundDegree: could not find the "'.concat(node2, '" node in the graph.'));
         var degree = 0;
         if (this.type !== "directed") {
           degree += nodeData.undirectedDegree;
@@ -25586,8 +25270,7 @@ var require_graphology_cjs = __commonJS({
       _proto.degree = function degree(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.degree: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.degree: could not find the "'.concat(node2, '" node in the graph.'));
         var degree2 = 0;
         if (this.type !== "directed") {
           degree2 += nodeData.undirectedDegree;
@@ -25600,44 +25283,35 @@ var require_graphology_cjs = __commonJS({
       _proto.inDegreeWithoutSelfLoops = function inDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.inDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.inDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.inDegree - nodeData.directedLoops;
       };
       _proto.outDegreeWithoutSelfLoops = function outDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.outDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.outDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.outDegree - nodeData.directedLoops;
       };
       _proto.directedDegreeWithoutSelfLoops = function directedDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.directedDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "undirected")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.directedDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "undirected") return 0;
         return nodeData.inDegree + nodeData.outDegree - nodeData.directedLoops * 2;
       };
       _proto.undirectedDegreeWithoutSelfLoops = function undirectedDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.undirectedDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
-        if (this.type === "directed")
-          return 0;
+        if (!nodeData) throw new NotFoundGraphError('Graph.undirectedDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (this.type === "directed") return 0;
         return nodeData.undirectedDegree - nodeData.undirectedLoops * 2;
       };
       _proto.inboundDegreeWithoutSelfLoops = function inboundDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.inboundDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.inboundDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
         var degree = 0;
         var loops = 0;
         if (this.type !== "directed") {
@@ -25653,8 +25327,7 @@ var require_graphology_cjs = __commonJS({
       _proto.outboundDegreeWithoutSelfLoops = function outboundDegreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.outboundDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.outboundDegreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
         var degree = 0;
         var loops = 0;
         if (this.type !== "directed") {
@@ -25670,8 +25343,7 @@ var require_graphology_cjs = __commonJS({
       _proto.degreeWithoutSelfLoops = function degreeWithoutSelfLoops(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.degreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.degreeWithoutSelfLoops: could not find the "'.concat(node2, '" node in the graph.'));
         var degree = 0;
         var loops = 0;
         if (this.type !== "directed") {
@@ -25687,65 +25359,55 @@ var require_graphology_cjs = __commonJS({
       _proto.source = function source(edge) {
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.source: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.source: could not find the "'.concat(edge, '" edge in the graph.'));
         return data.source.key;
       };
       _proto.target = function target(edge) {
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.target: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.target: could not find the "'.concat(edge, '" edge in the graph.'));
         return data.target.key;
       };
       _proto.extremities = function extremities(edge) {
         edge = "" + edge;
         var edgeData = this._edges.get(edge);
-        if (!edgeData)
-          throw new NotFoundGraphError('Graph.extremities: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!edgeData) throw new NotFoundGraphError('Graph.extremities: could not find the "'.concat(edge, '" edge in the graph.'));
         return [edgeData.source.key, edgeData.target.key];
       };
       _proto.opposite = function opposite(node2, edge) {
         node2 = "" + node2;
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.opposite: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.opposite: could not find the "'.concat(edge, '" edge in the graph.'));
         var source = data.source.key;
         var target = data.target.key;
-        if (node2 === source)
-          return target;
-        if (node2 === target)
-          return source;
+        if (node2 === source) return target;
+        if (node2 === target) return source;
         throw new NotFoundGraphError('Graph.opposite: the "'.concat(node2, '" node is not attached to the "').concat(edge, '" edge (').concat(source, ", ").concat(target, ")."));
       };
       _proto.hasExtremity = function hasExtremity(edge, node2) {
         edge = "" + edge;
         node2 = "" + node2;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.hasExtremity: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.hasExtremity: could not find the "'.concat(edge, '" edge in the graph.'));
         return data.source.key === node2 || data.target.key === node2;
       };
       _proto.isUndirected = function isUndirected(edge) {
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.isUndirected: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.isUndirected: could not find the "'.concat(edge, '" edge in the graph.'));
         return data.undirected;
       };
       _proto.isDirected = function isDirected(edge) {
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.isDirected: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.isDirected: could not find the "'.concat(edge, '" edge in the graph.'));
         return !data.undirected;
       };
       _proto.isSelfLoop = function isSelfLoop(edge) {
         edge = "" + edge;
         var data = this._edges.get(edge);
-        if (!data)
-          throw new NotFoundGraphError('Graph.isSelfLoop: could not find the "'.concat(edge, '" edge in the graph.'));
+        if (!data) throw new NotFoundGraphError('Graph.isSelfLoop: could not find the "'.concat(edge, '" edge in the graph.'));
         return data.source === data.target;
       };
       _proto.addNode = function addNode(node2, attributes) {
@@ -25753,8 +25415,7 @@ var require_graphology_cjs = __commonJS({
         return nodeData.key;
       };
       _proto.mergeNode = function mergeNode(node2, attributes) {
-        if (attributes && !isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError('Graph.mergeNode: invalid attributes. Expecting an object but got "'.concat(attributes, '"'));
+        if (attributes && !isPlainObject2(attributes)) throw new InvalidArgumentsGraphError('Graph.mergeNode: invalid attributes. Expecting an object but got "'.concat(attributes, '"'));
         node2 = "" + node2;
         attributes = attributes || {};
         var data = this._nodes.get(node2);
@@ -25779,8 +25440,7 @@ var require_graphology_cjs = __commonJS({
         return [node2, true];
       };
       _proto.updateNode = function updateNode(node2, updater) {
-        if (updater && typeof updater !== "function")
-          throw new InvalidArgumentsGraphError('Graph.updateNode: invalid updater function. Expecting a function but got "'.concat(updater, '"'));
+        if (updater && typeof updater !== "function") throw new InvalidArgumentsGraphError('Graph.updateNode: invalid updater function. Expecting a function but got "'.concat(updater, '"'));
         node2 = "" + node2;
         var data = this._nodes.get(node2);
         if (data) {
@@ -25807,8 +25467,7 @@ var require_graphology_cjs = __commonJS({
       _proto.dropNode = function dropNode(node2) {
         node2 = "" + node2;
         var nodeData = this._nodes.get(node2);
-        if (!nodeData)
-          throw new NotFoundGraphError('Graph.dropNode: could not find the "'.concat(node2, '" node in the graph.'));
+        if (!nodeData) throw new NotFoundGraphError('Graph.dropNode: could not find the "'.concat(node2, '" node in the graph.'));
         var edgeData;
         if (this.type !== "undirected") {
           for (var neighbor in nodeData.out) {
@@ -25847,38 +25506,30 @@ var require_graphology_cjs = __commonJS({
           var source = "" + arguments[0];
           var target = "" + arguments[1];
           edgeData = getMatchingEdge(this, source, target, this.type);
-          if (!edgeData)
-            throw new NotFoundGraphError('Graph.dropEdge: could not find the "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
+          if (!edgeData) throw new NotFoundGraphError('Graph.dropEdge: could not find the "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
         } else {
           edge = "" + edge;
           edgeData = this._edges.get(edge);
-          if (!edgeData)
-            throw new NotFoundGraphError('Graph.dropEdge: could not find the "'.concat(edge, '" edge in the graph.'));
+          if (!edgeData) throw new NotFoundGraphError('Graph.dropEdge: could not find the "'.concat(edge, '" edge in the graph.'));
         }
         dropEdgeFromData(this, edgeData);
         return this;
       };
       _proto.dropDirectedEdge = function dropDirectedEdge(source, target) {
-        if (arguments.length < 2)
-          throw new UsageGraphError("Graph.dropDirectedEdge: it does not make sense to try and drop a directed edge by key. What if the edge with this key is undirected? Use #.dropEdge for this purpose instead.");
-        if (this.multi)
-          throw new UsageGraphError("Graph.dropDirectedEdge: cannot use a {source,target} combo when dropping an edge in a MultiGraph since we cannot infer the one you want to delete as there could be multiple ones.");
+        if (arguments.length < 2) throw new UsageGraphError("Graph.dropDirectedEdge: it does not make sense to try and drop a directed edge by key. What if the edge with this key is undirected? Use #.dropEdge for this purpose instead.");
+        if (this.multi) throw new UsageGraphError("Graph.dropDirectedEdge: cannot use a {source,target} combo when dropping an edge in a MultiGraph since we cannot infer the one you want to delete as there could be multiple ones.");
         source = "" + source;
         target = "" + target;
         var edgeData = getMatchingEdge(this, source, target, "directed");
-        if (!edgeData)
-          throw new NotFoundGraphError('Graph.dropDirectedEdge: could not find a "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
+        if (!edgeData) throw new NotFoundGraphError('Graph.dropDirectedEdge: could not find a "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
         dropEdgeFromData(this, edgeData);
         return this;
       };
       _proto.dropUndirectedEdge = function dropUndirectedEdge(source, target) {
-        if (arguments.length < 2)
-          throw new UsageGraphError("Graph.dropUndirectedEdge: it does not make sense to drop a directed edge by key. What if the edge with this key is undirected? Use #.dropEdge for this purpose instead.");
-        if (this.multi)
-          throw new UsageGraphError("Graph.dropUndirectedEdge: cannot use a {source,target} combo when dropping an edge in a MultiGraph since we cannot infer the one you want to delete as there could be multiple ones.");
+        if (arguments.length < 2) throw new UsageGraphError("Graph.dropUndirectedEdge: it does not make sense to drop a directed edge by key. What if the edge with this key is undirected? Use #.dropEdge for this purpose instead.");
+        if (this.multi) throw new UsageGraphError("Graph.dropUndirectedEdge: cannot use a {source,target} combo when dropping an edge in a MultiGraph since we cannot infer the one you want to delete as there could be multiple ones.");
         var edgeData = getMatchingEdge(this, source, target, "undirected");
-        if (!edgeData)
-          throw new NotFoundGraphError('Graph.dropUndirectedEdge: could not find a "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
+        if (!edgeData) throw new NotFoundGraphError('Graph.dropUndirectedEdge: could not find a "'.concat(source, '" -> "').concat(target, '" edge in the graph.'));
         dropEdgeFromData(this, edgeData);
         return this;
       };
@@ -25917,8 +25568,7 @@ var require_graphology_cjs = __commonJS({
         return this;
       };
       _proto.updateAttribute = function updateAttribute(name, updater) {
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.updateAttribute: updater should be a function.");
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.updateAttribute: updater should be a function.");
         var value = this._attributes[name];
         this._attributes[name] = updater(value);
         this.emit("attributesUpdated", {
@@ -25938,8 +25588,7 @@ var require_graphology_cjs = __commonJS({
         return this;
       };
       _proto.replaceAttributes = function replaceAttributes(attributes) {
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.replaceAttributes: provided attributes are not a plain object.");
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.replaceAttributes: provided attributes are not a plain object.");
         this._attributes = attributes;
         this.emit("attributesUpdated", {
           type: "replace",
@@ -25948,8 +25597,7 @@ var require_graphology_cjs = __commonJS({
         return this;
       };
       _proto.mergeAttributes = function mergeAttributes(attributes) {
-        if (!isPlainObject2(attributes))
-          throw new InvalidArgumentsGraphError("Graph.mergeAttributes: provided attributes are not a plain object.");
+        if (!isPlainObject2(attributes)) throw new InvalidArgumentsGraphError("Graph.mergeAttributes: provided attributes are not a plain object.");
         assign(this._attributes, attributes);
         this.emit("attributesUpdated", {
           type: "merge",
@@ -25959,8 +25607,7 @@ var require_graphology_cjs = __commonJS({
         return this;
       };
       _proto.updateAttributes = function updateAttributes(updater) {
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.updateAttributes: provided updater is not a function.");
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.updateAttributes: provided updater is not a function.");
         this._attributes = updater(this._attributes);
         this.emit("attributesUpdated", {
           type: "update",
@@ -25969,10 +25616,8 @@ var require_graphology_cjs = __commonJS({
         return this;
       };
       _proto.updateEachNodeAttributes = function updateEachNodeAttributes(updater, hints) {
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.updateEachNodeAttributes: expecting an updater function.");
-        if (hints && !validateHints(hints))
-          throw new InvalidArgumentsGraphError("Graph.updateEachNodeAttributes: invalid hints. Expecting an object having the following shape: {attributes?: [string]}");
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.updateEachNodeAttributes: expecting an updater function.");
+        if (hints && !validateHints(hints)) throw new InvalidArgumentsGraphError("Graph.updateEachNodeAttributes: invalid hints. Expecting an object having the following shape: {attributes?: [string]}");
         var iterator = this._nodes.values();
         var step, nodeData;
         while (step = iterator.next(), step.done !== true) {
@@ -25984,10 +25629,8 @@ var require_graphology_cjs = __commonJS({
         });
       };
       _proto.updateEachEdgeAttributes = function updateEachEdgeAttributes(updater, hints) {
-        if (typeof updater !== "function")
-          throw new InvalidArgumentsGraphError("Graph.updateEachEdgeAttributes: expecting an updater function.");
-        if (hints && !validateHints(hints))
-          throw new InvalidArgumentsGraphError("Graph.updateEachEdgeAttributes: invalid hints. Expecting an object having the following shape: {attributes?: [string]}");
+        if (typeof updater !== "function") throw new InvalidArgumentsGraphError("Graph.updateEachEdgeAttributes: expecting an updater function.");
+        if (hints && !validateHints(hints)) throw new InvalidArgumentsGraphError("Graph.updateEachEdgeAttributes: invalid hints. Expecting an object having the following shape: {attributes?: [string]}");
         var iterator = this._edges.values();
         var step, edgeData, sourceData, targetData;
         while (step = iterator.next(), step.done !== true) {
@@ -26001,33 +25644,27 @@ var require_graphology_cjs = __commonJS({
         });
       };
       _proto.forEachAdjacencyEntry = function forEachAdjacencyEntry(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.forEachAdjacencyEntry: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.forEachAdjacencyEntry: expecting a callback.");
         forEachAdjacency(false, false, false, this, callback);
       };
       _proto.forEachAdjacencyEntryWithOrphans = function forEachAdjacencyEntryWithOrphans(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.forEachAdjacencyEntryWithOrphans: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.forEachAdjacencyEntryWithOrphans: expecting a callback.");
         forEachAdjacency(false, false, true, this, callback);
       };
       _proto.forEachAssymetricAdjacencyEntry = function forEachAssymetricAdjacencyEntry(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.forEachAssymetricAdjacencyEntry: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.forEachAssymetricAdjacencyEntry: expecting a callback.");
         forEachAdjacency(false, true, false, this, callback);
       };
       _proto.forEachAssymetricAdjacencyEntryWithOrphans = function forEachAssymetricAdjacencyEntryWithOrphans(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.forEachAssymetricAdjacencyEntryWithOrphans: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.forEachAssymetricAdjacencyEntryWithOrphans: expecting a callback.");
         forEachAdjacency(false, true, true, this, callback);
       };
       _proto.nodes = function nodes() {
-        if (typeof Array.from === "function")
-          return Array.from(this._nodes.keys());
+        if (typeof Array.from === "function") return Array.from(this._nodes.keys());
         return take__default["default"](this._nodes.keys(), this._nodes.size);
       };
       _proto.forEachNode = function forEachNode(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.forEachNode: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.forEachNode: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         while (step = iterator.next(), step.done !== true) {
@@ -26036,20 +25673,17 @@ var require_graphology_cjs = __commonJS({
         }
       };
       _proto.findNode = function findNode(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.findNode: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.findNode: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         while (step = iterator.next(), step.done !== true) {
           nodeData = step.value;
-          if (callback(nodeData.key, nodeData.attributes))
-            return nodeData.key;
+          if (callback(nodeData.key, nodeData.attributes)) return nodeData.key;
         }
         return;
       };
       _proto.mapNodes = function mapNodes(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.mapNode: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.mapNode: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         var result = new Array(this.order);
@@ -26061,47 +25695,39 @@ var require_graphology_cjs = __commonJS({
         return result;
       };
       _proto.someNode = function someNode(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.someNode: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.someNode: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         while (step = iterator.next(), step.done !== true) {
           nodeData = step.value;
-          if (callback(nodeData.key, nodeData.attributes))
-            return true;
+          if (callback(nodeData.key, nodeData.attributes)) return true;
         }
         return false;
       };
       _proto.everyNode = function everyNode(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.everyNode: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.everyNode: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         while (step = iterator.next(), step.done !== true) {
           nodeData = step.value;
-          if (!callback(nodeData.key, nodeData.attributes))
-            return false;
+          if (!callback(nodeData.key, nodeData.attributes)) return false;
         }
         return true;
       };
       _proto.filterNodes = function filterNodes(callback) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.filterNodes: expecting a callback.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.filterNodes: expecting a callback.");
         var iterator = this._nodes.values();
         var step, nodeData;
         var result = [];
         while (step = iterator.next(), step.done !== true) {
           nodeData = step.value;
-          if (callback(nodeData.key, nodeData.attributes))
-            result.push(nodeData.key);
+          if (callback(nodeData.key, nodeData.attributes)) result.push(nodeData.key);
         }
         return result;
       };
       _proto.reduceNodes = function reduceNodes(callback, initialValue) {
-        if (typeof callback !== "function")
-          throw new InvalidArgumentsGraphError("Graph.reduceNodes: expecting a callback.");
-        if (arguments.length < 2)
-          throw new InvalidArgumentsGraphError("Graph.reduceNodes: missing initial value. You must provide it because the callback takes more than one argument and we cannot infer the initial value from the first iteration, as you could with a simple array.");
+        if (typeof callback !== "function") throw new InvalidArgumentsGraphError("Graph.reduceNodes: expecting a callback.");
+        if (arguments.length < 2) throw new InvalidArgumentsGraphError("Graph.reduceNodes: missing initial value. You must provide it because the callback takes more than one argument and we cannot infer the initial value from the first iteration, as you could with a simple array.");
         var accumulator = initialValue;
         var iterator = this._nodes.values();
         var step, nodeData;
@@ -26115,8 +25741,7 @@ var require_graphology_cjs = __commonJS({
         var iterator = this._nodes.values();
         return new Iterator__default["default"](function() {
           var step = iterator.next();
-          if (step.done)
-            return step;
+          if (step.done) return step;
           var data = step.value;
           return {
             value: {
@@ -26155,49 +25780,36 @@ var require_graphology_cjs = __commonJS({
         var merge = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
         if (data instanceof Graph2) {
           data.forEachNode(function(n, a) {
-            if (merge)
-              _this3.mergeNode(n, a);
-            else
-              _this3.addNode(n, a);
+            if (merge) _this3.mergeNode(n, a);
+            else _this3.addNode(n, a);
           });
           data.forEachEdge(function(e, a, s, t, _sa, _ta, u) {
             if (merge) {
-              if (u)
-                _this3.mergeUndirectedEdgeWithKey(e, s, t, a);
-              else
-                _this3.mergeDirectedEdgeWithKey(e, s, t, a);
+              if (u) _this3.mergeUndirectedEdgeWithKey(e, s, t, a);
+              else _this3.mergeDirectedEdgeWithKey(e, s, t, a);
             } else {
-              if (u)
-                _this3.addUndirectedEdgeWithKey(e, s, t, a);
-              else
-                _this3.addDirectedEdgeWithKey(e, s, t, a);
+              if (u) _this3.addUndirectedEdgeWithKey(e, s, t, a);
+              else _this3.addDirectedEdgeWithKey(e, s, t, a);
             }
           });
           return this;
         }
-        if (!isPlainObject2(data))
-          throw new InvalidArgumentsGraphError("Graph.import: invalid argument. Expecting a serialized graph or, alternatively, a Graph instance.");
+        if (!isPlainObject2(data)) throw new InvalidArgumentsGraphError("Graph.import: invalid argument. Expecting a serialized graph or, alternatively, a Graph instance.");
         if (data.attributes) {
-          if (!isPlainObject2(data.attributes))
-            throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Expecting a plain object.");
-          if (merge)
-            this.mergeAttributes(data.attributes);
-          else
-            this.replaceAttributes(data.attributes);
+          if (!isPlainObject2(data.attributes)) throw new InvalidArgumentsGraphError("Graph.import: invalid attributes. Expecting a plain object.");
+          if (merge) this.mergeAttributes(data.attributes);
+          else this.replaceAttributes(data.attributes);
         }
         var i, l, list4, node2, edge;
         if (data.nodes) {
           list4 = data.nodes;
-          if (!Array.isArray(list4))
-            throw new InvalidArgumentsGraphError("Graph.import: invalid nodes. Expecting an array.");
+          if (!Array.isArray(list4)) throw new InvalidArgumentsGraphError("Graph.import: invalid nodes. Expecting an array.");
           for (i = 0, l = list4.length; i < l; i++) {
             node2 = list4[i];
             validateSerializedNode(node2);
             var _node = node2, key = _node.key, attributes = _node.attributes;
-            if (merge)
-              this.mergeNode(key, attributes);
-            else
-              this.addNode(key, attributes);
+            if (merge) this.mergeNode(key, attributes);
+            else this.addNode(key, attributes);
           }
         }
         if (data.edges) {
@@ -26206,8 +25818,7 @@ var require_graphology_cjs = __commonJS({
             undirectedByDefault = true;
           }
           list4 = data.edges;
-          if (!Array.isArray(list4))
-            throw new InvalidArgumentsGraphError("Graph.import: invalid edges. Expecting an array.");
+          if (!Array.isArray(list4)) throw new InvalidArgumentsGraphError("Graph.import: invalid edges. Expecting an array.");
           for (i = 0, l = list4.length; i < l; i++) {
             edge = list4[i];
             validateSerializedEdge(edge);
@@ -26240,12 +25851,9 @@ var require_graphology_cjs = __commonJS({
       };
       _proto.copy = function copy(options) {
         options = options || {};
-        if (typeof options.type === "string" && options.type !== this.type && options.type !== "mixed")
-          throw new UsageGraphError('Graph.copy: cannot create an incompatible copy from "'.concat(this.type, '" type to "').concat(options.type, '" because this would mean losing information about the current graph.'));
-        if (typeof options.multi === "boolean" && options.multi !== this.multi && options.multi !== true)
-          throw new UsageGraphError("Graph.copy: cannot create an incompatible copy by downgrading a multi graph to a simple one because this would mean losing information about the current graph.");
-        if (typeof options.allowSelfLoops === "boolean" && options.allowSelfLoops !== this.allowSelfLoops && options.allowSelfLoops !== true)
-          throw new UsageGraphError("Graph.copy: cannot create an incompatible copy from a graph allowing self loops to one that does not because this would mean losing information about the current graph.");
+        if (typeof options.type === "string" && options.type !== this.type && options.type !== "mixed") throw new UsageGraphError('Graph.copy: cannot create an incompatible copy from "'.concat(this.type, '" type to "').concat(options.type, '" because this would mean losing information about the current graph.'));
+        if (typeof options.multi === "boolean" && options.multi !== this.multi && options.multi !== true) throw new UsageGraphError("Graph.copy: cannot create an incompatible copy by downgrading a multi graph to a simple one because this would mean losing information about the current graph.");
+        if (typeof options.allowSelfLoops === "boolean" && options.allowSelfLoops !== this.allowSelfLoops && options.allowSelfLoops !== true) throw new UsageGraphError("Graph.copy: cannot create an incompatible copy from a graph allowing self loops to one that does not because this would mean losing information about the current graph.");
         var graph = this.emptyCopy(options);
         var iterator = this._edges.values();
         var step, edgeData;
@@ -26295,8 +25903,7 @@ var require_graphology_cjs = __commonJS({
         });
         var dummy = {};
         for (var k in this) {
-          if (this.hasOwnProperty(k) && !EMITTER_PROPS.has(k) && typeof this[k] !== "function" && _typeof(k) !== "symbol")
-            dummy[k] = this[k];
+          if (this.hasOwnProperty(k) && !EMITTER_PROPS.has(k) && typeof this[k] !== "function" && _typeof(k) !== "symbol") dummy[k] = this[k];
         }
         dummy.attributes = this._attributes;
         dummy.nodes = nodes;
@@ -26305,9 +25912,8 @@ var require_graphology_cjs = __commonJS({
         return dummy;
       };
       return Graph2;
-    }(events.EventEmitter);
-    if (typeof Symbol !== "undefined")
-      Graph.prototype[Symbol["for"]("nodejs.util.inspect.custom")] = Graph.prototype.inspect;
+    })(events.EventEmitter);
+    if (typeof Symbol !== "undefined") Graph.prototype[Symbol["for"]("nodejs.util.inspect.custom")] = Graph.prototype.inspect;
     EDGE_ADD_METHODS.forEach(function(method) {
       ["add", "merge", "update"].forEach(function(verb) {
         var name = method.name(verb);
@@ -26327,76 +25933,67 @@ var require_graphology_cjs = __commonJS({
     attachEdgeAttributesMethods(Graph);
     attachEdgeIterationMethods(Graph);
     attachNeighborIterationMethods(Graph);
-    var DirectedGraph2 = /* @__PURE__ */ function(_Graph) {
+    var DirectedGraph2 = /* @__PURE__ */ (function(_Graph) {
       _inheritsLoose(DirectedGraph3, _Graph);
       function DirectedGraph3(options) {
         var finalOptions = assign({
           type: "directed"
         }, options);
-        if ("multi" in finalOptions && finalOptions.multi !== false)
-          throw new InvalidArgumentsGraphError("DirectedGraph.from: inconsistent indication that the graph should be multi in given options!");
-        if (finalOptions.type !== "directed")
-          throw new InvalidArgumentsGraphError('DirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
+        if ("multi" in finalOptions && finalOptions.multi !== false) throw new InvalidArgumentsGraphError("DirectedGraph.from: inconsistent indication that the graph should be multi in given options!");
+        if (finalOptions.type !== "directed") throw new InvalidArgumentsGraphError('DirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph.call(this, finalOptions) || this;
       }
       return DirectedGraph3;
-    }(Graph);
-    var UndirectedGraph = /* @__PURE__ */ function(_Graph2) {
+    })(Graph);
+    var UndirectedGraph = /* @__PURE__ */ (function(_Graph2) {
       _inheritsLoose(UndirectedGraph2, _Graph2);
       function UndirectedGraph2(options) {
         var finalOptions = assign({
           type: "undirected"
         }, options);
-        if ("multi" in finalOptions && finalOptions.multi !== false)
-          throw new InvalidArgumentsGraphError("UndirectedGraph.from: inconsistent indication that the graph should be multi in given options!");
-        if (finalOptions.type !== "undirected")
-          throw new InvalidArgumentsGraphError('UndirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
+        if ("multi" in finalOptions && finalOptions.multi !== false) throw new InvalidArgumentsGraphError("UndirectedGraph.from: inconsistent indication that the graph should be multi in given options!");
+        if (finalOptions.type !== "undirected") throw new InvalidArgumentsGraphError('UndirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph2.call(this, finalOptions) || this;
       }
       return UndirectedGraph2;
-    }(Graph);
-    var MultiGraph = /* @__PURE__ */ function(_Graph3) {
+    })(Graph);
+    var MultiGraph = /* @__PURE__ */ (function(_Graph3) {
       _inheritsLoose(MultiGraph2, _Graph3);
       function MultiGraph2(options) {
         var finalOptions = assign({
           multi: true
         }, options);
-        if ("multi" in finalOptions && finalOptions.multi !== true)
-          throw new InvalidArgumentsGraphError("MultiGraph.from: inconsistent indication that the graph should be simple in given options!");
+        if ("multi" in finalOptions && finalOptions.multi !== true) throw new InvalidArgumentsGraphError("MultiGraph.from: inconsistent indication that the graph should be simple in given options!");
         return _Graph3.call(this, finalOptions) || this;
       }
       return MultiGraph2;
-    }(Graph);
-    var MultiDirectedGraph = /* @__PURE__ */ function(_Graph4) {
+    })(Graph);
+    var MultiDirectedGraph = /* @__PURE__ */ (function(_Graph4) {
       _inheritsLoose(MultiDirectedGraph2, _Graph4);
       function MultiDirectedGraph2(options) {
         var finalOptions = assign({
           type: "directed",
           multi: true
         }, options);
-        if ("multi" in finalOptions && finalOptions.multi !== true)
-          throw new InvalidArgumentsGraphError("MultiDirectedGraph.from: inconsistent indication that the graph should be simple in given options!");
-        if (finalOptions.type !== "directed")
-          throw new InvalidArgumentsGraphError('MultiDirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
+        if ("multi" in finalOptions && finalOptions.multi !== true) throw new InvalidArgumentsGraphError("MultiDirectedGraph.from: inconsistent indication that the graph should be simple in given options!");
+        if (finalOptions.type !== "directed") throw new InvalidArgumentsGraphError('MultiDirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph4.call(this, finalOptions) || this;
       }
       return MultiDirectedGraph2;
-    }(Graph);
-    var MultiUndirectedGraph = /* @__PURE__ */ function(_Graph5) {
+    })(Graph);
+    var MultiUndirectedGraph = /* @__PURE__ */ (function(_Graph5) {
       _inheritsLoose(MultiUndirectedGraph2, _Graph5);
       function MultiUndirectedGraph2(options) {
         var finalOptions = assign({
           type: "undirected",
           multi: true
         }, options);
-        if ("multi" in finalOptions && finalOptions.multi !== true)
-          throw new InvalidArgumentsGraphError("MultiUndirectedGraph.from: inconsistent indication that the graph should be simple in given options!");
-        if (finalOptions.type !== "undirected")
-          throw new InvalidArgumentsGraphError('MultiUndirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
+        if ("multi" in finalOptions && finalOptions.multi !== true) throw new InvalidArgumentsGraphError("MultiUndirectedGraph.from: inconsistent indication that the graph should be simple in given options!");
+        if (finalOptions.type !== "undirected") throw new InvalidArgumentsGraphError('MultiUndirectedGraph.from: inconsistent "' + finalOptions.type + '" type in given options!');
         return _Graph5.call(this, finalOptions) || this;
       }
       return MultiUndirectedGraph2;
-    }(Graph);
+    })(Graph);
     function attachStaticFromMethod(Class) {
       Class.from = function(data, options) {
         var finalOptions = assign({}, data.options, options);
@@ -26441,13 +26038,11 @@ var require_foreach = __commonJS({
     var SYMBOL_SUPPORT = support.SYMBOL_SUPPORT;
     module2.exports = function forEach(iterable, callback) {
       var iterator, k, i, l, s;
-      if (!iterable)
-        throw new Error("obliterator/forEach: invalid iterable.");
+      if (!iterable) throw new Error("obliterator/forEach: invalid iterable.");
       if (typeof callback !== "function")
         throw new Error("obliterator/forEach: expecting a callback.");
       if (Array.isArray(iterable) || ARRAY_BUFFER_SUPPORT && ArrayBuffer.isView(iterable) || typeof iterable === "string" || iterable.toString() === "[object Arguments]") {
-        for (i = 0, l = iterable.length; i < l; i++)
-          callback(iterable[i], i);
+        for (i = 0, l = iterable.length; i < l; i++) callback(iterable[i], i);
         return;
       }
       if (typeof iterable.forEach === "function") {
@@ -26808,13 +26403,10 @@ var require_bfs_queue = __commonJS({
       var seen = this.seen;
       var graph = this.graph;
       graph.someNode(function(node2, attr) {
-        if (seen.size === graph.order)
-          return true;
-        if (seen.has(node2))
-          return false;
+        if (seen.size === graph.order) return true;
+        if (seen.has(node2)) return false;
         var shouldBreak = callback(node2, attr);
-        if (shouldBreak)
-          return true;
+        if (shouldBreak) return true;
         return false;
       });
     };
@@ -26824,8 +26416,7 @@ var require_bfs_queue = __commonJS({
     BFSQueue.prototype.push = function(node2) {
       var seenSizeBefore = this.seen.size;
       this.seen.add(node2);
-      if (seenSizeBefore === this.seen.size)
-        return false;
+      if (seenSizeBefore === this.seen.size) return false;
       this.queue.push(node2);
       this.size++;
       return true;
@@ -26833,8 +26424,7 @@ var require_bfs_queue = __commonJS({
     BFSQueue.prototype.pushWith = function(node2, item) {
       var seenSizeBefore = this.seen.size;
       this.seen.add(node2);
-      if (seenSizeBefore === this.seen.size)
-        return false;
+      if (seenSizeBefore === this.seen.size) return false;
       this.queue.push(item);
       this.size++;
       return true;
@@ -26882,8 +26472,7 @@ var require_bfs = __commonJS({
         throw new Error(
           "graphology-traversal/bfs: given callback is not a function."
         );
-      if (graph.order === 0)
-        return;
+      if (graph.order === 0) return;
       var queue = new BFSQueue(graph);
       var forEachNeighbor = graph["forEach" + capitalize(options.mode || "outbound") + "Neighbor"].bind(
         graph
@@ -26909,8 +26498,7 @@ var require_bfs = __commonJS({
         while (queue.size !== 0) {
           record = queue.shift();
           stop = callback(record.node, record.attributes, record.depth);
-          if (stop === true)
-            continue;
+          if (stop === true) continue;
           forEachNeighbor(record.node, visit2);
         }
       });
@@ -26941,13 +26529,10 @@ var require_dfs_stack = __commonJS({
       var seen = this.seen;
       var graph = this.graph;
       graph.someNode(function(node2, attr) {
-        if (seen.size === graph.order)
-          return true;
-        if (seen.has(node2))
-          return false;
+        if (seen.size === graph.order) return true;
+        if (seen.has(node2)) return false;
         var shouldBreak = callback(node2, attr);
-        if (shouldBreak)
-          return true;
+        if (shouldBreak) return true;
         return false;
       });
     };
@@ -26957,22 +26542,19 @@ var require_dfs_stack = __commonJS({
     DFSStack.prototype.push = function(node2) {
       var seenSizeBefore = this.seen.size;
       this.seen.add(node2);
-      if (seenSizeBefore === this.seen.size)
-        return false;
+      if (seenSizeBefore === this.seen.size) return false;
       this.stack[this.size++] = node2;
       return true;
     };
     DFSStack.prototype.pushWith = function(node2, item) {
       var seenSizeBefore = this.seen.size;
       this.seen.add(node2);
-      if (seenSizeBefore === this.seen.size)
-        return false;
+      if (seenSizeBefore === this.seen.size) return false;
       this.stack[this.size++] = item;
       return true;
     };
     DFSStack.prototype.pop = function() {
-      if (this.size === 0)
-        return;
+      if (this.size === 0) return;
       return this.stack[--this.size];
     };
     module2.exports = DFSStack;
@@ -26997,8 +26579,7 @@ var require_dfs = __commonJS({
         throw new Error(
           "graphology-traversal/dfs: given callback is not a function."
         );
-      if (graph.order === 0)
-        return;
+      if (graph.order === 0) return;
       var stack = new DFSStack(graph);
       var forEachNeighbor = graph["forEach" + capitalize(options.mode || "outbound") + "Neighbor"].bind(
         graph
@@ -27024,8 +26605,7 @@ var require_dfs = __commonJS({
         while (stack.size !== 0) {
           record = stack.pop();
           stop = callback(record.node, record.attributes, record.depth);
-          if (stop === true)
-            continue;
+          if (stop === true) continue;
           forEachNeighbor(record.node, visit2);
         }
       });
@@ -27152,23 +26732,18 @@ var require_has_cycle = __commonJS({
         throw new Error(
           "graphology-dag/has-cycle: the given graph is not a valid graphology instance."
         );
-      if (graph.size === 0)
-        return false;
-      if (graph.selfLoopCount !== 0)
-        return true;
+      if (graph.size === 0) return false;
+      if (graph.selfLoopCount !== 0) return true;
       const labels = {};
       const stack = [];
       function neighborCallback(neighbor) {
         const neighborLabel = labels[neighbor];
-        if (neighborLabel === WHITE)
-          stack.push(neighbor);
-        else if (neighborLabel === GREY)
-          return true;
+        if (neighborLabel === WHITE) stack.push(neighbor);
+        else if (neighborLabel === GREY) return true;
         return false;
       }
       return graph.someNode((node2) => {
-        if (labels[node2] === BLACK)
-          return false;
+        if (labels[node2] === BLACK) return false;
         stack.push(node2);
         while (stack.length !== 0) {
           const current = stack[stack.length - 1];
@@ -27179,8 +26754,7 @@ var require_has_cycle = __commonJS({
               current,
               neighborCallback
             );
-            if (shouldStop)
-              return true;
+            if (shouldStop) return true;
           } else if (currentLabel === GREY) {
             stack.pop();
             labels[current] = BLACK;
@@ -27203,22 +26777,17 @@ var require_will_create_cycle = __commonJS({
         );
       source = "" + source;
       target = "" + target;
-      if (source === target)
-        return true;
-      if (!graph.hasNode(source) || !graph.hasNode(target))
-        return false;
-      if (graph.hasDirectedEdge(source, target))
-        return false;
-      if (graph.hasDirectedEdge(target, source))
-        return true;
+      if (source === target) return true;
+      if (!graph.hasNode(source) || !graph.hasNode(target)) return false;
+      if (graph.hasDirectedEdge(source, target)) return false;
+      if (graph.hasDirectedEdge(target, source)) return true;
       const stack = graph.outNeighbors(target);
       function push2(neighbor) {
         stack.push(neighbor);
       }
       while (stack.length !== 0) {
         const node2 = stack.pop();
-        if (node2 === source)
-          return true;
+        if (node2 === source) return true;
         graph.forEachOutNeighbor(node2, push2);
       }
       return false;
@@ -27247,8 +26816,7 @@ var require_topological_sort = __commonJS({
         throw new Error(
           "graphology-dag/topological-sort: cannot work if graph is not directed."
         );
-      if (graph.order === 0)
-        return;
+      if (graph.order === 0) return;
       const queue = new FixedDeque(Array, graph.order);
       const inDegrees = {};
       let total = 0;
@@ -27297,8 +26865,7 @@ var require_topological_sort = __commonJS({
         throw new Error(
           "graphology-dag/topological-generations: the given graph is not a valid graphology instance."
         );
-      if (graph.order === 0)
-        return;
+      if (graph.order === 0) return;
       let lastGenLevel = 0;
       let lastGen = [];
       forEachNodeInTopologicalOrder(graph, (node2, _, gen) => {
@@ -27345,7 +26912,7 @@ var require_graphology_dag = __commonJS({
 // node_modules/toml/lib/parser.js
 var require_parser = __commonJS({
   "node_modules/toml/lib/parser.js"(exports2, module2) {
-    module2.exports = function() {
+    module2.exports = (function() {
       function peg$subclass(child, parent) {
         function ctor() {
           this.constructor = child;
@@ -30848,8 +30415,7 @@ var require_parser = __commonJS({
         }
         function node2(type, value, line2, column2, key) {
           var obj = { type, value, line: line2(), column: column2() };
-          if (key)
-            obj.key = key;
+          if (key) obj.key = key;
           return obj;
         }
         function convertCodePoint(str, line2, col) {
@@ -30902,7 +30468,7 @@ var require_parser = __commonJS({
         SyntaxError,
         parse: parse4
       };
-    }();
+    })();
   }
 });
 
@@ -33283,8 +32849,7 @@ function splice(list4, start, remove, items) {
     parameters.unshift(start, remove);
     list4.splice(...parameters);
   } else {
-    if (remove)
-      list4.splice(start, remove);
+    if (remove) list4.splice(start, remove);
     while (chunkStart < items.length) {
       parameters = items.slice(chunkStart, chunkStart + 1e4);
       parameters.unshift(start, 0);
@@ -33321,8 +32886,7 @@ function syntaxExtension(all2, extension2) {
     let code3;
     if (right) {
       for (code3 in right) {
-        if (!hasOwnProperty.call(left, code3))
-          left[code3] = [];
+        if (!hasOwnProperty.call(left, code3)) left[code3] = [];
         const value = right[code3];
         constructs(
           // @ts-expect-error Looks like a list.
@@ -33554,8 +33118,7 @@ function initializeDocument(effects) {
     )(code3);
   }
   function thereIsANewContainer(code3) {
-    if (childFlow)
-      closeFlow();
+    if (childFlow) closeFlow();
     exitContainers(continued);
     return documentContinued(code3);
   }
@@ -33579,8 +33142,7 @@ function initializeDocument(effects) {
   }
   function flowStart(code3) {
     if (code3 === null) {
-      if (childFlow)
-        closeFlow();
+      if (childFlow) closeFlow();
       exitContainers(0);
       effects.consume(code3);
       return;
@@ -33612,11 +33174,9 @@ function initializeDocument(effects) {
   }
   function writeToChild(token, eof) {
     const stream = self.sliceStream(token);
-    if (eof)
-      stream.push(null);
+    if (eof) stream.push(null);
     token.previous = childToken;
-    if (childToken)
-      childToken.next = token;
+    if (childToken) childToken.next = token;
     childToken = token;
     childFlow.defineSkip(token.start);
     childFlow.write(stream);
@@ -34838,8 +34398,7 @@ function factoryLabel(effects, ok3, nok, type, markerType, stringType2) {
       return atBreak(code3);
     }
     effects.consume(code3);
-    if (!seen)
-      seen = !markdownSpace(code3);
+    if (!seen) seen = !markdownSpace(code3);
     return code3 === 92 ? labelEscape : labelInside;
   }
   function labelEscape(code3) {
@@ -36677,8 +36236,7 @@ function resolveAllLineSuffixes(events, context4) {
             size++;
             bufferIndex--;
           }
-          if (bufferIndex)
-            break;
+          if (bufferIndex) break;
           bufferIndex = -1;
         } else if (chunk === -2) {
           tabs = true;
@@ -37024,8 +36582,7 @@ function serializeChunks(chunks, expandTabs) {
           break;
         }
         case -1: {
-          if (!expandTabs && atTab)
-            continue;
+          if (!expandTabs && atTab) continue;
           value = " ";
           break;
         }
@@ -37201,8 +36758,7 @@ function preprocess() {
           case 9: {
             next = Math.ceil(column / 4) * 4;
             chunks.push(-2);
-            while (column++ < next)
-              chunks.push(-1);
+            while (column++ < next) chunks.push(-1);
             break;
           }
           case 10: {
@@ -37219,10 +36775,8 @@ function preprocess() {
       startPosition = endPosition + 1;
     }
     if (end) {
-      if (atCarriageReturn)
-        chunks.push(-5);
-      if (buffer)
-        chunks.push(buffer);
+      if (atCarriageReturn) chunks.push(-5);
+      if (buffer) chunks.push(buffer);
       chunks.push(null);
     }
     return chunks;
@@ -37505,8 +37059,7 @@ function compiler(options) {
           while (tailIndex--) {
             const tailEvent = events[tailIndex];
             if (tailEvent[1].type === "lineEnding" || tailEvent[1].type === "lineEndingBlank") {
-              if (tailEvent[0] === "exit")
-                continue;
+              if (tailEvent[0] === "exit") continue;
               if (lineIndex) {
                 events[lineIndex][1].type = "lineEndingBlank";
                 listSpread = true;
@@ -37553,8 +37106,7 @@ function compiler(options) {
     return open;
     function open(token) {
       enter.call(this, create(token), token);
-      if (and)
-        and.call(this, token);
+      if (and) and.call(this, token);
     }
   }
   function buffer() {
@@ -37578,8 +37130,7 @@ function compiler(options) {
   function closer(and) {
     return close;
     function close(token) {
-      if (and)
-        and.call(this, token);
+      if (and) and.call(this, token);
       exit3.call(this, token);
     }
   }
@@ -37627,8 +37178,7 @@ function compiler(options) {
     node2.meta = data2;
   }
   function onexitcodefencedfence() {
-    if (this.data.flowCodeInside)
-      return;
+    if (this.data.flowCodeInside) return;
     this.buffer();
     this.data.flowCodeInside = true;
   }
@@ -38066,6 +37616,7 @@ function configure2(base, extension2) {
         case "extensions": {
           break;
         }
+        /* c8 ignore next 4 */
         case "unsafe": {
           list2(base[key], extension2[key]);
           break;
@@ -38358,7 +37909,7 @@ var convert = (
    * @param {Test} [test]
    * @returns {Check}
    */
-  function(test) {
+  (function(test) {
     if (test === null || test === void 0) {
       return ok;
     }
@@ -38372,7 +37923,7 @@ var convert = (
       return typeFactory(test);
     }
     throw new Error("Expected function, string, or object as test");
-  }
+  })
 );
 function anyFactory(tests) {
   const checks = [];
@@ -38384,8 +37935,7 @@ function anyFactory(tests) {
   function any(...parameters) {
     let index3 = -1;
     while (++index3 < checks.length) {
-      if (checks[index3].apply(this, parameters))
-        return true;
+      if (checks[index3].apply(this, parameters)) return true;
     }
     return false;
   }
@@ -38404,8 +37954,7 @@ function propsFactory(check) {
     );
     let key;
     for (key in check) {
-      if (nodeAsRecord[key] !== checkAsRecord[key])
-        return false;
+      if (nodeAsRecord[key] !== checkAsRecord[key]) return false;
     }
     return true;
   }
@@ -38717,8 +38266,7 @@ function inlineCode(node2, _, state) {
     const pattern = state.unsafe[index2];
     const expression = state.compilePattern(pattern);
     let match;
-    if (!pattern.atBreak)
-      continue;
+    if (!pattern.atBreak) continue;
     while (match = expression.exec(value)) {
       let position2 = match.index;
       if (value.charCodeAt(position2) === 10 && value.charCodeAt(position2 - 1) === 13) {
@@ -39311,8 +38859,7 @@ function containerPhrasing(parent, state, info5) {
     indexStack[indexStack.length - 1] = index2;
     if (index2 + 1 < children.length) {
       let handle2 = state.handle.handlers[children[index2 + 1].type];
-      if (handle2 && handle2.peek)
-        handle2 = handle2.peek;
+      if (handle2 && handle2.peek) handle2 = handle2.peek;
       after = handle2 ? handle2(children[index2 + 1], parent, state, {
         before: "",
         after: "",
@@ -40339,7 +39886,7 @@ var CallableInstance = (
    * @param {string | symbol} property
    * @returns {(...parameters: Array<unknown>) => unknown}
    */
-  function(property) {
+  (function(property) {
     const self = this;
     const constr = self.constructor;
     const proto = (
@@ -40356,11 +39903,10 @@ var CallableInstance = (
     const names = Object.getOwnPropertyNames(func);
     for (const p of names) {
       const descriptor = Object.getOwnPropertyDescriptor(func, p);
-      if (descriptor)
-        Object.defineProperty(apply, p, descriptor);
+      if (descriptor) Object.defineProperty(apply, p, descriptor);
     }
     return apply;
-  }
+  })
 );
 
 // node_modules/unified/lib/index.js
@@ -41222,8 +40768,7 @@ function findUrl(_, protocol, domain2, path2, match) {
     return false;
   }
   const parts = splitUrl(domain2 + path2);
-  if (!parts[0])
-    return false;
+  if (!parts[0]) return false;
   const result = {
     type: "link",
     title: null,
@@ -41877,10 +41422,8 @@ var code2 = 48;
 while (code2 < 123) {
   text4[code2] = emailAutolink;
   code2++;
-  if (code2 === 58)
-    code2 = 65;
-  else if (code2 === 91)
-    code2 = 97;
+  if (code2 === 58) code2 = 65;
+  else if (code2 === 91) code2 = 97;
 }
 text4[43] = emailAutolink;
 text4[45] = emailAutolink;
@@ -42319,8 +41862,7 @@ function tokenizeGfmFootnoteCall(effects, ok3, nok) {
     return callStart;
   }
   function callStart(code3) {
-    if (code3 !== 94)
-      return nok(code3);
+    if (code3 !== 94) return nok(code3);
     effects.enter("gfmFootnoteCallMarker");
     effects.consume(code3);
     effects.exit("gfmFootnoteCallMarker");
@@ -42560,14 +42102,12 @@ function gfmStrikethrough(options) {
     function more(code3) {
       const before = classifyCharacter(previous3);
       if (code3 === 126) {
-        if (size > 1)
-          return nok(code3);
+        if (size > 1) return nok(code3);
         effects.consume(code3);
         size++;
         return more;
       }
-      if (size < 2 && !single)
-        return nok(code3);
+      if (size < 2 && !single) return nok(code3);
       const token = effects.exit("strikethroughSequenceTemporary");
       const after = classifyCharacter(code3);
       token._open = !after || after === 2 && Boolean(before);
@@ -42710,8 +42250,7 @@ function tokenizeTable(effects, ok3, nok) {
       if (type === "lineEnding" || // Note: markdown-rs uses `whitespace` instead of `linePrefix`
       type === "linePrefix")
         index2--;
-      else
-        break;
+      else break;
     }
     const tail = index2 > -1 ? self.events[index2][1].type : null;
     const next = tail === "tableHead" || tail === "tableRow" ? bodyRowStart : headRowBefore;
@@ -43219,8 +42758,7 @@ function renderVisualization(graph, terminatingRefs) {
     graph,
     rootRef,
     (_, stackNode, depth) => {
-      if (!stackNode.shouldPrint)
-        return;
+      if (!stackNode.shouldPrint) return;
       const tabSize = depth * 2;
       const indentation = new Array(tabSize).fill(" ").join("");
       let line = indentation;
@@ -45666,8 +45204,7 @@ var ZodObject = class _ZodObject extends ZodType {
           });
           status.dirty();
         }
-      } else if (unknownKeys === "strip")
-        ;
+      } else if (unknownKeys === "strip") ;
       else {
         throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
       }
@@ -47218,14 +46755,14 @@ var ostring = () => stringType().optional();
 var onumber = () => numberType().optional();
 var oboolean = () => booleanType().optional();
 var coerce = {
-  string: (arg) => ZodString.create({ ...arg, coerce: true }),
-  number: (arg) => ZodNumber.create({ ...arg, coerce: true }),
-  boolean: (arg) => ZodBoolean.create({
+  string: ((arg) => ZodString.create({ ...arg, coerce: true })),
+  number: ((arg) => ZodNumber.create({ ...arg, coerce: true })),
+  boolean: ((arg) => ZodBoolean.create({
     ...arg,
     coerce: true
-  }),
-  bigint: (arg) => ZodBigInt.create({ ...arg, coerce: true }),
-  date: (arg) => ZodDate.create({ ...arg, coerce: true })
+  })),
+  bigint: ((arg) => ZodBigInt.create({ ...arg, coerce: true })),
+  date: ((arg) => ZodDate.create({ ...arg, coerce: true }))
 };
 var NEVER = INVALID;
 var z = /* @__PURE__ */ Object.freeze({
