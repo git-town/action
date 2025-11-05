@@ -1,7 +1,7 @@
 # Git Town configuration file
 
 push-hook = true
-share-new-branches = false
+share-new-branches = "no"
 ship-delete-tracking-branch = false
 sync-before-ship = false
 sync-upstream = true
