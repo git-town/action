@@ -47065,7 +47065,7 @@ var configSchema = object({
     "perennial-regex": string3().optional()
   }).optional()
 });
-var CONFIG_FILE_NAMES = [".git-branches.toml", ".git-town.toml"];
+var CONFIG_FILE_NAMES = [".git-branches.toml", ".git-town.toml", "git-town.toml"];
 var configFile;
 CONFIG_FILE_NAMES.forEach((file) => {
   try {
@@ -47077,7 +47077,7 @@ CONFIG_FILE_NAMES.forEach((file) => {
 var parsed = configSchema.safeParse(toml.parse(configFile ?? ""));
 if (!parsed.success) {
   core4.warning(
-    "Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml`/`.git-town.toml` is valid."
+    "Failed to parse Git Town config. If this is a mistake, ensure that `.git-branches.toml`/`.git-town.toml`/`git-town.toml` is valid."
   );
 }
 var config = configFile && parsed.success ? parsed.data : void 0;
