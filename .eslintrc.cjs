@@ -34,5 +34,13 @@ module.exports = {
     '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
     '@typescript-eslint/require-await': 'off',
     'import/no-extraneous-dependencies': 'off'
-  }
+  },
+  overrides: [
+    {
+      files: ['**/*.config.*'],
+      rules: {
+        'import/no-default-export': 'off',
+      },
+    },
+  ],
 };

@@ -136,6 +136,7 @@ describe('getCurrentPullRequest', () => {
           number: 100,
           base: { ref: 'main' },
           head: { ref: 'feat/git-town-action' },
+          title: 'feat: git town action',
           state: 'open',
         },
       },
@@ -147,6 +148,7 @@ describe('getCurrentPullRequest', () => {
       number: 100,
       base: { ref: 'main' },
       head: { ref: 'feat/git-town-action' },
+      title: 'feat: git town action',
       state: 'open',
     })
   })

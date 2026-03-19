@@ -44,13 +44,16 @@ export function renderVisualization(
       }
 
       if (stackNode.type === 'pull-request') {
-        line += `- #${stackNode.number}`
+        if (stackNode.isCurrent) {
+          line += `- **${stackNode.title}**`
+          line += ' :point_left:'
+        } else {
+          line += `- #${stackNode.number}`
+        }
       }
 
-      if (stackNode.isCurrent) {
-        line += ' :point_left:'
-      }
-
+      // Attach anchor tag to root of visualization to enable subsequent runs to locate
+      // visualization directly
       if (depth === 0) {
         line += ` ${ANCHOR}`
       }

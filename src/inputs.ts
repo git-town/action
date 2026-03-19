@@ -161,6 +161,7 @@ export const inputs = {
         base: { ref: item.base.ref },
         head: { ref: item.head.ref },
         body: item.body ?? undefined,
+        title: item.title,
         state: item.state,
       }
     }
