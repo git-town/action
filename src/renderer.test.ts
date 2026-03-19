@@ -48,7 +48,7 @@ describe('getOutput', () => {
     const visualization = renderVisualization(stackGraph, ['main'])
     const expected = [
       '- `main` <!-- branch-stack -->',
-      '  - **feat: implement feature 1 \\#1** :point_left:',
+      '  - **feat: implement feature 1** :point_left:',
       '    - #2',
     ].join('\n')
 

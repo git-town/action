@@ -45,7 +45,7 @@ export function renderVisualization(
 
       if (stackNode.type === 'pull-request') {
         if (stackNode.isCurrent) {
-          line += `- **${stackNode.title} \\#${stackNode.number}**`
+          line += `- **${stackNode.title}**`
           line += ' :point_left:'
         } else {
           line += `- #${stackNode.number}`
