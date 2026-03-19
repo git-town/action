@@ -42769,10 +42769,12 @@ function renderVisualization(graph, terminatingRefs) {
         line += `- \`${stackNode.ref}\``;
       }
       if (stackNode.type === "pull-request") {
-        line += `- #${stackNode.number}`;
-      }
-      if (stackNode.isCurrent) {
-        line += " :point_left:";
+        if (stackNode.isCurrent) {
+          line += `- ${stackNode.title}`;
+          line += " :point_left:";
+        } else {
+          line += `- #${stackNode.number}`;
+        }
       }
       if (depth === 0) {
         line += ` ${ANCHOR}`;
@@ -46891,7 +46893,8 @@ var pullRequestSchema = objectType({
     ref: stringType()
   }),
   state: stringType(),
-  body: stringType().optional().nullable()
+  body: stringType().optional().nullable(),
+  title: stringType()
 });
 
 // src/locations/types.ts
@@ -47012,6 +47015,7 @@ var inputs = {
         base: { ref: item.base.ref },
         head: { ref: item.head.ref },
         body: item.body ?? void 0,
+        title: item.title,
         state: item.state
       };
     }

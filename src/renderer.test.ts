@@ -16,6 +16,7 @@ describe('getOutput', () => {
       },
       state: 'TODO',
       body: 'pr 1 body',
+      title: 'feat: implement feature 1',
     }
     const pullRequest2: PullRequest = {
       number: 2,
@@ -27,6 +28,7 @@ describe('getOutput', () => {
       },
       state: 'TODO',
       body: 'pr 2 body',
+      title: 'feat: implement feature 2',
     }
     const repoGraph = new DirectedGraph<StackNodeAttributes>()
     repoGraph.mergeNode('main', { type: 'perennial', ref: 'main' })
@@ -46,7 +48,7 @@ describe('getOutput', () => {
     const visualization = renderVisualization(stackGraph, ['main'])
     const expected = [
       '- `main` <!-- branch-stack -->',
-      '  - #1 :point_left:',
+      '  - feat: implement feature 1 :point_left:',
       '    - #2',
     ].join('\n')
 

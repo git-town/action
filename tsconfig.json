@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
@@ -21,6 +21,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["."],
+  "include": ["src", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules", "dist"]
 }

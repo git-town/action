@@ -15,6 +15,7 @@ export const pullRequestSchema = object({
   }),
   state: string(),
   body: string().optional().nullable(),
+  title: string(),
 })
 export type PullRequest = InferType<typeof pullRequestSchema>
 
