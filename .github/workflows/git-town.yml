@@ -3,7 +3,7 @@ name: Git Town
 on:
   pull_request:
     branches:
-      - '**'
+      - "**"
 
 concurrency:
   group: git-town-${{ github.sha }}

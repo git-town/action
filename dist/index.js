@@ -42770,7 +42770,7 @@ function renderVisualization(graph, terminatingRefs) {
       }
       if (stackNode.type === "pull-request") {
         if (stackNode.isCurrent) {
-          line += `- **${stackNode.title}**`;
+          line += `- **${stackNode.title} \\#${stackNode.number}**`;
           line += " :point_left:";
         } else {
           line += `- #${stackNode.number}`;
