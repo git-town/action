@@ -48,7 +48,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: git-town/action@v1
 ```
 
@@ -166,7 +166,7 @@ it into the actions's `github-token` input to grant it sufficient permissions:
 
 ```yaml
   steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: git-town/action@v1
       with:
         github-token: ${{ secrets.GIT_TOWN_PAT }} # 👈 Add this to `git-town.yml`
